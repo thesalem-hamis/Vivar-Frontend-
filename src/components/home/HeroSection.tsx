@@ -356,6 +356,7 @@ import {
 
 import LOGO_MAIN from "../../assets/logo_white.png";
 import HERO_VIDEO from "../../assets/mainhero.mp4";
+import HERO_IMAGE from "../../assets/ikoyi-main.jpg"
 
 const investDropdown = [
   { label: "Properties", sub: "Explore our property portfolio" },
@@ -376,7 +377,6 @@ export default function HeroSection() {
   const { scrollY } = useScroll();
 
   // Map scroll progress to a premium light-up / pop-out effect
-  // As the user scrolls from 0px down to 300px, the title illuminates and gets crisp
   const textOpacity = useTransform(scrollY, [0, 250], [0.85, 1]);
   const textFilter = useTransform(
     scrollY,
@@ -463,13 +463,19 @@ export default function HeroSection() {
           `}
         >
           {/* Core Cinematic Video Background */}
-          <video
+          {/* <video
             autoPlay
             loop
             muted
             playsInline
             className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-0"
             src={HERO_VIDEO}
+          /> */}
+          <img 
+            className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-0"
+            src={HERO_IMAGE}
+          
+          
           />
 
           {/* Dynamic Rich Overlays over Video Canvas */}
@@ -597,7 +603,7 @@ export default function HeroSection() {
               animate="visible"
               className="max-w-[1440px] w-full mx-auto flex flex-col items-start"
             >
-              {/* Framer Motion Scroll-Linked & Staggered Core Headline */}
+              {/* Scaled-down primary title to optimize hierarchy */}
               <motion.h1
                 ref={h1Ref}
                 style={{
@@ -605,32 +611,32 @@ export default function HeroSection() {
                   filter: textFilter,
                   scale: textScale,
                 }}
-                className="w-full font-sans font-normal text-white mb-8 text-left
-                  text-[2.6rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] xl:text-[6.5rem]
-                  leading-[1.08] md:leading-[1.02] tracking-tight max-w-[95%] will-change-[transform,opacity,filter]"
+                className="w-full font-serif font-light text-white mb-8 text-left
+                  text-[2.2rem] sm:text-[2.8rem] md:text-[3.4rem] lg:text-[3.8rem] xl:text-[4.2rem]
+                  leading-[1.1] tracking-tight max-w-[95%] will-change-[transform,opacity,filter]"
               >
                 <motion.span
-                  variants={itemVariants}
+                  // variants={itemVariants}
                   className="block select-none"
                 >
                   Lagos Real Estate.
                 </motion.span>
                 <motion.span
-                  variants={itemVariants}
+                  // variants={itemVariants}
                   className="block select-none"
                 >
                   Intelligently Curated.
                 </motion.span>
               </motion.h1>
 
-              {/* Sub-Headline Text Row (Border Underline Removed Entirely) */}
+              {/* Sub-Headline Text Row */}
               <motion.div
-                variants={textRowVariants}
+                // variants={textRowVariants}
                 className="w-full flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-2"
               >
                 {/* Subtitle Paragraph description */}
                 <div className="w-full max-w-2xl">
-                  <p className="text-white/90 text-sm sm:text-base md:text-[1.15rem] lg:text-[1.2rem] leading-relaxed font-light tracking-wide">
+                  <p className="text-white/90 text-sm sm:text-base md:text-[1.05rem] lg:text-[1.1rem] leading-relaxed font-light tracking-wide">
                     We unravel complex property markets with data intelligence,
                     local compliance, and verified premium portfolios for
                     seamless high-yield asset acquisitions.

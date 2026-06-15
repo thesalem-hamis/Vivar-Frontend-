@@ -1,44 +1,39 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { ArrowUpRight, Phone, Mail } from "lucide-react";
 import { FaFacebook, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
 
-import LOGO_MAIN from "../../assets/logo_white.png";
+import LOGO_TEXT from "../../assets/logo_main.png";
 
 const quickLinks = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  { label: "Properties", href: "/properties" },
-  { label: "Projects", href: "/projects" },
-  { label: "Invest with Vivar", href: "/invest" },
-  { label: "Insights", href: "/insights" },
-  { label: "Book a Consultation", href: "/contact" },
+  { label: "Homepage",            href: "/"         },
+  { label: "About Us",           href: "/about"     },
+  { label: "Properties",         href: "/properties"},
+  { label: "Projects",           href: "/projects"  },
+  { label: "Invest with Vivar",  href: "/invest"    },
+  { label: "Insights",           href: "/insights"  },
+  { label: "Book a Consultation",href: "/contact"   },
 ];
 
 const locations = [
-  "Ikoyi",
-  "Lekki",
-  "Victoria Island",
-  "Abuja",
-  "Port Harcourt",
-  "Diaspora Properties",
+  { label: "Ikoyi",               href: "/properties?loc=ikoyi"    },
+  { label: "Lekki",               href: "/properties?loc=lekki"    },
+  { label: "Victoria Island",     href: "/properties?loc=vi"       },
+  { label: "Abuja",               href: "/properties?loc=abuja"    },
+  { label: "Port Harcourt",       href: "/properties?loc=ph"       },
+  { label: "Diaspora Properties", href: "/properties?loc=diaspora" },
 ];
 
 const socials = [
-  {
-    icon: FaInstagram,
-    label: "Instagram",
-    href: "https://instagram.com/vivar_realty",
-  },
-  { icon: FaFacebook, label: "Facebook", href: "#" },
-  { icon: FaYoutube, label: "YouTube", href: "#" },
-  { icon: FaTiktok, label: "TikTok", href: "#" },
+  { icon: FaInstagram, label: "Instagram", href: "https://instagram.com/vivar_realty" },
+  { icon: FaFacebook,  label: "Facebook",  href: "#" },
+  { icon: FaYoutube,   label: "YouTube",   href: "#" },
+  { icon: FaTiktok,    label: "TikTok",    href: "#" },
 ];
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail]         = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -48,99 +43,22 @@ export default function Footer() {
     setEmail("");
   };
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 24 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-    },
-  };
-
   return (
-    <footer className="relative bg-[#0E292F] text-white">
-      {/* Subtle dashed grid texture, consistent with brand-statement section */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none opacity-[0.06]"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, #ffffff 1px, transparent 1px),
-            linear-gradient(to bottom, #ffffff 1px, transparent 1px)
-          `,
-          backgroundSize: "28px 28px",
-        }}
-      />
+    <footer className="relative bg-white text-black overflow-hidden pt-20 md:pt-28 pb-6 border-t border-black/10">
+      <div className="relative z-10 max-w-[90rem] mx-auto px-6 sm:px-10 lg:px-16 w-full">
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-16 py-20 md:py-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={fadeUp}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8"
-        >
-          {/* Column 1 — Brand & Newsletter */}
-          <div className="flex flex-col gap-6 lg:col-span-1 sm:col-span-2 lg:max-w-xs">
-            <a href="/">
-              <img
-                src={LOGO_MAIN}
-                alt="Vivar Realty"
-                className="h-16 w-auto object-contain brightness-0 invert"
-              />
-            </a>
-            <p className="text-sm font-light italic tracking-tight text-white/70 font-serif">
-              Real Estate, Refined for You.
-            </p>
+        {/* ── UPPER GRID ── */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-12 gap-x-8 pb-16 items-start">
 
-            <div className="flex flex-col gap-3 mt-2">
-              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#3D7188]">
-                Stay Informed
-              </p>
-              <p className="text-sm text-white/60 leading-relaxed font-light">
-                Get exclusive listings and market insights in your inbox.
-              </p>
-              <form
-                onSubmit={handleSubmit}
-                className="flex items-center gap-2 mt-1"
-              >
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  className="w-full bg-transparent border-b border-white/25 focus:border-[#3D7188]
-                    text-sm text-white placeholder:text-white/40 py-2 outline-none transition-colors"
-                />
-                <button
-                  type="submit"
-                  aria-label="Subscribe"
-                  className="flex items-center justify-center w-9 h-9 shrink-0 rounded-[6px]
-                    bg-white text-[#0E292F] hover:bg-[#3D7188] hover:text-white transition-colors duration-300"
-                >
-                  <ArrowUpRight size={15} strokeWidth={2.5} />
-                </button>
-              </form>
-              {submitted && (
-                <p className="text-xs text-[#D4E9B9]">
-                  You're on the list — thank you.
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Column 2 — Quick Links */}
-          <div className="flex flex-col gap-4">
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#3D7188]">
-              Quick Links
-            </p>
-            <ul className="flex flex-col gap-3">
+          {/* Links */}
+          <div className="md:col-span-3 border-l border-black/10 pl-4 md:pl-5">
+            <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase text-black/40 mb-6 font-sans">
+              Links
+            </h4>
+            <ul className="flex flex-col gap-3.5">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-white/70 hover:text-white transition-colors duration-200"
-                  >
+                  <a href={link.href} className="text-[15px] text-black/80 hover:text-black font-serif font-light transition-all duration-200 block tracking-wide">
                     {link.label}
                   </a>
                 </li>
@@ -148,85 +66,104 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3 — Popular Locations */}
-          <div className="flex flex-col gap-4">
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#3D7188]">
-              Popular Locations
-            </p>
-            <ul className="flex flex-col gap-3">
+          {/* Locations */}
+          <div className="md:col-span-3 border-l border-black/10 pl-4 md:pl-5">
+            <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase text-black/40 mb-6 font-sans">
+              Solutions
+            </h4>
+            <ul className="flex flex-col gap-3.5">
               {locations.map((loc) => (
-                <li key={loc}>
-                  <a
-                    href="/properties"
-                    className="text-sm text-white/70 hover:text-white transition-colors duration-200"
-                  >
-                    {loc}
+                <li key={loc.label}>
+                  <a href={loc.href} className="text-[15px] text-black/80 hover:text-black font-serif font-light transition-all duration-200 block tracking-wide">
+                    {loc.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 4 — Connect */}
-          <div className="flex flex-col gap-4">
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#3D7188]">
-              Connect
-            </p>
-            <div className="flex items-center gap-2.5">
-              {socials.map(({ icon: Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="flex items-center justify-center w-10 h-10 rounded-[8px] border border-white/15
-                    text-white/70 hover:text-[#0E292F] hover:bg-white hover:border-white transition-all duration-300"
-                >
-                  <Icon size={16} />
-                </a>
-              ))}
-            </div>
-            <div className="flex flex-col gap-3 mt-2">
-              <a
-                href="tel:+2349062036699"
-                className="flex items-center gap-2.5 text-sm text-white/70 hover:text-white transition-colors"
-              >
-                <Phone size={14} className="text-[#3D7188]" />
-                +234 906 203 6699
+          {/* Contact + Newsletter */}
+          <div className="md:col-span-3 border-l border-black/10 pl-4 md:pl-5">
+            <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase text-black/40 mb-6 font-sans">
+              Direct Contact
+            </h4>
+            <div className="flex flex-col gap-4">
+              <a href="tel:+2349062036699" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
+                <Phone size={13} className="text-black/40 group-hover:text-black transition-colors shrink-0" />
+                <span className="font-sans text-sm tracking-wide">+234 906 203 6699</span>
               </a>
+              <a href="mailto:info@vivar.com.ng" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
+                <Mail size={13} className="text-black/40 group-hover:text-black transition-colors shrink-0" />
+                <span className="font-sans text-sm tracking-wide">info@vivar.com.ng</span>
+              </a>
+            </div>
+
+            <div className="mt-8 max-w-xs">
+              <form onSubmit={handleSubmit} className="flex items-center gap-2 border-b border-black/15 py-1.5 focus-within:border-black transition-colors">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Subscribe to updates"
+                  className="w-full bg-transparent text-xs text-black placeholder:text-black/30 outline-none font-sans"
+                />
+                <button type="submit" aria-label="Subscribe" className="text-black/50 hover:text-black transition-colors">
+                  <ArrowUpRight size={14} />
+                </button>
+              </form>
+              {submitted && (
+                <p className="text-[10px] text-black mt-2 font-sans font-medium">Registered successfully.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Say Hello */}
+          <div className="md:col-span-3 flex flex-col justify-between min-h-[180px] md:text-right md:items-end">
+            <div className="w-full">
+              <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase text-black/40 mb-4 font-sans">
+                Say Hello
+              </h4>
               <a
                 href="mailto:info@vivar.com.ng"
-                className="flex items-center gap-2.5 text-sm text-white/70 hover:text-white transition-colors"
+                className="text-xl sm:text-2xl lg:text-[26px] font-serif font-light text-black tracking-wide border-b border-black/60 pb-1 hover:border-black transition-colors inline-block break-all"
               >
-                <Mail size={14} className="text-[#3D7188]" />
                 info@vivar.com.ng
               </a>
             </div>
-          </div>
-        </motion.div>
 
-        {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/40 text-center sm:text-left">
-            © 2026 Vivar Realty Limited · RC 771396
-          </p>
-          <div className="flex items-center gap-6 text-xs text-white/40">
-            <a
-              href="/privacy"
-              className="hover:text-white/80 transition-colors"
-            >
-              Privacy Policy
-            </a>
-            <a href="/terms" className="hover:text-white/80 transition-colors">
-              Terms &amp; Conditions
-            </a>
-            <a
-              href="/sitemap"
-              className="hover:text-white/80 transition-colors"
-            >
-              Site Map
-            </a>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-8 md:mt-0 text-[10px] tracking-wider text-black/40 uppercase font-sans md:justify-end">
+              <a href="/privacy" className="hover:text-black transition-colors">Privacy Policy</a>
+              <span className="text-black/10">•</span>
+              <a href="/terms" className="hover:text-black transition-colors">Terms &amp; Conditions</a>
+              <span className="text-black/10">•</span>
+              <span className="tabular-nums">© 2026</span>
+            </div>
+
+            <div className="flex items-center gap-3.5 mt-6 md:justify-end">
+              {socials.map(({ icon: Icon, label, href }) => (
+                <a key={label} href={href} aria-label={label} className="text-black/40 hover:text-black transition-colors duration-300">
+                  <Icon size={15} />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
+
+        {/* ── LOWER BRAND CANVAS ── */}
+        <div className="border-t border-black/10 pt-10 mt-6 select-none">
+          <img
+            src={LOGO_TEXT}
+            alt="Vivar Realty"
+            className="w-full h-auto object-contain object-left max-h-[140px] md:max-h-[180px] lg:max-h-[220px]"
+          />
+        </div>
+
+        {/* Bottom micro line */}
+        <div className="mt-6 text-[9px] tracking-widest text-black/20 uppercase font-sans">
+          Vivar Realty Limited · RC 771396
+        </div>
+
       </div>
     </footer>
   );

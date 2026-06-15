@@ -31,7 +31,7 @@ export default function ClosingCTASection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          variants={fadeUp}
+          // variants={fadeUp}
           className="text-[11px] font-bold tracking-[0.25em] text-[#3D7188] uppercase"
         >
           Your Next Move
@@ -41,7 +41,7 @@ export default function ClosingCTASection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          variants={fadeUp}
+          // variants={fadeUp}
           transition={{ delay: 0.1 }}
           className="text-4xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.1]"
         >
@@ -56,7 +56,7 @@ export default function ClosingCTASection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          variants={fadeUp}
+          // variants={fadeUp}
           transition={{ delay: 0.2 }}
           className="flex flex-col sm:flex-row items-center gap-4 mt-2"
         >
