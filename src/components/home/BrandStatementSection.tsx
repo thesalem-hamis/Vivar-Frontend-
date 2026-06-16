@@ -59,23 +59,23 @@ export default function BrandStatementSection() {
     }
   };
 
-  const wordVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.65, ease: [0.215, 0.61, 0.355, 1] }
-    }
-  };
+  // const wordVariants = {
+  //   hidden: { opacity: 0, y: 20 },
+  //   visible: {
+  //     opacity: 1,
+  //     y: 0,
+  //     transition: { duration: 0.65, ease: [0.215, 0.61, 0.355, 1] }
+  //   }
+  // };
 
-  const mobileParagraphVariants = {
-    hidden: { opacity: 0, y: 24 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: [0.215, 0.61, 0.355, 1] }
-    }
-  };
+  // const mobileParagraphVariants = {
+  //   hidden: { opacity: 0, y: 24 },
+  //   visible: {
+  //     opacity: 1,
+  //     y: 0,
+  //     transition: { duration: 0.7, ease: [0.215, 0.61, 0.355, 1] }
+  //   }
+  // };
 
   const statVariants = {
     hidden: { opacity: 0, y: 15 },

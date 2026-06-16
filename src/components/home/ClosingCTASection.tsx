@@ -5,14 +5,14 @@ import { ArrowUpRight } from "lucide-react";
 
 import LOGO_MARK from "../../assets/logo_white.png";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+// const fadeUp = {
+//   hidden: { opacity: 0, y: 28 },
+//   visible: {
+//     opacity: 1,
+//     y: 0,
+//     transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+//   },
+// };
 
 export default function ClosingCTASection() {
   return (

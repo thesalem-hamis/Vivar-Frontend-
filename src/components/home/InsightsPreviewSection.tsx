@@ -33,14 +33,14 @@ const articles = [
   },
 ];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+// const fadeUp = {
+//   hidden: { opacity: 0, y: 28 },
+//   visible: {
+//     opacity: 1,
+//     y: 0,
+//     transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+//   },
+// };
 
 export default function InsightsPreviewSection() {
   return (
@@ -50,7 +50,7 @@ export default function InsightsPreviewSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
+          // variants={fadeUp}
           className="max-w-2xl mx-auto text-center mb-16 md:mb-20"
         >
           <span className="text-[11px] font-bold tracking-[0.25em] text-[#3D7188] uppercase mb-4 block">
@@ -73,7 +73,7 @@ export default function InsightsPreviewSection() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
-              variants={fadeUp}
+              // variants={fadeUp}
               transition={{ delay: idx * 0.1 }}
               className="group flex flex-col gap-5"
             >
@@ -118,7 +118,7 @@ export default function InsightsPreviewSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          variants={fadeUp}
+          // variants={fadeUp}
           className="flex justify-center mt-16"
         >
           <a

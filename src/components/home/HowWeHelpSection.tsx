@@ -214,20 +214,20 @@ export default function HowWeHelpSection() {
     },
   };
 
-  const cardVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 60 
-    },
-    animate: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.85,
-        ease: [0.16, 1, 0.3, 1],
-      }
-    },
-  };
+  // const cardVariants = {
+  //   hidden: { 
+  //     opacity: 0, 
+  //     y: 60 
+  //   },
+  //   animate: { 
+  //     opacity: 1, 
+  //     y: 0,
+  //     transition: {
+  //       duration: 0.85,
+  //       ease: [0.16, 1, 0.3, 1],
+  //     }
+  //   },
+  // };
 
   return (
     <section 
@@ -302,7 +302,7 @@ export default function HowWeHelpSection() {
               <motion.a
                 key={idx}
                 href={card.href}
-                variants={cardVariants}
+                // variants={cardVariants}
                 className={`
                   group relative 
                   w-full h-[62vh] md:h-[500px] 

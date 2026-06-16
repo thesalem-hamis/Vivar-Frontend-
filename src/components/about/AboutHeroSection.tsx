@@ -3,14 +3,14 @@
 import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+// const fadeUp = {
+//   hidden: { opacity: 0, y: 28 },
+//   visible: {
+//     opacity: 1,
+//     y: 0,
+//     transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+//   },
+// };
 
 export default function AboutHero() {
   return (
@@ -40,7 +40,7 @@ export default function AboutHero() {
           <motion.div
             initial="hidden"
             animate="visible"
-            variants={fadeUp}
+            // variants={fadeUp}
             className="max-w-[1440px] w-full mx-auto flex flex-col items-start gap-6"
           >
             <span className="text-[11px] font-bold tracking-[0.25em] text-[#3D7188] uppercase">

@@ -31,10 +31,10 @@ const listings = [
   },
 ];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
-};
+// const fadeUp = {
+//   hidden: { opacity: 0, y: 28 },
+//   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+// };
 
 export default function FeaturedListingsSection() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ export default function FeaturedListingsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
+          // variants={fadeUp}
           className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12"
         >
           <div>
@@ -87,7 +87,7 @@ export default function FeaturedListingsSection() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-40px" }}
-            variants={fadeUp}
+            // variants={fadeUp}
             transition={{ delay: idx * 0.07 }}
             style={{ scrollSnapAlign: "start" }}
             className="relative flex-none w-[72vw] sm:w-[44vw] lg:w-[30vw] xl:w-[26vw]

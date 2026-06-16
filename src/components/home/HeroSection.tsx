@@ -355,7 +355,7 @@ import {
 } from "framer-motion";
 
 import LOGO_MAIN from "../../assets/logo_white.png";
-import HERO_VIDEO from "../../assets/mainhero.mp4";
+// import HERO_VIDEO from "../../assets/mainhero.mp4";
 import HERO_IMAGE from "../../assets/ikoyi-main.jpg"
 
 const investDropdown = [
@@ -422,23 +422,23 @@ export default function HeroSection() {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
-    },
-  };
+  // const itemVariants = {
+  //   hidden: { opacity: 0, y: 30 },
+  //   visible: {
+  //     opacity: 1,
+  //     y: 0,
+  //     transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+  //   },
+  // };
 
-  const textRowVariants = {
-    hidden: { opacity: 0, y: 25 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.75, ease: [0.25, 1, 0.5, 1], delay: 0.6 },
-    },
-  };
+  // const textRowVariants = {
+  //   hidden: { opacity: 0, y: 25 },
+  //   visible: {
+  //     opacity: 1,
+  //     y: 0,
+  //     transition: { duration: 0.75, ease: [0.25, 1, 0.5, 1], delay: 0.6 },
+  //   },
+  // };
 
   return (
     <>
