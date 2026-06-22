@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
-import HomePage from "@/pages/overview/HomePage";
-import AboutPage from "@/pages/overview/AboutPage";
+import HomePage from "@/pages/HomePage";
+import AboutPage from "@/pages/AboutPage";
 
 export default function AppRouter() {
   return (
