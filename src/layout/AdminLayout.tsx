@@ -1,8 +1,28 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { useEffect } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function AdminLayout() {
+  const { isAuthenticated, user, fetchUser, isLoadingUser } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      fetchUser();
+    }
+  }, [isAuthenticated, user, fetchUser]);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  if (isLoadingUser) return (
+    <div className="w-full bg-teal-800 text-white">
+Loading your resources...
+    </div>
+  )
+
   return (
     <div className="flex h-screen min-w-7xl overflow-hidden bg-[#f4f6f8] font-sans">
       <AdminSidebar />

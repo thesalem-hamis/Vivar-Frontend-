@@ -50,7 +50,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        useAuthStore.getState().clearAuth();
+        useAuthStore.getState().logout();
         window.location.href = "/admin/login";
         return Promise.reject(refreshError);
       }

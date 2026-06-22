@@ -11,7 +11,8 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
-import LOGO_MAIN from "../../assets/logo_white.png";
+import LOGO_MAIN from "../../assets/logo_main.png";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const navSections = [
   {
@@ -46,13 +47,14 @@ const navSections = [
     label: "ACCOUNT",
     items: [
       { icon: HelpCircle, label: "Help", href: "/admin/help" },
-      { icon: LogOut, label: "Logout", href: "/" },
+      { icon: LogOut, label: "Logout", href: "/admin#",  },
     ],
   },
 ];
 
 export default function AdminSidebar() {
   const { pathname } = useLocation();
+  const { logout } = useAuthStore();
 
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
@@ -61,11 +63,12 @@ export default function AdminSidebar() {
     <aside className="w-[220px] h-screen bg-white border-r border-gray-100 flex flex-col shrink-0">
       {/* Logo */}
       <div className="px-4 py-5 border-b border-gray-100 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-[#0E292F] flex items-center justify-center shrink-0">
+        <div className="h-6 w-9 overflow-hidden flex items-center">
+
           <img
             src={LOGO_MAIN}
             alt=""
-            className="h-6 w-auto brightness-0 invert"
+            className="h-15 w-auto object-cover"
           />
         </div>
         <div className="min-w-0">
@@ -88,14 +91,17 @@ export default function AdminSidebar() {
                 const Icon = item.icon;
                 const active = isActive(item.href);
                 return (
-                  <li key={item.label}>
+                  <li key={item.label} onClick={() => {
+                    if (item.label === "Logout") {
+                      logout();
+                    }
+                  }}>
                     <Link
                       to={item.href}
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
-                        active
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${active
                           ? "bg-[#0E292F] text-white shadow-sm"
                           : "text-gray-600 hover:bg-gray-50 hover:text-[#0E292F]"
-                      }`}
+                        }`}
                     >
                       <Icon
                         size={15}
@@ -105,11 +111,10 @@ export default function AdminSidebar() {
                       <span className="flex-1 truncate">{item.label}</span>
                       {item.badge && (
                         <span
-                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                            active
+                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${active
                               ? "bg-white/20 text-white"
                               : "bg-[#0E292F]/10 text-[#0E292F]"
-                          }`}
+                            }`}
                         >
                           {item.badge}
                         </span>
