@@ -1,4 +1,3 @@
-// pages/admin/DashboardPage.tsx
 import { useEffect, useState, useCallback } from "react";
 import { getDashboardStats } from "@/lib/supabase/admin";
 import { supabase } from "@/lib/supabase/client";

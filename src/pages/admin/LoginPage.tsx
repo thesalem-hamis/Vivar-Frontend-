@@ -231,7 +231,7 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.6, ease: "easeOut"}}
           className="relative w-full max-w-[400px] xl:max-w-[440px] px-4 z-10"
         >
           {/* Mobile Logo */}
