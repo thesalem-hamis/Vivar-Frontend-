@@ -14,12 +14,22 @@ const investDropdown = [
 ];
 
 export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileDropOpen, setMobileDropOpen] = useState(false);
 
   const dropRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Dropdown Auto-closer
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropRef.current && !dropRef.current.contains(e.target as Node))
@@ -29,6 +39,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // Document Layout Scroll Lock for Drawer
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
@@ -38,105 +49,122 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="relative z-30 w-full px-6 md:px-12 py-5 flex items-center justify-between gap-4">
-        {/* Mobile/Desktop Logo Pill */}
-        <div className="flex items-center justify-between w-full md:w-auto bg-[#0E292F]/40 border border-white/10 backdrop-blur-sm rounded-[18px] px-4 py-2 md:bg-transparent md:border-0 md:px-0 md:py-0 md:rounded-none md:backdrop-blur-none">
-          <Link to="/" className="flex items-center">
-            <img
-              src={LOGO_MAIN}
-              alt="Vivar Realty"
-              className="h-14 sm:h-16 md:h-20 lg:h-24 w-auto object-contain brightness-0 invert"
-            />
-          </Link>
-
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="md:hidden flex items-center justify-center w-11 h-11 rounded-xl bg-white/20 hover:bg-white/30 transition-colors ml-4"
-            aria-label="Open menu"
+      {/* ── GLOBAL STICKY HEADER CONTAINER ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 w-full px-6 md:px-12 py-4 transition-all duration-300 pointer-events-none">
+        <div className="max-w-[1440px] mx-auto w-full flex items-center justify-between gap-4 pointer-events-auto">
+          
+          {/* Logo / Mobile Wrapper */}
+          <div
+            className={`
+              flex items-center justify-between w-full md:w-auto
+              transition-all duration-500 ease-out
+              md:bg-transparent md:border-0 md:px-0 md:py-0 md:rounded-none md:shadow-none md:backdrop-blur-none
+              ${
+                scrolled
+                  ? "bg-[#0E292F]/95 border border-white/20 shadow-xl backdrop-blur-md rounded-[18px] px-5 py-2.5"
+                  : "bg-[#0E292F]/40 border border-white/10 backdrop-blur-sm rounded-[18px] px-4 py-2"
+              }
+            `}
           >
-            <div className="flex flex-col gap-1.5 w-4">
-              <span className="h-[2px] w-full bg-white rounded-full" />
-              <span className="h-[2px] w-full bg-white rounded-full" />
-            </div>
-          </button>
-        </div>
+            <a href="/" className="flex items-center">
+              <img
+                src={LOGO_MAIN}
+                alt="Logo"
+                className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-all duration-300 brightness-0 invert"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+            </a>
 
-        {/* Desktop Navigation Pill */}
-        <div className="hidden md:flex items-center p-1.5 rounded-[14px] bg-[#F5F5F5] border border-white/20 shadow-xl ml-auto">
-          <div className="flex items-center gap-1 px-4">
-            <Link
-              to="/"
-              className="px-3 py-2.5 rounded-[6px] transition-colors duration-200 text-xs font-bold tracking-widest uppercase whitespace-nowrap text-black hover:bg-black/8"
+            {/* Mobile Hamburger Drawer Trigger */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="md:hidden flex items-center justify-center w-11 h-11 rounded-xl
+                bg-white/20 hover:bg-white/30 transition-colors ml-4"
+              aria-label="Open menu"
             >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              className="px-3 py-2.5 rounded-[6px] transition-colors duration-200 text-xs font-bold tracking-widest uppercase whitespace-nowrap text-black hover:bg-black/8"
-            >
-              About
-            </Link>
-
-            <div ref={dropRef} className="relative">
-              <button
-                onClick={() => setDropOpen((o) => !o)}
-                className="flex items-center gap-1.5 px-3 py-2.5 rounded-[6px] transition-colors duration-200 text-xs font-bold tracking-widest uppercase whitespace-nowrap text-black/90 hover:bg-black/8"
-              >
-                Invest with Us
-                <motion.span
-                  animate={{ rotate: dropOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ChevronDown size={13} strokeWidth={2.5} />
-                </motion.span>
-              </button>
-
-              <AnimatePresence>
-                {dropOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                    transition={{ duration: 0.18, ease: "easeOut" }}
-                    className="absolute top-full right-0 mt-4 w-72 bg-[#0E292F] border border-white/20 rounded-[12px] backdrop-blur-xl shadow-2xl overflow-hidden z-50"
-                  >
-                    {investDropdown.map((item) => (
-                      <Link
-                        key={item.label}
-                        to={item.to}
-                        onClick={() => setDropOpen(false)}
-                        className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-white/10 transition-colors duration-150 group border-b border-white/10 last:border-0"
-                      >
-                        <div>
-                          <p className="text-white text-sm font-semibold tracking-tight">
-                            {item.label}
-                          </p>
-                          <p className="text-white/60 text-xs mt-0.5 font-normal normal-case tracking-normal">
-                            {item.sub}
-                          </p>
-                        </div>
-                        <ArrowUpRight
-                          size={15}
-                          className="text-white/40 group-hover:text-white mt-0.5 shrink-0 transition-colors"
-                        />
-                      </Link>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+              <div className="flex flex-col gap-1.5 w-4">
+                <span className="h-[2px] w-full bg-white rounded-full" />
+                <span className="h-[2px] w-full bg-white rounded-full" />
+              </div>
+            </button>
           </div>
 
-          <Link
-            to="/contact"
-            className="px-6 py-3.5 rounded-[10px] bg-[#0E292F] hover:bg-[#1D3F48] transition-colors duration-200 text-white text-[11px] font-bold tracking-widest uppercase whitespace-nowrap"
-          >
-            Work With Us
-          </Link>
-        </div>
-      </nav>
+          {/* Desktop Navigation Menu Container */}
+          <div className="hidden md:flex items-center p-1.5 rounded-[14px] bg-[#F5F5F5] border border-white/20 shadow-xl ml-auto">
+            <div className="flex items-center gap-1 px-4">
+              <NavLink href="/">Home</NavLink>
+              <NavLink href="/about">About</NavLink>
 
-      {/* Mobile Drawer */}
+              {/* Main Link Dropdown */}
+              <div ref={dropRef} className="relative">
+                <button
+                  onClick={() => setDropOpen((o) => !o)}
+                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-[6px] transition-colors
+                    duration-200 text-xs font-bold tracking-widest uppercase whitespace-nowrap
+                    text-black/90 hover:bg-black/8"
+                >
+                  Invest with Us
+                  <motion.span
+                    animate={{ rotate: dropOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown size={13} strokeWidth={2.5} />
+                  </motion.span>
+                </button>
+
+                <AnimatePresence>
+                  {dropOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
+                      className="absolute top-full right-0 mt-4 w-72 bg-[#0E292F] border border-white/20
+                        rounded-[12px] backdrop-blur-xl shadow-2xl overflow-hidden z-50"
+                    >
+                      {investDropdown.map((item) => (
+                        <a
+                          key={item.label}
+                          href={item.to}
+                          onClick={() => setDropOpen(false)}
+                          className="flex items-start justify-between gap-3 px-4 py-3.5
+                            hover:bg-white/10 transition-colors duration-150 group
+                            border-b border-white/10 last:border-0"
+                        >
+                          <div>
+                            <p className="text-white text-sm font-semibold tracking-tight">
+                              {item.label}
+                            </p>
+                            <p className="text-white/60 text-xs mt-0.5 font-normal normal-case tracking-normal">
+                              {item.sub}
+                            </p>
+                          </div>
+                          <ArrowUpRight
+                            size={15}
+                            className="text-white/40 group-hover:text-white mt-0.5 shrink-0 transition-colors"
+                          />
+                        </a>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            <a
+              href="/contact"
+              className="px-6 py-3.5 rounded-[10px] bg-[#0E292F] hover:bg-[#1D3F48]
+                transition-colors duration-200 text-white text-[11px] font-bold tracking-widest uppercase whitespace-nowrap"
+            >
+              Work With Us
+            </a>
+          </div>
+        </div>
+      </header>
+
+      {/* ── MOBILE DRAWER CONTAINER ── */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -148,12 +176,15 @@ export default function Navbar() {
               className="fixed inset-0 z-[65] bg-black/60 backdrop-blur-sm"
               onClick={() => setMobileOpen(false)}
             />
+
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 32, stiffness: 290 }}
-              className="fixed bottom-0 left-0 right-0 z-[70] flex flex-col bg-[#0E292F] border-t border-white/20 rounded-t-[24px] max-h-[92vh] overflow-hidden"
+              className="fixed bottom-0 left-0 right-0 z-[70] flex flex-col
+                bg-[#0E292F] border-t border-white/20
+                rounded-t-[24px] max-h-[92vh] overflow-hidden"
             >
               <div className="flex justify-center pt-4 pb-2 shrink-0">
                 <div className="w-10 h-1 rounded-full bg-white/30" />
@@ -163,7 +194,7 @@ export default function Navbar() {
                 <Link to="/" onClick={() => setMobileOpen(false)}>
                   <img
                     src={LOGO_MAIN}
-                    alt="Vivar Realty"
+                    alt="Logo"
                     className="h-12 w-auto object-contain brightness-0 invert"
                   />
                 </Link>
@@ -181,7 +212,8 @@ export default function Navbar() {
                     key={label}
                     to={label === "Home" ? "/" : `/${label.toLowerCase()}`}
                     onClick={() => setMobileOpen(false)}
-                    className="block py-5 text-white/90 text-2xl font-bold tracking-tight border-b border-white/10 hover:text-white transition-colors"
+                    className="block py-5 text-white/90 text-2xl font-bold tracking-tight
+                      border-b border-white/10 hover:text-white transition-colors"
                   >
                     {label}
                   </Link>
@@ -190,18 +222,15 @@ export default function Navbar() {
                 <div>
                   <button
                     onClick={() => setMobileDropOpen((o) => !o)}
-                    className="w-full flex items-center justify-between py-5 text-white/90 text-2xl font-bold tracking-tight border-b border-white/10"
+                    className="w-full flex items-center justify-between py-5 text-white/90
+                      text-2xl font-bold tracking-tight border-b border-white/10"
                   >
                     <span>Invest with Us</span>
                     <motion.span
                       animate={{ rotate: mobileDropOpen ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <ChevronDown
-                        size={20}
-                        strokeWidth={2}
-                        className="text-white/60"
-                      />
+                      <ChevronDown size={20} className="text-white/60" />
                     </motion.span>
                   </button>
                   <AnimatePresence>
@@ -218,20 +247,14 @@ export default function Navbar() {
                             key={item.label}
                             to={item.to}
                             onClick={() => setMobileOpen(false)}
-                            className="flex items-center justify-between px-4 py-4 border-b border-white/10 last:border-0 group"
+                            className="flex items-center justify-between px-4 py-4
+                              border-b border-white/10 last:border-0 group"
                           >
                             <div>
-                              <p className="text-white text-base font-semibold">
-                                {item.label}
-                              </p>
-                              <p className="text-white/60 text-sm mt-0.5">
-                                {item.sub}
-                              </p>
+                              <p className="text-white text-base font-semibold">{item.label}</p>
+                              <p className="text-white/60 text-sm mt-0.5">{item.sub}</p>
                             </div>
-                            <ArrowUpRight
-                              size={16}
-                              className="text-white/40 group-hover:text-white transition-colors"
-                            />
+                            <ArrowUpRight size={16} className="text-white/40 group-hover:text-white transition-colors" />
                           </Link>
                         ))}
                       </motion.div>
@@ -242,7 +265,8 @@ export default function Navbar() {
                 <Link
                   to="/contact"
                   onClick={() => setMobileOpen(false)}
-                  className="block py-5 text-white/90 text-2xl font-bold tracking-tight border-b border-white/10 hover:text-white transition-colors"
+                  className="block py-5 text-white/90 text-2xl font-bold tracking-tight
+                    border-b border-white/10 hover:text-white transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -252,7 +276,9 @@ export default function Navbar() {
                 <Link
                   to="/contact"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-4 bg-white hover:bg-white/90 transition-colors text-[#0E292F] rounded-[12px] font-bold text-sm tracking-wider uppercase shadow-lg"
+                  className="flex items-center justify-center gap-2 w-full py-4
+                    bg-white hover:bg-white/90 transition-colors text-[#0E292F]
+                    rounded-[12px] font-bold text-sm tracking-wider uppercase shadow-lg"
                 >
                   Work With Us
                 </Link>
@@ -262,5 +288,18 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      className="px-3 py-2.5 rounded-[6px] transition-colors duration-200
+        text-xs font-bold tracking-widest uppercase whitespace-nowrap
+        text-black hover:bg-black/8"
+    >
+      {children}
+    </a>
   );
 }

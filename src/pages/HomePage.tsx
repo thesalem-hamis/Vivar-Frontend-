@@ -9,11 +9,13 @@ import ClosingCTASection from "@/components/home/ClosingCTASection";
 import Footer from "@/components/layout/Footer";
 import PropertyCategory from "@/components/home/PropertyCategory";
 import TestimonialsSection from "@/components/home/Testimonial";
+import Navbar from "@/components/layout/Navbar";
 
 const HomePage = () => {
   return (
     <div>
       <HeroSection />
+      <Navbar />
       <BrandStatementSection />
       <HowWeHelpSection />
       <PropertyCategory />
