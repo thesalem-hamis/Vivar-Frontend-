@@ -28,20 +28,20 @@ export const propertyApi = {
       success: boolean;
       data: Property[];
       meta: SearchResult["meta"];
-    }>(`/search?${buildParams(filters)}`);
+    }>(`/properties/search?${buildParams(filters)}`);
     return { data: data.data, meta: data.meta };
   },
 
   getFeatured: async (): Promise<Property[]> => {
     const { data } = await api.get<{ success: boolean; data: Property[] }>(
-      "/featured",
+      "/properties/featured",
     );
     return data.data ?? [];
   },
 
   getById: async (id: string): Promise<Property> => {
     const { data } = await api.get<{ success: boolean; data: Property }>(
-      `/${id}`,
+      `/properties/${id}`,
     );
     return data.data;
   },

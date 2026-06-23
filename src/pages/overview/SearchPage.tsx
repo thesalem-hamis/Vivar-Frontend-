@@ -14,7 +14,6 @@ import { SORT_LABELS, type SortOption } from "../../types/property.types";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
-// ── Inline SVGs ───────────────────────────────────────────────────────────────
 const GridSVG = ({ active }: { active: boolean }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
     <rect
@@ -285,7 +284,6 @@ export default function SearchPage() {
                 )}
               </div>
 
-              {/* Layout toggle */}
               <div className="flex rounded-xl border border-gray-200 bg-white overflow-hidden">
                 <button
                   onClick={() => setLayout("grid")}
@@ -316,7 +314,6 @@ export default function SearchPage() {
               />
             </div>
 
-            {/* ── Results ── */}
             {loading ? (
               <PropertySkeleton
                 count={layout === "grid" ? 9 : 5}
