@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/useAuthStore";
 import { Bell, Mail, Search, ChevronDown } from "lucide-react";
 
 interface AdminHeaderProps {
@@ -11,6 +12,7 @@ export default function AdminHeader({
   subtitle,
   actions,
 }: AdminHeaderProps) {
+  const { user } = useAuthStore();
   return (
     <header className="bg-white border-b border-gray-100 h-[68px] flex items-center px-8 gap-6 shrink-0">
       {/* Search */}
@@ -21,9 +23,6 @@ export default function AdminHeader({
           placeholder="Search..."
           className="bg-transparent text-[13px] text-gray-600 outline-none w-full placeholder:text-gray-400"
         />
-        <kbd className="hidden sm:flex items-center px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-[10px] text-gray-400 font-mono shrink-0">
-          ⌘F
-        </kbd>
       </div>
 
       {/* Page Title (if provided, shows in header) */}
@@ -60,19 +59,18 @@ export default function AdminHeader({
         <div className="w-px h-8 bg-gray-100 mx-1" />
 
         {/* User profile */}
-        <button className="flex items-center gap-2.5 hover:bg-gray-50 rounded-xl px-2 py-1 transition-colors">
+        <button className="flex items-center gap-2.5 px-2 py-1">
           <div className="w-8 h-8 rounded-full bg-[#0E292F] flex items-center justify-center shrink-0">
-            <span className="text-white text-[12px] font-bold">AV</span>
+            <span className="text-white text-[12px] font-bold">{user?.name.split(" ")[0][0].toUpperCase()}{user?.name.split(" ")[1][0].toUpperCase()}</span>
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-[13px] font-semibold text-gray-800 leading-none">
-              Admin
+            <p className="text-[13px] font-semibold text-gray-800 leading-none line-clamp-1">
+              {user?.name}
             </p>
-            <p className="text-[10px] text-gray-400 mt-0.5">
-              admin@vivar.com.ng
+            <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-1">
+              {user?.email}
             </p>
           </div>
-          <ChevronDown size={13} className="text-gray-400 hidden sm:block" />
         </button>
       </div>
     </header>

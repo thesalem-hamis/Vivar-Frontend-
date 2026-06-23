@@ -3,7 +3,8 @@ import { AxiosError } from "axios";
 import LOGO_MAIN from "../../assets/logo_main.png";
 import { api } from "@/lib/api/axios";
 import { Eye, EyeClosed } from "lucide-react";
-const useAuthStore = { getState: () => ({ setAuth: (token: string) => {} }) };
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "react-router";
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -11,8 +12,9 @@ export const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hide, setHide] = useState(true);
+  const navigate = useNavigate();
 
-  const setAuth = useAuthStore.getState().setAuth;
+  const { setAuth, isAuthenticated } = useAuthStore()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +23,11 @@ export const LoginPage: React.FC = () => {
 
     try {
       const response = await api.post("/auth/login", { email, password });
-      const accessToken = response.data?.data.accessToken;
+      const accessToken = response.data?.data.access_token;
+      console.log(response.data)
       if (accessToken) setAuth(accessToken);
-      window.location.href = "/admin";
+      console.log(isAuthenticated);
+      navigate("/admin", { replace: true })
     } catch (err) {
       if (err instanceof AxiosError) {
         setError(err.response?.data?.message || "Invalid credentials");
