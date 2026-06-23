@@ -356,7 +356,7 @@ import {
 
 import LOGO_MAIN from "../../assets/logo_white.png";
 // import HERO_VIDEO from "../../assets/mainhero.mp4";
-import HERO_IMAGE from "../../assets/ikoyi-main.jpg"
+import HERO_IMAGE from "../../assets/ikoyi-main.jpg";
 
 const investDropdown = [
   { label: "Properties", sub: "Explore our property portfolio" },
@@ -454,7 +454,7 @@ export default function HeroSection() {
         <div
           className={`
             relative z-10 w-full overflow-hidden flex flex-col justify-start bg-[#040c0e] shadow-2xl
-            transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-top will-change-[transform,border-radius]
+            transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] origin-top will-change-[transform,border-radius]
             ${
               scrolled
                 ? "scale-100 mt-0 rounded-none min-h-screen"
@@ -471,11 +471,9 @@ export default function HeroSection() {
             className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-0"
             src={HERO_VIDEO}
           /> */}
-          <img 
+          <img
             className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-0"
             src={HERO_IMAGE}
-          
-          
           />
 
           {/* Dynamic Rich Overlays over Video Canvas */}

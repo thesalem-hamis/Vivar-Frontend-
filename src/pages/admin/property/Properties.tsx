@@ -16,7 +16,7 @@ import {
   statusColors,
   formatPrice,
   type Property,
-} from "../../lib/data";
+} from "../../../lib/data";
 
 const typeFilters = [
   "All",

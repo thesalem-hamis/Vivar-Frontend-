@@ -3,8 +3,8 @@ import type {
   Property,
   PropertySearchFilters,
   SearchResult,
-} from "../types/property.types";
-import { api } from "./axios";
+} from "../../../types/property.types";
+import { api } from "../axios";
 
 const BASE =
   (import.meta as any).env?.VITE_API_URL ?? "http://localhost:3000/api";
