@@ -16,7 +16,11 @@ export default function AppRouter() {
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="properties" element={<PropertiesListingPage />} />
+        {/* <Route path="properties:id" element={<SinglePropertyPage />} /> */}
+        <Route path="properties" element={<PropertiesListingPage />} />
       </Route>
+
+      {/* ADMIN ROUTES */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="users" element={<UsersPage />} />

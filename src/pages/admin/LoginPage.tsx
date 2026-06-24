@@ -1,39 +1,12 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { adminLogin } from "@/lib/supabase/admin"
-import { 
-  Mail, Lock, Shield, AlertCircle, Loader2, Eye, EyeOff, ArrowRight, 
-  Sparkles, ChevronLeft, ChevronRight 
-} from "lucide-react"
+import { Mail, Lock, AlertCircle, Loader2, Eye, EyeOff, ArrowUpRight } from "lucide-react"
 
-const propertyImages = [
-  {
-    url: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80",
-    alt: "Modern luxury villa exterior",
-    caption: "Luxury Living Redefined"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80",
-    alt: "Contemporary interior design",
-    caption: "Elegant Interior Spaces"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80",
-    alt: "Premium kitchen design",
-    caption: "Gourmet Kitchens"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&q=80",
-    alt: "Scenic poolside view",
-    caption: "Resort-Style Living"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=80",
-    alt: "Panoramic city view",
-    caption: "Breathtaking Views"
-  },
-]
+// Import logos from assets (tweak paths as needed)
+import logoWhite from "@/assets/logo_white.png" 
+import logoMobile from "@/assets/logo_main.png" // Secondary logo image path for mobile layout
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -45,30 +18,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [focusedField, setFocusedField] = useState<string | null>(null)
-  const [currentImage, setCurrentImage] = useState(0)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-
-  const nextImage = useCallback(() => {
-    if (!isTransitioning) {
-      setIsTransitioning(true)
-      setCurrentImage((prev) => (prev + 1) % propertyImages.length)
-      setTimeout(() => setIsTransitioning(false), 700)
-    }
-  }, [isTransitioning])
-
-  const prevImage = useCallback(() => {
-    if (!isTransitioning) {
-      setIsTransitioning(true)
-      setCurrentImage((prev) => (prev - 1 + propertyImages.length) % propertyImages.length)
-      setTimeout(() => setIsTransitioning(false), 700)
-    }
-  }, [isTransitioning])
-
-  useEffect(() => {
-    const interval = setInterval(nextImage, 5000)
-    return () => clearInterval(interval)
-  }, [nextImage])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,357 +36,165 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Left Side - Real Estate Showcase (50%) */}
-      <div className="hidden lg:flex lg:w-1/2 relative h-screen overflow-hidden">
-        {/* Image Slideshow */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentImage}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.7, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <img
-              src={propertyImages[currentImage].url}
-              alt={propertyImages[currentImage].alt}
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
-        </AnimatePresence>
+    <div className="flex h-screen w-screen bg-white overflow-hidden font-sans antialiased">
+      
+      {/* ── LEFT PANEL: PREMIUM PURE WHITE SIGN IN FORM (50%) ── */}
+      <div className="w-full lg:w-1/2 h-full flex items-center justify-center p-6 sm:p-12 relative bg-white">
+        
+        {/* Form container border removed entirely to blend seamlessly */}
+        <div className="w-full max-w-[380px] bg-white p-4 sm:p-8">
+          
+          {/* Mobile Only Header Logo Display (Hidden on Desktop) */}
+          <div className="block lg:hidden mb-6 text-left">
+            <img src={logoMobile} alt="Vivar Logo Mobile" className="w-20 h-20 object-contain" />
+          </div>
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/30" />
+          {/* Header - Aligned Left */}
+          <div className="text-left mb-8">
+            <h2 className="text-2xl font-serif font-normal text-[#0E292F] tracking-tight">
+              Sign In to Dashboard
+            </h2>
+            <p className="mt-1.5 text-slate-400 text-xs font-light">
+              Enter your official administrator credentials below.
+            </p>
+          </div>
 
-        {/* Content Overlay */}
-        <div className="relative z-10 flex flex-col justify-between w-full h-full p-8 xl:p-12">
-          {/* Top Branding */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="flex items-center gap-3"
-          >
-            <div className="relative flex-shrink-0">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur opacity-50" />
-              <div className="relative w-11 h-11 bg-white/10 backdrop-blur-xl rounded-xl flex items-center justify-center border border-white/20 overflow-hidden">
-                <img 
-                  src="/favicon.png" 
-                  alt="Vivar Logo" 
-                  className="w-7 h-7 object-contain"
+          {/* Form Action Gateway */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            
+            <AnimatePresence mode="wait">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="flex items-start gap-2.5 px-3.5 py-3 rounded-none bg-red-50 border border-red-100"
+                >
+                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5 stroke-[1.5]" />
+                  <p className="text-xs text-red-600/90 leading-normal font-medium">{error}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Email Address */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 stroke-[1.5]" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@vivar.com"
+                  required
+                  disabled={loading}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-none bg-slate-50/30 border border-[#0E292F]/40 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#0E292F] focus:bg-white transition-all duration-200 text-xs"
                 />
               </div>
             </div>
-            <div>
-              <h2 className="text-lg xl:text-xl font-bold text-white tracking-tight leading-tight">VIVAR</h2>
-              <p className="text-[10px] xl:text-xs text-blue-200/80 tracking-wider">REALTY PLATFORM</p>
-            </div>
-          </motion.div>
 
-          {/* Middle - Caption */}
-          <motion.div
-            key={`caption-${currentImage}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="space-y-3 px-2"
-          >
-            <motion.h1 
-              className="text-3xl xl:text-4xl font-bold text-white leading-tight"
-            >
-              {propertyImages[currentImage].caption}
-            </motion.h1>
-            <p className="text-sm xl:text-base text-gray-300 max-w-sm">
-              Discover exceptional properties curated for the most discerning clients.
-            </p>
-          </motion.div>
-
-          {/* Bottom - Navigation & Stats */}
-          <div className="space-y-6">
-            {/* Navigation Arrows & Dots */}
-            <div className="flex items-center justify-between">
-              <div className="flex gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={prevImage}
-                  className="w-9 h-9 xl:w-10 xl:h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-200"
+            {/* Password */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  className="text-[11px] text-[#1D3F47] hover:text-[#0E292F] font-medium transition-colors"
                 >
-                  <ChevronLeft className="w-4 h-4" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={nextImage}
-                  className="w-9 h-9 xl:w-10 xl:h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all duration-200"
+                  Forgot?
+                </button>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 stroke-[1.5]" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  required
+                  disabled={loading}
+                  className="w-full pl-10 pr-12 py-2.5 rounded-none bg-slate-50/30 border border-[#0E292F]/40 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#0E292F] focus:bg-white transition-all duration-200 text-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 transition-colors"
                 >
-                  <ChevronRight className="w-4 h-4" />
-                </motion.button>
-              </div>
-
-              {/* Progress Dots */}
-              <div className="flex gap-1.5">
-                {propertyImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImage(index)}
-                    className="group"
-                  >
-                    <motion.div
-                      animate={{
-                        width: index === currentImage ? 24 : 8,
-                        backgroundColor: index === currentImage ? "#fff" : "rgba(255,255,255,0.3)"
-                      }}
-                      transition={{ duration: 0.3 }}
-                      className="h-1.5 rounded-full group-hover:bg-white/60"
-                    />
-                  </button>
-                ))}
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <p className="text-xl xl:text-2xl font-bold text-white">500+</p>
-                <p className="text-[10px] xl:text-xs text-gray-400">Properties</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xl xl:text-2xl font-bold text-white">50+</p>
-                <p className="text-[10px] xl:text-xs text-gray-400">Cities</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xl xl:text-2xl font-bold text-white">98%</p>
-                <p className="text-[10px] xl:text-xs text-gray-400">Satisfaction</p>
-              </div>
+            {/* Keep Logged In Option */}
+            <label className="flex items-center gap-2 cursor-pointer group select-none py-0.5">
+              <input
+                type="checkbox"
+                className="w-3.5 h-3.5 rounded-none border-[#0E292F]/40 bg-slate-50 text-[#0E292F] focus:ring-[#0E292F]/20 cursor-pointer transition-colors"
+              />
+              <span className="text-[11px] text-slate-500 group-hover:text-slate-700 transition-colors">
+                Stay logged in on this machine
+              </span>
+            </label>
+
+            {/* Premium Button Action */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex items-center w-full justify-between pl-6 pr-1.5 py-1.5 rounded-[8px] bg-[#0E292F] text-white hover:bg-white hover:text-[#0E292F] border border-[#0E292F] transition-all duration-300 group font-sans text-[10px] sm:text-[11px] font-bold tracking-widest uppercase whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="w-full text-center pr-2">
+                  {loading ? "Verifying Access..." : "Login to Dashboard"}
+                </span>
+                
+                <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-[6px] bg-white text-[#0E292F] group-hover:bg-[#0E292F] group-hover:text-white transition-all duration-300 shrink-0">
+                  {loading ? (
+                    <Loader2 className="w-[14px] h-[14px] animate-spin" />
+                  ) : (
+                    <ArrowUpRight size={14} strokeWidth={2.5} />
+                  )}
+                </div>
+              </button>
             </div>
-          </div>
+          </form>
+
         </div>
       </div>
 
-      {/* Right Side - Login Form (50%) */}
-      <div className="w-full lg:w-1/2 h-screen flex items-center justify-center bg-[#0A0F1E] relative overflow-hidden">
-        {/* Background Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1f2e_1px,transparent_1px),linear-gradient(to_bottom,#1a1f2e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+      {/* ── RIGHT PANEL: CLASSIC BRAND SHOWCASE (50%) ── */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0E292F] relative h-full flex-col justify-between p-16 text-white overflow-hidden">
+        {/* Deep background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#0A1D21] via-[#0E292F] to-[#1D3F47] opacity-90" />
+        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-[#1D3F47]/20 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Background Gradient Orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+        {/* Top Branding (Desktop Variant) */}
+        <div className="relative z-10 flex items-center">
+          <img src={logoWhite} alt="Vivar Logo Desktop" className="w-25 h-25 object-contain" />
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut"}}
-          className="relative w-full max-w-[400px] xl:max-w-[440px] px-4 z-10"
-        >
-          {/* Mobile Logo */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="lg:hidden flex justify-center mb-6"
-          >
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-75" />
-              <div className="relative w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center border border-slate-700/50 overflow-hidden">
-                <img 
-                  src="/favicon.png" 
-                  alt="Vivar Logo" 
-                  className="w-9 h-9 object-contain"
-                />
-              </div>
-            </div>
-          </motion.div>
+        {/* Center Spotlight Copy */}
+        <div className="relative z-10 max-w-md my-auto space-y-4">
+          <h1 className="text-4xl font-serif font-normal text-[#F5F5F7] leading-tight tracking-tight">
+            Elevating property management to an art form.
+          </h1>
+          <p className="text-white/60 text-sm font-light leading-relaxed">
+            Welcome back to the secure control hub. Access your localized portfolio tracking, high-tier analytics, and secure institutional transaction logs.
+          </p>
+        </div>
 
-          {/* Card */}
-          <div className="relative bg-slate-900/60 backdrop-blur-2xl rounded-2xl border border-slate-800/60 shadow-[0_0_60px_-15px] shadow-blue-500/20 p-6 xl:p-8">
-            {/* Glow Effect */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
-            
-            <div className="relative">
-              {/* Header */}
-              <div className="text-center mb-6">
-                {/* Desktop Logo */}
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                  className="hidden lg:flex justify-center mb-5"
-                >
-                  <div className="relative">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-75" />
-                    <div className="relative w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center border border-slate-700/50 overflow-hidden">
-                      <img 
-                        src="/favicon.png" 
-                        alt="Vivar Logo" 
-                        className="w-9 h-9 object-contain"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-3"
-                >
-                  <Sparkles className="w-3 h-3" />
-                  Admin Portal
-                </motion.div>
-                <h1 className="text-xl xl:text-2xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-                  Welcome Back
-                </h1>
-                <p className="mt-1 text-slate-400 text-xs xl:text-sm">
-                  Sign in to manage your platform
-                </p>
-              </div>
-
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <AnimatePresence mode="wait">
-                  {error && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, height: "auto", scale: 1 }}
-                      exit={{ opacity: 0, height: 0, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-red-500/10 border border-red-500/20"
-                    >
-                      <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-red-400">{error}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Email Field */}
-                <div className="space-y-1.5">
-                  <label className="text-[11px] xl:text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Email Address
-                  </label>
-                  <div className="relative group">
-                    <div className={`absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 transition-opacity duration-300 ${
-                      focusedField === 'email' ? 'opacity-100' : 'group-hover:opacity-50'
-                    }`} />
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 transition-colors group-hover:text-slate-400" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField(null)}
-                        placeholder="admin@vivar.com"
-                        required
-                        disabled={loading}
-                        className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 transition-all duration-200 text-sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Password Field */}
-                <div className="space-y-1.5">
-                  <label className="text-[11px] xl:text-xs font-medium text-slate-400 uppercase tracking-wider">
-                    Password
-                  </label>
-                  <div className="relative group">
-                    <div className={`absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 transition-opacity duration-300 ${
-                      focusedField === 'password' ? 'opacity-100' : 'group-hover:opacity-50'
-                    }`} />
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 transition-colors group-hover:text-slate-400" />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField(null)}
-                        placeholder="Enter your password"
-                        required
-                        disabled={loading}
-                        className="w-full pl-9 pr-12 py-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 transition-all duration-200 text-sm"
-                      />
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        disabled={loading}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-slate-700/50 transition-colors"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-3.5 h-3.5 text-slate-500" />
-                        ) : (
-                          <Eye className="w-3.5 h-3.5 text-slate-500" />
-                        )}
-                      </motion.button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Remember Me & Forgot Password */}
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-blue-500 focus:ring-blue-500/30 focus:ring-offset-0 cursor-pointer"
-                    />
-                    <span className="text-[11px] xl:text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
-                      Remember me
-                    </span>
-                  </label>
-                  <button
-                    type="button"
-                    className="text-[11px] xl:text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    Forgot password?
-                  </button>
-                </div>
-
-                {/* Submit Button */}
-                <motion.button
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  type="submit"
-                  disabled={loading}
-                  className="relative w-full group"
-                >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur opacity-50 group-hover:opacity-75 transition duration-300" />
-                  <div className="relative flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium text-sm transition-all duration-200 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed">
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Authenticating...
-                      </>
-                    ) : (
-                      <>
-                        <Shield className="w-4 h-4" />
-                        Sign In to Dashboard
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                      </>
-                    )}
-                  </div>
-                </motion.button>
-              </form>
-
-              {/* Footer */}
-              <div className="mt-5 pt-4 border-t border-slate-800">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <p className="text-[10px] xl:text-xs text-slate-500">
-                    Secured admin area • Vivar Realty Platform
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {/* Bottom Footer Signal */}
+        <div className="relative z-10 flex items-center gap-2 text-xs text-white/30 font-light tracking-wide">
+          <span>© Vivar Realty Limited</span>
+          <span>•</span>
+          <span>Secured Admin Node</span>
+        </div>
       </div>
+
     </div>
   )
 }

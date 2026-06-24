@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.36.0",
+    "@emotion/react": "^11.14.0",
     "@fontsource-variable/geist": "^5.2.9",
     "@motionone/utils": "^10.18.0",
     "@supabase/supabase-js": "^2.108.2",
