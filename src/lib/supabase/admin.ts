@@ -106,6 +106,10 @@ export async function createProperty(data: {
 
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Validate listing type against allowed values
+  const validListingTypes = ['sale', 'rent', 'commercial', 'land']
+  const listingType = validListingTypes.includes(data.type || '') ? data.type : 'sale'
+
   const { data: property, error } = await supabase
     .from('properties')
     .insert({
@@ -113,19 +117,19 @@ export async function createProperty(data: {
       title: data.title,
       description: data.description || null,
       price: data.price,
-      property_type: 'house',
-      listing_type: data.type || 'sale',
+      property_type: listingType, // Keep both for compatibility
+      listing_type: listingType,
       bedrooms: data.bedrooms || 0,
       bathrooms: data.bathrooms || 0,
-      area_sqft: data.area_sqft || null,
+      area_sqft: data.area_sqft || 0,
       location: `POINT(${data.longitude} ${data.latitude})`,
       address: data.address || null,
       city: data.city || null,
       state: data.state || null,
-      country: data.country || null,
+      country: data.country || 'Nigeria',
       status: 'available'
     } as any)
-    .select()
+    .select('*, property_images (*)')
     .single()
 
   if (error) throw error
@@ -136,7 +140,7 @@ export async function createProperty(data: {
 export async function getPublicProperties() {
   const { data, error } = await supabase
     .from('properties')
-    .select('*, property_images(*)')
+    .select('*, property_images (*)')
     .eq('status', 'available')
     .order('created_at', { ascending: false })
   if (error) throw error
@@ -148,7 +152,7 @@ export async function getAllProperties() {
   await requireAdmin()
   const { data, error } = await supabase
     .from('properties')
-    .select('*, property_images(*)')
+    .select('*, property_images (*)')
     .order('created_at', { ascending: false })
   if (error) throw error
   return data
@@ -158,7 +162,7 @@ export async function getAllProperties() {
 export async function getPropertyById(propertyId: string) {
   const { data, error } = await supabase
     .from('properties')
-    .select('*, property_images(*)')
+    .select('*, property_images (*)')
     .eq('id', propertyId)
     .single()
   if (error) throw error
@@ -202,16 +206,23 @@ export async function updateProperty(propertyId: string, data: {
 }) {
   await requireAdmin()
 
+  // Validate listing type
+  const validListingTypes = ['sale', 'rent', 'commercial', 'land']
+  const listingType = data.listing_type && validListingTypes.includes(data.listing_type) 
+    ? data.listing_type 
+    : 'sale'
+
   const { data: property, error } = await supabase
     .from('properties')
     .update({
       title: data.title,
       description: data.description || null,
       price: data.price,
-      listing_type: data.listing_type || 'sale',
+      property_type: listingType, // Update both for consistency
+      listing_type: listingType,
       bedrooms: data.bedrooms ?? 0,
       bathrooms: data.bathrooms ?? 0,
-      area_sqft: data.area_sqft ?? null,
+      area_sqft: data.area_sqft ?? 0,
       address: data.address || null,
       city: data.city || null,
       state: data.state || null,
@@ -219,7 +230,7 @@ export async function updateProperty(propertyId: string, data: {
       status: data.status || 'available',
     } as any)
     .eq('id', propertyId)
-    .select('*, property_images(*)')
+    .select('*, property_images (*)')
     .single()
 
   if (error) throw error
