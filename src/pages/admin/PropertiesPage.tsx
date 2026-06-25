@@ -1731,16 +1731,18 @@
 
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getAllProperties,
   createProperty,
   deleteProperty,
+  updateProperty,
   uploadPropertyImages,
 } from "@/lib/supabase/admin";
 import { subscribeToProperties } from "@/lib/supabase/realtime";
 import {
   Search, Trash2, Plus, MapPin, BedDouble, Bath, Maximize,
-  X, Upload, Image as ImageIcon, RefreshCw, Building2, Eye,
+  X, Upload, Image as ImageIcon, RefreshCw, Eye,
   Edit, Grid3x3, List, Check, ChevronDown,
 } from "lucide-react";
 
@@ -1819,7 +1821,7 @@ const PropertiesEmptyState = ({
   <div className="bg-white border border-dashed border-[#E5E7EB] rounded-xl py-16 px-6 text-center font-sans">
     <div className="w-16 h-16 mx-auto flex items-center justify-center mb-5 select-none pointer-events-none">
       <img
-        src={emptyStateImg.src || emptyStateImg}
+        src={emptyStateImg}
         alt="Empty state placeholder"
         className="w-full h-full object-contain mix-blend-multiply opacity-80"
       />
@@ -1953,6 +1955,8 @@ const statusStyles: Record<string, string> = {
 const typeStyles: Record<string, string> = {
   sale: "bg-white/95 text-[#0E292F] border-white",
   rent: "bg-white/95 text-[#0E292F] border-white",
+  commercial: "bg-white/95 text-[#0E292F] border-white",
+  land: "bg-white/95 text-[#0E292F] border-white",
 };
 
 const getStyle = (map: Record<string, string>, key: string) =>
@@ -1985,6 +1989,7 @@ const Field = ({
 // ─── Main Component ────────────────────────────────────────────────────────
 
 export default function PropertiesPage() {
+  const navigate = useNavigate()
   const [properties, setProperties]             = useState<any[]>([]);
   const [loading, setLoading]                   = useState(true);
   const [error, setError]                       = useState<string | null>(null);
@@ -2001,6 +2006,16 @@ export default function PropertiesPage() {
   // Delete modal state
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
   const [deleting, setDeleting]         = useState(false);
+
+  // Edit modal state
+  const [showEditModal, setShowEditModal]       = useState(false);
+  const [editingProperty, setEditingProperty]   = useState<any>(null);
+  const [editFormData, setEditFormData]         = useState<PropertyFormData>(initialFormData);
+  const [updating, setUpdating]                 = useState(false);
+
+  // View modal state
+  const [showViewModal, setShowViewModal]       = useState(false);
+  const [viewingProperty, setViewingProperty]   = useState<any>(null);
 
   const addToast = (message: string, type: "success" | "error") => {
     const id = Math.random().toString(36).substring(7);
@@ -2086,6 +2101,61 @@ export default function PropertiesPage() {
     }
   };
 
+  const openViewModal = (property: any) => {
+    setViewingProperty(property);
+    setShowViewModal(true);
+  };
+
+  const openEditModal = (property: any) => {
+    setEditingProperty(property);
+    setEditFormData({
+      title: property.title || "",
+      description: property.description || "",
+      price: property.price?.toString() || "",
+      type: property.listing_type || property.property_type || "sale",
+      bedrooms: property.bedrooms?.toString() || "",
+      bathrooms: property.bathrooms?.toString() || "",
+      area: property.area_sqft?.toString() || "",
+      address: property.address || "",
+      city: property.city || "",
+      state: property.state || "",
+      country: property.country || "Nigeria",
+      imageFiles: [],
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProperty) return;
+    setUpdating(true);
+    try {
+      await updateProperty(editingProperty.id, {
+        title: editFormData.title,
+        description: editFormData.description,
+        price: parseFloat(editFormData.price),
+        listing_type: editFormData.type,
+        bedrooms: parseInt(editFormData.bedrooms) || 0,
+        bathrooms: parseInt(editFormData.bathrooms) || 0,
+        area_sqft: editFormData.area ? parseFloat(editFormData.area) : undefined,
+        address: editFormData.address,
+        city: editFormData.city,
+        state: editFormData.state,
+        country: editFormData.country,
+        status: editingProperty.status,
+      });
+      setShowEditModal(false);
+      setEditingProperty(null);
+      setEditFormData(initialFormData);
+      addToast("Property updated successfully", "success");
+      fetchProperties();
+    } catch (err: any) {
+      addToast(err.message || "Failed to update property", "error");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const filteredProperties = properties.filter((p) => {
     if (selectedType !== "all" && p.type !== selectedType) return false;
     if (selectedStatus !== "all" && p.status !== selectedStatus) return false;
@@ -2101,10 +2171,12 @@ export default function PropertiesPage() {
   });
 
   const stats = useMemo(() => ({
-    total:     properties.length,
-    available: properties.filter((p) => p.status === "available").length,
-    forSale:   properties.filter((p) => p.type === "sale").length,
-    forRent:   properties.filter((p) => p.type === "rent").length,
+    total:       properties.length,
+    available:   properties.filter((p) => p.status === "available").length,
+    forSale:     properties.filter((p) => p.type === "sale").length,
+    forRent:     properties.filter((p) => p.type === "rent").length,
+    commercial:  properties.filter((p) => p.type === "commercial").length,
+    land:        properties.filter((p) => p.type === "land").length,
   }), [properties]);
 
   const isFiltered = !!searchQuery || selectedType !== "all" || selectedStatus !== "all";
@@ -2187,20 +2259,22 @@ export default function PropertiesPage() {
       </header>
 
       {/* ── Stats ── */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 border border-[#E5E7EB] rounded-xl overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+      <section className="grid grid-cols-2 lg:grid-cols-6 border border-[#E5E7EB] rounded-xl overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
         {[
-          { label: "Total listings", value: stats.total,     sub: "All properties" },
-          { label: "Available",      value: stats.available, sub: "Ready to view" },
-          { label: "For sale",       value: stats.forSale,   sub: "Sale listings" },
-          { label: "For rent",       value: stats.forRent,   sub: "Rental listings" },
+          { label: "Total",       value: stats.total,      sub: "All listings" },
+          { label: "Available",   value: stats.available,  sub: "Ready to view" },
+          { label: "For sale",    value: stats.forSale,    sub: "Sale listings" },
+          { label: "For rent",    value: stats.forRent,    sub: "Rental listings" },
+          { label: "Commercial",  value: stats.commercial, sub: "Commercial" },
+          { label: "Land",        value: stats.land,       sub: "Land plots" },
         ].map(({ label, value, sub }, index) => (
           <div
             key={label}
-            className={`py-4 px-5 bg-white font-sans ${index !== 3 ? "border-r border-[#E5E7EB]" : ""} ${index >= 2 ? "max-sm:border-t max-sm:border-[#E5E7EB]" : ""}`}
+            className={`py-4 px-4 bg-white font-sans ${index !== 5 ? "border-r border-[#E5E7EB]" : ""} ${index >= 2 ? "max-sm:border-t max-sm:border-[#E5E7EB]" : ""}`}
           >
-            <p className="text-xs font-medium text-gray-500 font-sans">{label}</p>
-            <p className="text-3xl font-semibold text-gray-800 mt-1.5 tracking-tight font-sans">{value}</p>
-            <p className="text-[11px] text-[#A3A3A3] mt-1.5 font-sans font-normal">{sub}</p>
+            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider font-sans">{label}</p>
+            <p className="text-2xl font-bold text-gray-800 mt-1 tracking-tight font-sans">{value}</p>
+            <p className="text-[10px] text-[#A3A3A3] mt-1 font-sans">{sub}</p>
           </div>
         ))}
       </section>
@@ -2218,7 +2292,7 @@ export default function PropertiesPage() {
           />
         </div>
         <div className="flex gap-2">
-          <div className="relative">
+            <div className="relative">
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
@@ -2227,6 +2301,8 @@ export default function PropertiesPage() {
               <option value="all">All types</option>
               <option value="sale">For sale</option>
               <option value="rent">For rent</option>
+              <option value="commercial">For commercial</option>
+              <option value="land">Land</option>
             </select>
             <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-[#9CA3AF] pointer-events-none" />
           </div>
@@ -2298,7 +2374,7 @@ export default function PropertiesPage() {
                     {property.status}
                   </span>
                   <span className={`px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold border rounded-full ${getStyle(typeStyles, property.type)}`}>
-                    {property.type === "sale" ? "For sale" : "For rent"}
+                    {property.type === "sale" ? "For sale" : property.type === "rent" ? "For rent" : property.type === "commercial" ? "Commercial" : property.type === "land" ? "Land" : property.type}
                   </span>
                 </div>
                 <div className="absolute bottom-3 left-3 right-3">
@@ -2329,10 +2405,16 @@ export default function PropertiesPage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-0.5">
-                    <button className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6] transition-colors">
+                    <button
+                      onClick={() => openViewModal(property)}
+                      className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6] transition-colors"
+                    >
                       <Eye className="w-3.5 h-3.5" />
                     </button>
-                    <button className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6] transition-colors">
+                    <button
+                      onClick={() => openEditModal(property)}
+                      className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6] transition-colors"
+                    >
                       <Edit className="w-3.5 h-3.5" />
                     </button>
                     <button
@@ -2397,10 +2479,16 @@ export default function PropertiesPage() {
                   </td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-end gap-0.5">
-                      <button className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6]">
+                      <button
+                        onClick={() => openViewModal(property)}
+                        className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6]"
+                      >
                         <Eye className="w-3.5 h-3.5" />
                       </button>
-                      <button className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6]">
+                      <button
+                        onClick={() => openEditModal(property)}
+                        className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#0E292F] hover:bg-[#F3F4F6]"
+                      >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
                       <button
@@ -2415,6 +2503,350 @@ export default function PropertiesPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* ── View Property Modal ── */}
+      {showViewModal && viewingProperty && (
+        <div className="fixed inset-0 z-50 bg-[#0E292F]/40 backdrop-blur-sm flex items-center justify-center p-4 font-sans">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[92vh] flex flex-col border border-[#E5E7EB] shadow-2xl">
+            {/* Modal header */}
+            <div className="flex items-start justify-between px-7 py-5 border-b border-[#E5E7EB] shrink-0">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-[#9CA3AF] font-bold">Viewing</p>
+                <h2 className="text-2xl font-bold text-[#0E292F] tracking-tight mt-0.5 font-sans">{viewingProperty.title}</h2>
+                <p className="text-xs text-[#6B6B66] mt-1 font-sans">Property details and information</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowViewModal(false); setViewingProperty(null); }}
+                className="w-8 h-8 rounded-md border border-[#E5E7EB] bg-white hover:bg-[#F3F4F6] flex items-center justify-center text-[#6B6B66] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto px-7 py-6 flex-1">
+              {/* Image gallery */}
+              {viewingProperty.property_images && viewingProperty.property_images.length > 0 && (
+                <div className="mb-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {viewingProperty.property_images.map((img: any, idx: number) => (
+                      <div key={img.id || idx} className={`relative rounded-xl overflow-hidden ${idx === 0 ? 'col-span-2 md:col-span-2 md:row-span-2' : ''}`}>
+                        <img
+                          src={img.url}
+                          alt={`${viewingProperty.title} - ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                          style={{ minHeight: idx === 0 ? '300px' : '150px' }}
+                        />
+                        {idx === 0 && (
+                          <div className="absolute top-2 left-2">
+                            <span className="px-2 py-1 bg-[#0E292F] text-white text-[10px] uppercase tracking-wider font-semibold rounded-md">Primary</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Price and status badges */}
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <span className="text-3xl font-bold text-[#0E292F] tracking-tight font-sans">
+                  ₦{Number(viewingProperty.price).toLocaleString()}
+                </span>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold border capitalize ${getStyle(statusStyles, viewingProperty.status)}`}>
+                  {viewingProperty.status}
+                </span>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold border capitalize ${getStyle(typeStyles, viewingProperty.type)}`}>
+                  {viewingProperty.type === "sale" ? "For Sale" : viewingProperty.type === "rent" ? "For Rent" : viewingProperty.type === "commercial" ? "Commercial" : viewingProperty.type === "land" ? "Land" : viewingProperty.type}
+                </span>
+              </div>
+
+              {/* Description */}
+              {viewingProperty.description && (
+                <div className="mb-6">
+                  <SectionLabel label="Description" />
+                  <p className="text-sm text-[#6B6B66] leading-relaxed font-sans whitespace-pre-wrap">
+                    {viewingProperty.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Two column layout for details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Location */}
+                <div>
+                  <SectionLabel label="Location" />
+                  <div className="bg-[#F9FAFB] rounded-xl p-4 border border-[#E5E7EB]">
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-5 h-5 text-[#0E292F] shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-semibold text-[#0E292F] font-sans">
+                          {[viewingProperty.address, viewingProperty.city, viewingProperty.state, viewingProperty.country].filter(Boolean).join(", ") || "—"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Property specs */}
+                <div>
+                  <SectionLabel label="Property details" />
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-[#F9FAFB] rounded-xl p-3 border border-[#E5E7EB] text-center">
+                      <BedDouble className="w-5 h-5 text-[#0E292F] mx-auto mb-1.5" />
+                      <p className="text-lg font-bold text-[#0E292F] font-sans">{viewingProperty.bedrooms}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-semibold">Bedrooms</p>
+                    </div>
+                    <div className="bg-[#F9FAFB] rounded-xl p-3 border border-[#E5E7EB] text-center">
+                      <Bath className="w-5 h-5 text-[#0E292F] mx-auto mb-1.5" />
+                      <p className="text-lg font-bold text-[#0E292F] font-sans">{viewingProperty.bathrooms}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-semibold">Bathrooms</p>
+                    </div>
+                    <div className="bg-[#F9FAFB] rounded-xl p-3 border border-[#E5E7EB] text-center">
+                      <Maximize className="w-5 h-5 text-[#0E292F] mx-auto mb-1.5" />
+                      <p className="text-lg font-bold text-[#0E292F] font-sans">{viewingProperty.area_sqft || "—"}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-semibold">Sqft</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional info */}
+              <div className="mt-6 pt-6 border-t border-[#E5E7EB]">
+                <SectionLabel label="Additional information" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-semibold mb-1">Property ID</p>
+                    <p className="text-xs text-[#6B6B66] font-mono font-sans">{viewingProperty.id}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-semibold mb-1">Listed on</p>
+                    <p className="text-xs text-[#6B6B66] font-sans">
+                      {viewingProperty.created_at ? new Date(viewingProperty.created_at).toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' }) : "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-semibold mb-1">Last updated</p>
+                    <p className="text-xs text-[#6B6B66] font-sans">
+                      {viewingProperty.updated_at ? new Date(viewingProperty.updated_at).toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric' }) : "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-[#9CA3AF] font-semibold mb-1">Images</p>
+                    <p className="text-xs text-[#6B6B66] font-sans">{viewingProperty.property_images?.length || 0} photos</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal footer */}
+            <div className="px-7 py-4 border-t border-[#E5E7EB] bg-gray-50/50 flex items-center justify-end gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => { setShowViewModal(false); setViewingProperty(null); }}
+                className="h-10 px-4 border border-[#E5E7EB] bg-white text-sm font-medium text-[#0E292F] rounded-md hover:bg-gray-50 transition-colors font-sans"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowViewModal(false); setViewingProperty(null); openEditModal(viewingProperty); }}
+                className="h-10 px-5 bg-[#0E292F] text-white text-sm font-medium rounded-md hover:bg-[#0E292F]/90 transition-colors font-sans inline-flex items-center gap-2"
+              >
+                <Edit className="w-3.5 h-3.5" />
+                Edit listing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit Property Modal ── */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 bg-[#0E292F]/40 backdrop-blur-sm flex items-center justify-center p-4 font-sans">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[92vh] flex flex-col border border-[#E5E7EB] shadow-2xl">
+            {/* Modal header */}
+            <div className="flex items-start justify-between px-7 py-5 border-b border-[#E5E7EB] shrink-0">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-[#9CA3AF] font-bold">Edit</p>
+                <h2 className="text-2xl font-bold text-[#0E292F] tracking-tight mt-0.5 font-sans">Update listing</h2>
+                <p className="text-xs text-[#6B6B66] mt-1 font-sans">Modify the property details below.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowEditModal(false); setEditingProperty(null); setEditFormData(initialFormData); }}
+                className="w-8 h-8 rounded-md border border-[#E5E7EB] bg-white hover:bg-[#F3F4F6] flex items-center justify-center text-[#6B6B66] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="flex flex-col flex-1 min-h-0">
+              <div className="overflow-y-auto px-7 py-6 space-y-7 flex-1">
+
+                {/* ── Basic Info ── */}
+                <div>
+                  <SectionLabel label="Basic info" />
+                  <div className="space-y-4">
+                    <Field label="Listing title" required>
+                      <input
+                        type="text" required placeholder="e.g. Luxury Penthouse with Ocean View"
+                        value={editFormData.title}
+                        onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="Description">
+                      <textarea
+                        rows={3} placeholder="Write a compelling description of the property…"
+                        value={editFormData.description}
+                        onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                        className={`${inputCls} h-auto py-2.5 resize-none`}
+                      />
+                    </Field>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Field label="Price (₦)" required>
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF] font-semibold pointer-events-none select-none font-sans">₦</span>
+                          <input
+                            type="number" required min="0" placeholder="0"
+                            value={editFormData.price}
+                            onChange={(e) => setEditFormData({ ...editFormData, price: e.target.value })}
+                            className={`${inputCls} pl-8`}
+                          />
+                        </div>
+                      </Field>
+                      <Field label="Listing type" required>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { value: "sale", label: "🏷️ For sale" },
+                            { value: "rent", label: "📋 For rent" },
+                            { value: "commercial", label: "🏢 For commercial" },
+                            { value: "land", label: "🌾 Land" },
+                          ].map(({ value, label }) => (
+                            <button
+                              key={value} type="button"
+                              onClick={() => setEditFormData({ ...editFormData, type: value })}
+                              className={`rounded-md text-sm font-semibold border transition-all duration-150 font-sans ${
+                                editFormData.type === value
+                                  ? "bg-[#0E292F] border-[#0E292F] text-white"
+                                  : "bg-white border-[#E5E7EB] text-[#6B6B66] hover:border-[#0E292F]/30"
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      </Field>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Location ── */}
+                <div>
+                  <SectionLabel label="Location" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="Street address" className="sm:col-span-2">
+                      <input
+                        type="text" placeholder="123 Marina Drive"
+                        value={editFormData.address}
+                        onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="City">
+                      <input
+                        type="text" placeholder="Lagos"
+                        value={editFormData.city}
+                        onChange={(e) => setEditFormData({ ...editFormData, city: e.target.value })}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="State">
+                      <input
+                        type="text" placeholder="Lagos State"
+                        value={editFormData.state}
+                        onChange={(e) => setEditFormData({ ...editFormData, state: e.target.value })}
+                        className={inputCls}
+                      />
+                    </Field>
+                    <Field label="Country">
+                      <input
+                        type="text" placeholder="Nigeria"
+                        value={editFormData.country}
+                        onChange={(e) => setEditFormData({ ...editFormData, country: e.target.value })}
+                        className={inputCls}
+                      />
+                    </Field>
+                  </div>
+                </div>
+
+                {/* ── Property Details ── */}
+                <div>
+                  <SectionLabel label="Property details" />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Field label="Bedrooms">
+                      <div className="relative">
+                        <BedDouble className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                        <input
+                          type="number" min="0" placeholder="3"
+                          value={editFormData.bedrooms}
+                          onChange={(e) => setEditFormData({ ...editFormData, bedrooms: e.target.value })}
+                          className={`${inputCls} pl-9`}
+                        />
+                      </div>
+                    </Field>
+                    <Field label="Bathrooms">
+                      <div className="relative">
+                        <Bath className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                        <input
+                          type="number" min="0" placeholder="2"
+                          value={editFormData.bathrooms}
+                          onChange={(e) => setEditFormData({ ...editFormData, bathrooms: e.target.value })}
+                          className={`${inputCls} pl-9`}
+                        />
+                      </div>
+                    </Field>
+                    <Field label="Area (sqft)">
+                      <div className="relative">
+                        <Maximize className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF]" />
+                        <input
+                          type="number" min="0" placeholder="1500"
+                          value={editFormData.area}
+                          onChange={(e) => setEditFormData({ ...editFormData, area: e.target.value })}
+                          className={`${inputCls} pl-9`}
+                        />
+                      </div>
+                    </Field>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Modal footer */}
+              <div className="px-7 py-4 border-t border-[#E5E7EB] bg-gray-50/50 flex items-center justify-end gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => { setShowEditModal(false); setEditingProperty(null); setEditFormData(initialFormData); }}
+                  className="h-10 px-4 border border-[#E5E7EB] bg-white text-sm font-medium text-[#0E292F] rounded-md hover:bg-gray-50 transition-colors font-sans"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="h-10 px-5 bg-[#0E292F] text-white text-sm font-medium rounded-md hover:bg-[#0E292F]/90 transition-colors font-sans disabled:opacity-50 inline-flex items-center gap-2"
+                >
+                  {updating
+                    ? <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Updating…</>
+                    : "Save changes"
+                  }
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -2475,15 +2907,17 @@ export default function PropertiesPage() {
                         </div>
                       </Field>
                       <Field label="Listing type" required>
-                        <div className="flex gap-2 h-10">
+                        <div className="grid grid-cols-2 gap-2">
                           {[
                             { value: "sale", label: "🏷️ For sale" },
                             { value: "rent", label: "📋 For rent" },
+                            { value: "commercial", label: "🏢 For commercial" },
+                            { value: "land", label: "🌾 Land" },
                           ].map(({ value, label }) => (
                             <button
                               key={value} type="button"
                               onClick={() => setFormData({ ...formData, type: value })}
-                              className={`flex-1 rounded-md text-sm font-semibold border transition-all duration-150 font-sans ${
+                              className={`rounded-md text-sm font-semibold border transition-all duration-150 font-sans ${
                                 formData.type === value
                                   ? "bg-[#0E292F] border-[#0E292F] text-white"
                                   : "bg-white border-[#E5E7EB] text-[#6B6B66] hover:border-[#0E292F]/30"

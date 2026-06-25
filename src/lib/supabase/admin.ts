@@ -186,6 +186,46 @@ export async function deleteProperty(propertyId: string) {
   return { success: true }
 }
 
+export async function updateProperty(propertyId: string, data: {
+  title: string
+  description?: string
+  price: number
+  listing_type?: string
+  bedrooms?: number
+  bathrooms?: number
+  area_sqft?: number
+  address?: string
+  city?: string
+  state?: string
+  country?: string
+  status?: string
+}) {
+  await requireAdmin()
+
+  const { data: property, error } = await supabase
+    .from('properties')
+    .update({
+      title: data.title,
+      description: data.description || null,
+      price: data.price,
+      listing_type: data.listing_type || 'sale',
+      bedrooms: data.bedrooms ?? 0,
+      bathrooms: data.bathrooms ?? 0,
+      area_sqft: data.area_sqft ?? null,
+      address: data.address || null,
+      city: data.city || null,
+      state: data.state || null,
+      country: data.country || null,
+      status: data.status || 'available',
+    } as any)
+    .eq('id', propertyId)
+    .select('*, property_images(*)')
+    .single()
+
+  if (error) throw error
+  return property
+}
+
 // ==========================================
 // BOOKINGS
 // ==========================================

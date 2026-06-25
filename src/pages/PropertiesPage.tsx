@@ -1,543 +1,10 @@
-// import { useEffect, useState, useCallback } from "react";
-// import { supabase } from "@/lib/supabase/client";
-// import { trackPropertyView } from "@/lib/trackPageView";
-// import {
-//   Search, MapPin, BedDouble, Bath, Maximize, Home, Filter, X, ArrowLeft,
-//   Calendar, Building2, User, Mail, Phone, Clock,
-// } from "lucide-react";
-
-// type PropertyType = "sale" | "rent";
-
-// const propertyTypes: { value: PropertyType | "all"; label: string }[] = [
-//   { value: "all", label: "All Properties" },
-//   { value: "sale", label: "For Sale" },
-//   { value: "rent", label: "For Rent" },
-// ];
-
-// export default function PropertiesListingPage() {
-//   const [properties, setProperties] = useState<any[]>([]);
-//   const [filtered, setFiltered] = useState<any[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [selectedType, setSelectedType] = useState<PropertyType | "all">("all");
-//   const [showFilters, setShowFilters] = useState(false);
-//   const [selectedProperty, setSelectedProperty] = useState<any>(null);
-//   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-//   const fetchProperties = useCallback(async () => {
-//     try {
-//       setLoading(true);
-//       setError(null);
-//       const { data, error: fetchError } = await supabase
-//         .from("properties")
-//         .select("*, property_images(*)")
-//         .eq("status", "available")
-//         .order("created_at", { ascending: false });
-
-//       if (fetchError) throw fetchError;
-
-//       const mapped = (data || []).map((p: any) => ({
-//         ...p,
-//         type: p.listing_type || "sale",
-//         location: [p.address, p.city, p.state].filter(Boolean).join(", ") || p.city || "Unknown",
-//         area: p.area_sqft || 0,
-//         images: (p.property_images || []).map((img: any) => img.url),
-//         createdAt: p.created_at,
-//       }));
-
-//       setProperties(mapped);
-//       setFiltered(mapped);
-//     } catch (err: any) {
-//       setError(err.message || "Unable to load properties");
-//       console.error(err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, []);
-
-//   useEffect(() => {
-//     fetchProperties();
-//   }, [fetchProperties]);
-
-//   // Real-time updates
-//   useEffect(() => {
-//     const channel = supabase
-//       .channel("public-properties")
-//       .on(
-//         "postgres_changes",
-//         { event: "*", schema: "public", table: "properties" },
-//         () => {
-//           fetchProperties();
-//         }
-//       )
-//       .subscribe();
-
-//     return () => {
-//       supabase.removeChannel(channel);
-//     };
-//   }, [fetchProperties]);
-
-//   useEffect(() => {
-//     let result = properties;
-
-//     if (selectedType !== "all") {
-//       result = result.filter((p) => p.type === selectedType);
-//     }
-
-//     if (searchQuery.trim()) {
-//       const q = searchQuery.toLowerCase();
-//       result = result.filter(
-//         (p) =>
-//           (p.title || "").toLowerCase().includes(q) ||
-//           (p.location || "").toLowerCase().includes(q) ||
-//           (p.description || "").toLowerCase().includes(q)
-//       );
-//     }
-
-//     setFiltered(result);
-//   }, [searchQuery, selectedType, properties]);
-
-//   const clearFilters = () => {
-//     setSearchQuery("");
-//     setSelectedType("all");
-//   };
-
-//   const openDetails = (property: any) => {
-//     setSelectedProperty(property);
-//     setCurrentImageIndex(0);
-//     trackPropertyView(property.id);
-//   };
-
-//   const closeDetails = () => {
-//     setSelectedProperty(null);
-//     setCurrentImageIndex(0);
-//   };
-
-//   const nextImage = () => {
-//     if (!selectedProperty) return;
-//     setCurrentImageIndex((prev) =>
-//       prev === selectedProperty.images.length - 1 ? 0 : prev + 1
-//     );
-//   };
-
-//   const prevImage = () => {
-//     if (!selectedProperty) return;
-//     setCurrentImageIndex((prev) =>
-//       prev === 0 ? selectedProperty.images.length - 1 : prev - 1
-//     );
-//   };
-
-//   const hasActiveFilters = searchQuery.trim() !== "" || selectedType !== "all";
-
-//   const formatPrice = (price: any) => {
-//     const num = Number(price);
-//     return isNaN(num) ? "0" : num.toLocaleString();
-//   };
-
-//   const formatArea = (area: any) => {
-//     const num = Number(area);
-//     return isNaN(num) ? "—" : num.toLocaleString();
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-//         <div className="text-center">
-//           <div className="w-16 h-16 rounded-2xl border-4 border-slate-200 border-t-slate-900 animate-spin mx-auto" />
-//           <p className="mt-4 text-slate-600 font-medium">Discovering properties...</p>
-//           <p className="text-sm text-slate-400 mt-1">Loading the best listings for you</p>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-//         <div className="bg-white rounded-2xl border border-slate-200 p-8 max-w-md text-center shadow-lg">
-//           <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-//             <X className="w-7 h-7 text-red-500" />
-//           </div>
-//           <h3 className="text-lg font-semibold text-slate-900 mb-2">Unable to Load</h3>
-//           <p className="text-sm text-slate-500 mb-4">{error}</p>
-//           <button
-//             onClick={fetchProperties}
-//             className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
-//           >
-//             Try Again
-//           </button>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-slate-50">
-//       {/* Hero — Compact */}
-//       <div className="relative bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-700/50">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-//           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-//             <div className="shrink-0">
-//               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-medium mb-3">
-//                 <Building2 className="w-3 h-3" />
-//                 Investment Portfolio
-//               </div>
-//               <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-//                 Premium Properties
-//               </h1>
-//               <p className="mt-1.5 text-sm text-white/50 max-w-md">
-//                 Curated real estate investments verified for long-term value.
-//               </p>
-//             </div>
-
-//             {/* Search & Filters */}
-//             <div className="flex items-center gap-2 w-full sm:w-auto">
-//               <div className="relative flex-1 sm:w-72">
-//                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-//                 <input
-//                   type="text"
-//                   placeholder="Search properties..."
-//                   value={searchQuery}
-//                   onChange={(e) => setSearchQuery(e.target.value)}
-//                   className="w-full pl-9 pr-4 py-2.5 bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:bg-white/15 transition-all"
-//                 />
-//               </div>
-//               <button
-//                 onClick={() => setShowFilters((v) => !v)}
-//                 className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all duration-200 ${
-//                   showFilters || hasActiveFilters
-//                     ? "border-white bg-white text-slate-900"
-//                     : "border-white/10 text-white/80 hover:border-white/30"
-//                 }`}
-//               >
-//                 <Filter className="w-3.5 h-3.5" />
-//                 Filters
-//                 {hasActiveFilters && (
-//                   <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-white text-[10px]">
-//                     {(selectedType !== "all" ? 1 : 0) + (searchQuery.trim() ? 1 : 0)}
-//                   </span>
-//                 )}
-//               </button>
-//             </div>
-//           </div>
-
-//           {/* Filter chips */}
-//           {showFilters && (
-//             <div className="mt-4 flex flex-wrap items-center gap-2">
-//               {propertyTypes.map((type) => (
-//                 <button
-//                   key={type.value}
-//                   onClick={() => setSelectedType(type.value)}
-//                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-//                     selectedType === type.value
-//                       ? "bg-white text-slate-900 shadow-md"
-//                       : "bg-white/5 text-white/70 hover:bg-white/10 border border-white/10"
-//                   }`}
-//                 >
-//                   {type.label}
-//                 </button>
-//               ))}
-//               {hasActiveFilters && (
-//                 <button
-//                   onClick={clearFilters}
-//                   className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white/50 hover:text-white transition-colors"
-//                 >
-//                   <X className="w-3 h-3" />
-//                   Clear
-//                 </button>
-//               )}
-//             </div>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Results */}
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-//         <div className="flex items-center justify-between mb-8">
-//           <div>
-//             <p className="text-sm text-slate-500">
-//               <span className="font-semibold text-slate-900 text-lg">{filtered.length}</span>{" "}
-//               {filtered.length === 1 ? "property" : "properties"} found
-//             </p>
-//           </div>
-//         </div>
-
-//         {filtered.length === 0 ? (
-//           <div className="bg-white rounded-3xl border border-slate-200 p-16 text-center shadow-sm">
-//             <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-6">
-//               <Home className="w-10 h-10 text-slate-400" />
-//             </div>
-//             <h3 className="text-xl font-semibold text-slate-900 mb-2">No properties found</h3>
-//             <p className="text-slate-500 mb-6">Try adjusting your search or filter criteria</p>
-//             {hasActiveFilters && (
-//               <button
-//                 onClick={clearFilters}
-//                 className="inline-flex items-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
-//               >
-//                 Clear filters
-//               </button>
-//             )}
-//           </div>
-//         ) : (
-//           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-//             {filtered.map((property) => (
-//               <article
-//                 key={property.id}
-//                 className="group bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-//               >
-//                 <div className="relative h-56 bg-slate-100 overflow-hidden">
-//                   {property.images?.[0] ? (
-//                     <img
-//                       src={property.images[0]}
-//                       alt={property.title}
-//                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-//                     />
-//                   ) : (
-//                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-//                       <Home className="w-16 h-16 text-slate-300" />
-//                     </div>
-//                   )}
-//                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-//                   <div className="absolute top-3 left-3">
-//                     <span className="px-3 py-1.5 rounded-full text-[11px] font-bold bg-white/95 backdrop-blur-sm text-slate-900 shadow-lg">
-//                       {property.type === "sale" ? "🏷️ For Sale" : "📋 For Rent"}
-//                     </span>
-//                   </div>
-//                   <div className="absolute top-3 right-3">
-//                     <span className="px-3 py-1.5 rounded-full text-[11px] font-bold bg-emerald-500 text-white shadow-lg">
-//                       Available
-//                     </span>
-//                   </div>
-//                   {property.images.length > 1 && (
-//                     <div className="absolute bottom-3 right-3 px-2 py-1 rounded-lg bg-black/50 backdrop-blur-sm text-white text-xs font-medium">
-//                       +{property.images.length - 1} photos
-//                     </div>
-//                   )}
-//                 </div>
-
-//                 <div className="p-5">
-//                   <h3 className="text-lg font-semibold text-slate-900 line-clamp-1 mb-2 group-hover:text-slate-700 transition-colors">
-//                     {property.title}
-//                   </h3>
-//                   <div className="flex items-center gap-1.5 text-sm text-slate-500 mb-4">
-//                     <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-//                     <span className="line-clamp-1">{property.location || "—"}</span>
-//                   </div>
-
-//                   <div className="flex items-baseline gap-1 mb-4">
-//                     <span className="text-2xl font-bold text-slate-900">₦{formatPrice(property.price)}</span>
-//                     {property.type === "rent" && <span className="text-sm text-slate-500">/year</span>}
-//                   </div>
-
-//                   <div className="flex items-center gap-4 text-sm text-slate-500 mb-5 pb-5 border-b border-slate-100">
-//                     <span className="flex items-center gap-1.5"><BedDouble className="w-4 h-4 text-slate-400" /><span className="font-semibold text-slate-700">{property.bedrooms || 0}</span></span>
-//                     <span className="flex items-center gap-1.5"><Bath className="w-4 h-4 text-slate-400" /><span className="font-semibold text-slate-700">{property.bathrooms || 0}</span></span>
-//                     <span className="flex items-center gap-1.5"><Maximize className="w-4 h-4 text-slate-400" /><span className="font-semibold text-slate-700">{formatArea(property.area)}</span><span className="text-xs text-slate-400">sqft</span></span>
-//                   </div>
-
-//                   <div className="flex items-center justify-between">
-//                     <p className="text-xs text-slate-400 flex items-center gap-1.5">
-//                       <Clock className="w-3.5 h-3.5" />
-//                       {property.createdAt
-//                         ? new Date(property.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-//                         : "Recently"}
-//                     </p>
-//                     <button
-//                       onClick={() => openDetails(property)}
-//                       className="text-sm font-semibold text-slate-900 hover:text-slate-600 transition-colors group-hover:underline"
-//                     >
-//                       View details →
-//                     </button>
-//                   </div>
-//                 </div>
-//               </article>
-//             ))}
-//           </div>
-//         )}
-//       </div>
-
-//       {/* Property Detail Modal */}
-//       {selectedProperty && (
-//         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-//           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col">
-//             {/* Modal Header */}
-//             <div className="relative bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
-//               <button
-//                 onClick={closeDetails}
-//                 className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
-//               >
-//                 <ArrowLeft className="w-5 h-5" />
-//                 <span className="text-sm font-medium">Back to listings</span>
-//               </button>
-//               <div className="flex items-center gap-3">
-//                 <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500 text-white">
-//                   Available
-//                 </span>
-//                 <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-white/20 text-white">
-//                   {selectedProperty.type === "sale" ? "For Sale" : "For Rent"}
-//                 </span>
-//               </div>
-//             </div>
-
-//             <div className="flex-1 overflow-y-auto">
-//               {/* Image Gallery */}
-//               <div className="relative h-[400px] bg-slate-900">
-//                 {selectedProperty.images?.length > 0 ? (
-//                   <>
-//                     <img
-//                       src={selectedProperty.images[currentImageIndex]}
-//                       alt={selectedProperty.title}
-//                       className="w-full h-full object-cover"
-//                     />
-//                     {selectedProperty.images.length > 1 && (
-//                       <>
-//                         <button
-//                           onClick={prevImage}
-//                           className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 text-white flex items-center justify-center transition-all"
-//                         >
-//                           ←
-//                         </button>
-//                         <button
-//                           onClick={nextImage}
-//                           className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 text-white flex items-center justify-center transition-all"
-//                         >
-//                           →
-//                         </button>
-//                         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-//                           {selectedProperty.images.map((_: string, i: number) => (
-//                             <button
-//                               key={i}
-//                               onClick={() => setCurrentImageIndex(i)}
-//                               className={`w-2.5 h-2.5 rounded-full transition-all ${
-//                                 i === currentImageIndex ? "bg-white scale-110" : "bg-white/40 hover:bg-white/60"
-//                               }`}
-//                             />
-//                           ))}
-//                         </div>
-//                         <div className="absolute bottom-4 right-4 px-3 py-1.5 rounded-lg bg-black/50 backdrop-blur-sm text-white text-xs font-medium">
-//                           {currentImageIndex + 1} / {selectedProperty.images.length}
-//                         </div>
-//                       </>
-//                     )}
-//                   </>
-//                 ) : (
-//                   <div className="w-full h-full flex items-center justify-center">
-//                     <Home className="w-24 h-24 text-white/20" />
-//                   </div>
-//                 )}
-//               </div>
-
-//               {/* Details */}
-//               <div className="p-8">
-//                 <div className="flex items-start justify-between gap-6 mb-6">
-//                   <div>
-//                     <h2 className="text-2xl font-bold text-slate-900 mb-2">{selectedProperty.title}</h2>
-//                     <div className="flex items-center gap-1.5 text-slate-500">
-//                       <MapPin className="w-4 h-4 text-slate-400" />
-//                       <span>{selectedProperty.location || "—"}</span>
-//                     </div>
-//                   </div>
-//                   <div className="text-right">
-//                     <p className="text-3xl font-bold text-slate-900">₦{formatPrice(selectedProperty.price)}</p>
-//                     {selectedProperty.type === "rent" && <p className="text-sm text-slate-500">per year</p>}
-//                   </div>
-//                 </div>
-
-//                 {/* Quick Stats */}
-//                 <div className="grid grid-cols-3 gap-4 mb-8">
-//                   <div className="bg-slate-50 rounded-xl p-4 text-center">
-//                     <BedDouble className="w-5 h-5 text-slate-500 mx-auto mb-1" />
-//                     <p className="text-lg font-bold text-slate-900">{selectedProperty.bedrooms || 0}</p>
-//                     <p className="text-xs text-slate-500">Bedrooms</p>
-//                   </div>
-//                   <div className="bg-slate-50 rounded-xl p-4 text-center">
-//                     <Bath className="w-5 h-5 text-slate-500 mx-auto mb-1" />
-//                     <p className="text-lg font-bold text-slate-900">{selectedProperty.bathrooms || 0}</p>
-//                     <p className="text-xs text-slate-500">Bathrooms</p>
-//                   </div>
-//                   <div className="bg-slate-50 rounded-xl p-4 text-center">
-//                     <Maximize className="w-5 h-5 text-slate-500 mx-auto mb-1" />
-//                     <p className="text-lg font-bold text-slate-900">{formatArea(selectedProperty.area)}</p>
-//                     <p className="text-xs text-slate-500">Sqft</p>
-//                   </div>
-//                 </div>
-
-//                 {/* Description */}
-//                 {selectedProperty.description && (
-//                   <div className="mb-8">
-//                     <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">Description</h3>
-//                     <p className="text-slate-600 leading-relaxed">{selectedProperty.description}</p>
-//                   </div>
-//                 )}
-
-//                 {/* Additional Info */}
-//                 <div className="grid grid-cols-2 gap-4 mb-8">
-//                   <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
-//                     <Building2 className="w-5 h-5 text-slate-500" />
-//                     <div>
-//                       <p className="text-xs text-slate-500">Property Type</p>
-//                       <p className="text-sm font-semibold text-slate-900 capitalize">{selectedProperty.property_type || selectedProperty.type}</p>
-//                     </div>
-//                   </div>
-//                   <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
-//                     <Calendar className="w-5 h-5 text-slate-500" />
-//                     <div>
-//                       <p className="text-xs text-slate-500">Listed On</p>
-//                       <p className="text-sm font-semibold text-slate-900">
-//                         {selectedProperty.createdAt
-//                           ? new Date(selectedProperty.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-//                           : "Recently"}
-//                       </p>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//                 {/* Contact CTA */}
-//                 <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 text-white">
-//                   <div className="flex items-center gap-4 mb-4">
-//                     <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-//                       <User className="w-6 h-6" />
-//                     </div>
-//                     <div>
-//                       <h4 className="font-bold text-lg">Interested in this property?</h4>
-//                       <p className="text-white/60 text-sm">Contact an agent for more information</p>
-//                     </div>
-//                   </div>
-//                   <div className="flex flex-col sm:flex-row gap-3">
-//                     <button className="flex-1 px-5 py-3 bg-white text-slate-900 rounded-xl text-sm font-bold hover:bg-white/90 transition-all">
-//                       <span className="flex items-center justify-center gap-2">
-//                         <Phone className="w-4 h-4" />
-//                         Request a Call
-//                       </span>
-//                     </button>
-//                     <button className="flex-1 px-5 py-3 bg-white/10 backdrop-blur-sm rounded-xl text-sm font-bold hover:bg-white/20 transition-all border border-white/10">
-//                       <span className="flex items-center justify-center gap-2">
-//                         <Mail className="w-4 h-4" />
-//                         Send Message
-//                       </span>
-//                     </button>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
-
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/client";
 import { trackPropertyView } from "@/lib/trackPageView";
 import { PropertyCard } from "@/components/layout/Card";
-import PageNavbar from "@/components/layout/PageNavbar"; // Adjust path as needed based on file tree
 import {
-  Search, MapPin, BedDouble, Bath, Maximize, Home, Filter, X, ArrowLeft,
-  Building2, User, Clock, ChevronDown
+  Search, Home, Filter, X
 } from "lucide-react";
 
 type PropertyType = "sale" | "rent";
@@ -549,6 +16,7 @@ const propertyTypes: { value: PropertyType | "all"; label: string }[] = [
 ];
 
 export default function PropertiesListingPage() {
+  const navigate = useNavigate();
   const [properties, setProperties] = useState<any[]>([]);
   const [filtered, setFiltered] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -556,8 +24,6 @@ export default function PropertiesListingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<PropertyType | "all">("all");
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState<any>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const fetchProperties = useCallback(async () => {
     try {
@@ -637,28 +103,8 @@ export default function PropertiesListingPage() {
   };
 
   const openDetails = (property: any) => {
-    setSelectedProperty(property);
-    setCurrentImageIndex(0);
     trackPropertyView(property.id);
-  };
-
-  const closeDetails = () => {
-    setSelectedProperty(null);
-    setCurrentImageIndex(0);
-  };
-
-  const nextImage = () => {
-    if (!selectedProperty) return;
-    setCurrentImageIndex((prev) =>
-      prev === selectedProperty.images.length - 1 ? 0 : prev + 1
-    );
-  };
-
-  const prevImage = () => {
-    if (!selectedProperty) return;
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? selectedProperty.images.length - 1 : prev - 1
-    );
+    navigate(`/properties/${property.id}`);
   };
 
   const hasActiveFilters = searchQuery.trim() !== "" || selectedType !== "all";
@@ -681,45 +127,52 @@ export default function PropertiesListingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50/30 text-gray-900 antialiased selection:bg-emerald-50">
-      {/* Global Brand Navbar Component */}
-      <PageNavbar />
-
-      {/* Controlled Functional Search Header Strip */}
-      <div className="bg-white border-b border-gray-100 sticky top-[72px] z-40 backdrop-blur-md bg-white/90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-gray-900">Our Collections</h1>
-              <p className="text-xs text-gray-500 font-medium mt-0.5">
-                Displaying {filtered.length} matching available listings
+      {/* Enhanced Search & Filter Header */}
+      <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700/50 overflow-hidden">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 rounded-full blur-3xl" />
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/90 text-xs font-medium">
+                <Home className="w-3.5 h-3.5" />
+                Premium Real Estate
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+                Our Collections
+              </h1>
+              <p className="text-sm text-white/60 max-w-lg">
+                Discover exceptional properties tailored to your lifestyle. Browse through our curated selection of premium listings.
               </p>
             </div>
 
-            {/* Premium Refined Search Bar and Filters Switcher */}
-            <div className="flex items-center gap-2.5 w-full md:w-auto">
-              <div className="relative flex-1 md:w-80">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {/* Search & Filters */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+              <div className="relative flex-1 sm:w-80">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
                 <input
                   type="text"
-                  placeholder="Search by keywords or location..."
+                  placeholder="Search properties, locations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:border-emerald-600/30 focus:ring-4 focus:ring-emerald-600/5 transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/30 focus:bg-white/15 focus:ring-2 focus:ring-white/20 transition-all"
                 />
               </div>
 
               <button
                 onClick={() => setShowFilters((v) => !v)}
-                className={`shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all ${
+                className={`shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-200 ${
                   showFilters || hasActiveFilters
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                    : "border-gray-200 text-gray-700 bg-white hover:bg-gray-50"
+                    ? "border-white bg-white text-slate-900 shadow-lg"
+                    : "border-white/20 text-white hover:border-white/40 hover:bg-white/10"
                 }`}
               >
-                <Filter className="w-3.5 h-3.5" />
+                <Filter className="w-4 h-4" />
                 <span>Filters</span>
                 {hasActiveFilters && (
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white text-[10px] font-bold ml-0.5">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-[10px] font-bold">
                     {(selectedType !== "all" ? 1 : 0) + (searchQuery.trim() ? 1 : 0)}
                   </span>
                 )}
@@ -727,17 +180,17 @@ export default function PropertiesListingPage() {
             </div>
           </div>
 
-          {/* Expanded Filter Area */}
+          {/* Filter Chips */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center gap-2 animate-in fade-in duration-200">
+            <div className="mt-6 pt-6 border-t border-white/10 flex flex-wrap items-center gap-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
               {propertyTypes.map((type) => (
                 <button
                   key={type.value}
                   onClick={() => setSelectedType(type.value)}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all duration-200 ${
                     selectedType === type.value
-                      ? "bg-emerald-600 border-emerald-600 text-white shadow-sm"
-                      : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ? "bg-white text-slate-900 shadow-lg border-white"
+                      : "bg-white/5 text-white/80 border-white/10 hover:bg-white/10 hover:border-white/20"
                   }`}
                 >
                   {type.label}
@@ -746,10 +199,10 @@ export default function PropertiesListingPage() {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-gray-900 transition-colors ml-auto"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white/60 hover:text-white transition-colors ml-auto"
                 >
-                  <X className="w-3 h-3" />
-                  Clear all filters
+                  <X className="w-3.5 h-3.5" />
+                  Clear all
                 </button>
               )}
             </div>
@@ -758,147 +211,51 @@ export default function PropertiesListingPage() {
       </div>
 
       {/* Main Grid Frame */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-xs font-medium text-red-600">
+          <div className="mb-8 p-4 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl text-sm font-medium text-red-700 flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
             {error}. Retrying connection...
           </div>
         )}
 
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center max-w-xl mx-auto mt-8">
-            <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
-              <Home className="w-5 h-5 text-gray-400" />
+          <div className="bg-white rounded-3xl border-2 border-dashed border-gray-200 p-16 text-center max-w-2xl mx-auto">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center mx-auto mb-6">
+              <Home className="w-10 h-10 text-gray-300" />
             </div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-1">No matching options found</h3>
-            <p className="text-xs text-gray-500 mb-5">We couldn&apos;t find matching assets based on your keyword criteria.</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">No properties found</h3>
+            <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
+              We couldn't find any properties matching your criteria. Try adjusting your search or filters.
+            </p>
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                Reset Search Filters
+                <X className="w-4 h-4" />
+                Clear all filters
               </button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((property) => (
-              <PropertyCard
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+            {filtered.map((property, index) => (
+              <div
                 key={property.id}
-                property={property}
-                onClick={() => openDetails(property)}
-                formatPrice={formatPrice}
-              />
+                className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <PropertyCard
+                  property={property}
+                  onClick={() => openDetails(property)}
+                  formatPrice={formatPrice}
+                />
+              </div>
             ))}
           </div>
         )}
       </main>
-
-      {/* Unified Property Detail Slide-over Modal */}
-      {selectedProperty && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col border border-gray-100">
-            {/* Modal Sub-Header */}
-            <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between shrink-0 bg-white">
-              <button
-                onClick={closeDetails}
-                className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors text-xs font-semibold"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back to All Listings</span>
-              </button>
-              <span className="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold tracking-wider uppercase">
-                Managed Portfolio Asset
-              </span>
-            </div>
-
-            {/* Scrollable Context Panel */}
-            <div className="flex-1 overflow-y-auto">
-              {/* Main Image Slider View */}
-              <div className="relative h-72 bg-gray-900">
-                {selectedProperty.images?.length > 0 ? (
-                  <>
-                    <img
-                      src={selectedProperty.images[currentImageIndex]}
-                      alt={selectedProperty.title}
-                      className="w-full h-full object-cover"
-                    />
-                    {selectedProperty.images.length > 1 && (
-                      <>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 text-white flex items-center justify-center transition-all text-xs"
-                        >
-                          ←
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 text-white flex items-center justify-center transition-all text-xs"
-                        >
-                          →
-                        </button>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">No media available</div>
-                )}
-              </div>
-
-              {/* Text Context Frame */}
-              <div className="p-6">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-1">{selectedProperty.title}</h2>
-                    <p className="text-xs text-gray-500 font-medium flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-gray-400" /> {selectedProperty.location}
-                    </p>
-                  </div>
-                  <div className="sm:text-right">
-                    <p className="text-2xl font-black text-gray-900">₦{formatPrice(selectedProperty.price)}</p>
-                    {selectedProperty.type === "rent" && <p className="text-[11px] text-gray-400 font-medium">per annum</p>}
-                  </div>
-                </div>
-
-                <div className="flex gap-4 border-y border-gray-100 py-3 mb-6 text-xs text-gray-600 font-semibold">
-                  <span className="flex items-center gap-1"><BedDouble className="w-4 h-4 text-gray-400" /> {selectedProperty.bedrooms || 0} Bedrooms</span>
-                  <span className="flex items-center gap-1"><Bath className="w-4 h-4 text-gray-400" /> {selectedProperty.bathrooms || 0} Bathrooms</span>
-                  {selectedProperty.area ? (
-                    <span className="flex items-center gap-1"><Maximize className="w-4 h-4 text-gray-400" /> {selectedProperty.area.toLocaleString()} Sqft</span>
-                  ) : null}
-                </div>
-
-                {selectedProperty.description && (
-                  <div className="mb-6">
-                    <h4 className="text-[11px] font-bold text-gray-400 tracking-wider uppercase mb-1.5">Overview</h4>
-                    <p className="text-sm text-gray-600 leading-relaxed">{selectedProperty.description}</p>
-                  </div>
-                )}
-
-                {/* Direct Acquisition Action Bar */}
-                <div className="bg-gray-50 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-100">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-emerald-600/10 text-emerald-700 flex items-center justify-center shrink-0">
-                      <User className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-900">Direct Portfolio Representative</p>
-                      <p className="text-[11px] text-gray-400">Inquire regarding verified placement options</p>
-                    </div>
-                  </div>
-                  <a
-                    href="tel:+2348092949777"
-                    className="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold text-center transition-colors shadow-sm"
-                  >
-                    Call Representative
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

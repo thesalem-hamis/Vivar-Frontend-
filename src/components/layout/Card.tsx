@@ -7,7 +7,7 @@ interface PropertyCardProps {
     title: string;
     location: string;
     price: number;
-    type: "sale" | "rent";
+    type: "sale" | "rent" | "commercial" | "land";
     bedrooms?: number;
     bathrooms?: number;
     area?: number;
@@ -42,7 +42,7 @@ export function PropertyCard({ property, onClick, formatPrice }: PropertyCardPro
         {/* Status Tags */}
         <div className="absolute top-3 left-3 flex gap-1.5">
           <span className="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-white/95 backdrop-blur-sm text-gray-900 shadow-sm">
-            {property.type === "sale" ? "For Sale" : "For Rent"}
+            {property.type === "sale" ? "For Sale" : property.type === "rent" ? "For Rent" : property.type === "commercial" ? "Commercial" : "Land"}
           </span>
           {property.property_type && (
             <span className="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-emerald-600/10 backdrop-blur-sm text-emerald-800 shadow-sm">
