@@ -12,7 +12,6 @@ interface SearchBarProps {
 export default function SearchBar({ value, onChange, onSearch }: SearchBarProps) {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [listingType, setListingType] = useState("sale"); // sale | rent | lease
-  const [priceRange, setPriceRange] = useState(0);
   const [beds, setBeds] = useState("Any");
   const [baths, setBaths] = useState("Any");
   const [homeType, setHomeType] = useState("Any");
