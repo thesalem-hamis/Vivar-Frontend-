@@ -1,9 +1,11 @@
-// "use client";
+"use client";
 
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Maximize, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function PropertyCard({ property }: { property: any }) {
+  const navigate = useNavigate();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -33,8 +35,12 @@ export default function PropertyCard({ property }: { property: any }) {
 
   const displayImages = images.length > 0 ? images : ["/placeholder.jpg"];
 
+  const handleClick = () => {
+    navigate(`/properties/${property.id}`);
+  };
+
   return (
-    <div className="group bg-white rounded-2xl border border-gray-200 p-3.5 shadow-[0_2px_15px_rgba(0,0,0,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.07)] transition-all duration-400 flex flex-col gap-4 font-sans">
+    <div onClick={handleClick} className="group bg-white rounded-2xl border border-gray-200 p-3.5 shadow-[0_2px_15px_rgba(0,0,0,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.07)] transition-all duration-400 flex flex-col gap-4 font-sans cursor-pointer">
       
       {/* ── MULTI-SCROLL IMAGE CAROUSEL LAYER ── */}
       <div className="relative aspect-[1.75/1] w-full overflow-hidden rounded-xl bg-gray-50 group/carousel">
@@ -133,7 +139,13 @@ export default function PropertyCard({ property }: { property: any }) {
             </div>
           </div>
 
-          <button className="h-8 px-3 bg-[#0E292F] text-white text-[10px] font-bold uppercase tracking-wider rounded hover:bg-[#0E292F]/90 transition-colors">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClick();
+            }}
+            className="h-8 px-3 bg-[#0E292F] text-white text-[10px] font-bold uppercase tracking-wider rounded hover:bg-[#0E292F]/90 transition-colors"
+          >
             View
           </button>
         </div>
