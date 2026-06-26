@@ -250,6 +250,27 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
+        {/* Location Map */}
+        {property.map_embed && (
+          <div className="mb-6">
+            <h2 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-2.5">
+              Location
+            </h2>
+            <div className="rounded-lg overflow-hidden border border-neutral-200">
+              <iframe
+                src={property.map_embed}
+                width="100%"
+                height="300"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Property location map"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Description */}
         {property.description && (
           <div className="mb-6">

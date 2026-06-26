@@ -92,15 +92,18 @@ export async function createProperty(data: {
   description?: string
   price: number
   type?: string
+  category?: string
   bedrooms?: number
   bathrooms?: number
   area_sqft?: number
-  latitude: number
-  longitude: number
   address?: string
   city?: string
   state?: string
   country?: string
+  documents?: string
+  amenities?: string[]
+  tags?: string[]
+  map_embed?: string
 }) {
   await requireAdmin()
 
@@ -113,60 +116,114 @@ export async function createProperty(data: {
   const { data: property, error } = await supabase
     .from('properties')
     .insert({
-      agent_id: user!.id,
+      agent_id: user!.id,                    // Required - NOT NULL column
       title: data.title,
       description: data.description || null,
       price: data.price,
-      property_type: listingType, // Keep both for compatibility
+      property_type: listingType,            // Required - has check constraint
       listing_type: listingType,
+      category: data.category || 'Apartment',
       bedrooms: data.bedrooms || 0,
       bathrooms: data.bathrooms || 0,
-      area_sqft: data.area_sqft || 0,
-      location: `POINT(${data.longitude} ${data.latitude})`,
+      area_sqft: data.area_sqft || null,
+      location: data.address || '',          // Required - PostGIS column
       address: data.address || null,
       city: data.city || null,
       state: data.state || null,
       country: data.country || 'Nigeria',
+      documents: data.documents || null,
+      amenities: data.amenities || [],
+      tags: data.tags || [],
+      map_embed: data.map_embed || null,
       status: 'available'
     } as any)
-    .select('*, property_images (*)')
+    .select()
     .single()
 
   if (error) throw error
-  return property
+  
+  return {
+    ...property,
+    property_images: []
+  }
 }
 
 // For public users — they can see available properties (no admin check)
 export async function getPublicProperties() {
-  const { data, error } = await supabase
+  const { data: properties, error } = await supabase
     .from('properties')
-    .select('*, property_images (*)')
+    .select('*')
     .eq('status', 'available')
     .order('created_at', { ascending: false })
   if (error) throw error
-  return data
+  
+  if (properties && properties.length > 0) {
+    const propertyIds = properties.map((p: any) => p.id)
+    const { data: images } = await supabase
+      .from('property_images')
+      .select('*')
+      .in('property_id', propertyIds)
+      .order('order_index', { ascending: true })
+    
+    return properties.map((property: any) => ({
+      ...property,
+      property_images: (images || []).filter((img: any) => img.property_id === property.id)
+    }))
+  }
+  
+  return properties || []
 }
 
 // For admin — sees all properties including sold/rented
 export async function getAllProperties() {
   await requireAdmin()
-  const { data, error } = await supabase
+  
+  const { data: properties, error } = await supabase
     .from('properties')
-    .select('*, property_images (*)')
+    .select('*')
     .order('created_at', { ascending: false })
   if (error) throw error
-  return data
+  
+  if (properties && properties.length > 0) {
+    const propertyIds = properties.map((p: any) => p.id)
+    const { data: images } = await supabase
+      .from('property_images')
+      .select('*')
+      .in('property_id', propertyIds)
+      .order('order_index', { ascending: true })
+    
+    return properties.map((property: any) => ({
+      ...property,
+      property_images: (images || []).filter((img: any) => img.property_id === property.id)
+    }))
+  }
+  
+  return properties || []
 }
 
 // Get single property (public)
 export async function getPropertyById(propertyId: string) {
-  const { data, error } = await supabase
+  const { data: property, error } = await supabase
     .from('properties')
-    .select('*, property_images (*)')
+    .select('*')
     .eq('id', propertyId)
     .single()
   if (error) throw error
-  return data
+  
+  if (property) {
+    const { data: images } = await supabase
+      .from('property_images')
+      .select('*')
+      .eq('property_id', propertyId)
+      .order('order_index', { ascending: true })
+    
+    return {
+      ...property,
+      property_images: images || []
+    }
+  }
+  
+  return property
 }
 
 export async function deleteProperty(propertyId: string) {
@@ -195,6 +252,7 @@ export async function updateProperty(propertyId: string, data: {
   description?: string
   price: number
   listing_type?: string
+  category?: string
   bedrooms?: number
   bathrooms?: number
   area_sqft?: number
@@ -202,11 +260,14 @@ export async function updateProperty(propertyId: string, data: {
   city?: string
   state?: string
   country?: string
+  documents?: string
+  amenities?: string[]
+  tags?: string[]
+  map_embed?: string
   status?: string
 }) {
   await requireAdmin()
 
-  // Validate listing type
   const validListingTypes = ['sale', 'rent', 'commercial', 'land']
   const listingType = data.listing_type && validListingTypes.includes(data.listing_type) 
     ? data.listing_type 
@@ -218,23 +279,39 @@ export async function updateProperty(propertyId: string, data: {
       title: data.title,
       description: data.description || null,
       price: data.price,
-      property_type: listingType, // Update both for consistency
+      property_type: listingType,            // Required - has check constraint
       listing_type: listingType,
+      category: data.category || 'Apartment',
       bedrooms: data.bedrooms ?? 0,
       bathrooms: data.bathrooms ?? 0,
-      area_sqft: data.area_sqft ?? 0,
+      area_sqft: data.area_sqft || null,
+      location: data.address || '',          // Required - PostGIS column
       address: data.address || null,
       city: data.city || null,
       state: data.state || null,
       country: data.country || null,
+      documents: data.documents || null,
+      amenities: data.amenities || [],
+      tags: data.tags || [],
+      map_embed: data.map_embed || null,
       status: data.status || 'available',
     } as any)
     .eq('id', propertyId)
-    .select('*, property_images (*)')
+    .select()
     .single()
 
   if (error) throw error
-  return property
+  
+  const { data: images } = await supabase
+    .from('property_images')
+    .select('*')
+    .eq('property_id', propertyId)
+    .order('order_index', { ascending: true })
+  
+  return {
+    ...property,
+    property_images: images || []
+  }
 }
 
 // ==========================================
