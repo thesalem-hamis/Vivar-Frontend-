@@ -3,13 +3,14 @@ import {
   getAllProperties,
   createProperty,
   deleteProperty,
+  updateProperty,
   uploadPropertyImages,
 } from "@/lib/supabase/admin";
 import { subscribeToProperties } from "@/lib/supabase/realtime";
 import {
   Search, Trash2, Plus, MapPin, BedDouble, Bath, Maximize,
   X, Upload, Image as ImageIcon, RefreshCw,
-  Grid3x3, List, Check, ChevronDown,
+  Grid3x3, List, Check, ChevronDown, FilePen,
 } from "lucide-react";
 
 import emptyStateImg from "@/assets/svg.png";
@@ -276,6 +277,9 @@ export default function PropertiesPage() {
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
   const [deleting, setDeleting]         = useState(false);
+  
+  const [editTarget, setEditTarget] = useState<any | null>(null);
+  const [editing, setEditing]       = useState(false);
 
   const addToast = (message: string, type: "success" | "error") => {
     const id = Math.random().toString(36).substring(7);
@@ -370,6 +374,74 @@ export default function PropertiesPage() {
       addToast("Failed to delete property", "error");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleEditClick = (property: any) => {
+    setEditTarget(property);
+    setFormData({
+      title: property.title || "",
+      description: property.description || "",
+      price: property.price?.toString() || "",
+      type: property.listing_type || property.type || "sale",
+      category: property.category || "Apartment",
+      bedrooms: property.bedrooms?.toString() || "",
+      bathrooms: property.bathrooms?.toString() || "",
+      area: property.area_sqft?.toString() || "",
+      address: property.address || "",
+      city: property.city || "",
+      state: property.state || "",
+      country: property.country || "Nigeria",
+      documents: property.documents || "",
+      amenities: property.amenities?.join(", ") || "",
+      tags: property.tags?.join(", ") || "",
+      imageFiles: [],
+    });
+    setShowModal(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editTarget) return;
+    setEditing(true);
+    try {
+      const mapEmbed = generateMapEmbed();
+      const amenities = formData.amenities.split(",").map(a => a.trim()).filter(Boolean);
+      const tags = formData.tags.split(",").map(t => t.trim().toUpperCase()).filter(Boolean);
+      
+      await updateProperty(editTarget.id, {
+        title:       formData.title,
+        description: formData.description,
+        price:       parseFloat(formData.price),
+        listing_type: formData.type,
+        category:    formData.category,
+        bedrooms:    parseInt(formData.bedrooms) || 0,
+        bathrooms:   parseInt(formData.bathrooms) || 0,
+        area_sqft:   formData.area ? parseFloat(formData.area) : undefined,
+        address:     formData.address,
+        city:        formData.city,
+        state:       formData.state,
+        country:     formData.country,
+        documents:   formData.documents,
+        amenities:   amenities,
+        tags:        tags,
+        map_embed:   mapEmbed,
+        status:      editTarget.status,
+      });
+      
+      if (formData.imageFiles.length > 0) {
+        await uploadPropertyImages(editTarget.id, formData.imageFiles, 0);
+      }
+      
+      setShowModal(false);
+      setEditTarget(null);
+      setFormData(initialFormData);
+      addToast("Property updated successfully", "success");
+      fetchProperties();
+    } catch (err: any) {
+      addToast(err.message || "Failed to update property", "error");
+    } finally {
+      setEditing(false);
     }
   };
 
@@ -572,6 +644,7 @@ export default function PropertiesPage() {
                     <span className="inline-flex items-center gap-1"><Maximize className="w-3.5 h-3.5 text-[#9CA3AF]" /> {property.area_sqft ?? "—"}</span>
                   </div>
                   <div className="flex items-center gap-0.5">
+                    <button onClick={() => handleEditClick(property)} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-blue-600 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 transition-all hover:scale-110 active:scale-95 hover:shadow-md hover:shadow-blue-200 hover:ring-2 hover:ring-blue-300"><FilePen className="w-3.5 h-3.5" /></button>
                     <button onClick={() => setDeleteTarget({ id: property.id, title: property.title })} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
@@ -612,6 +685,7 @@ export default function PropertiesPage() {
                   <td className="px-4 py-2.5 text-xs text-[#6B6B66] font-sans">{property.bedrooms} bd · {property.bathrooms} ba · {property.area_sqft ?? "—"} sqft</td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-end gap-0.5">
+                      <button onClick={() => handleEditClick(property)} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-blue-600 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 transition-all hover:scale-110 active:scale-95 hover:shadow-md hover:shadow-blue-200 hover:ring-2 hover:ring-blue-300"><FilePen className="w-3.5 h-3.5" /></button>
                       <button onClick={() => setDeleteTarget({ id: property.id, title: property.title })} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2]"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </td>
@@ -637,7 +711,7 @@ export default function PropertiesPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+            <form onSubmit={editTarget ? handleEditSubmit : handleSubmit} className="flex flex-col flex-1 min-h-0">
               <div className="overflow-y-auto px-7 py-6 space-y-7 flex-1">
 
                 {/* Basic Info */}
@@ -799,8 +873,8 @@ export default function PropertiesPage() {
 
               <div className="px-7 py-4 border-t border-[#E5E7EB] bg-gray-50/50 flex items-center justify-end gap-3 shrink-0">
                 <button type="button" onClick={() => setShowModal(false)} className="h-10 px-4 border border-[#E5E7EB] bg-white text-sm font-medium text-[#0E292F] rounded-md hover:bg-gray-50 transition-colors font-sans">Cancel</button>
-                <button type="submit" disabled={submitting} className="h-10 px-5 bg-[#0E292F] text-white text-sm font-medium rounded-md hover:bg-[#0E292F]/90 transition-colors font-sans disabled:opacity-50 inline-flex items-center gap-2">
-                  {submitting ? <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Publishing…</> : "Publish listing"}
+                <button type="submit" disabled={submitting || editing} className="h-10 px-5 bg-[#0E292F] text-white text-sm font-medium rounded-md hover:bg-[#0E292F]/90 transition-colors font-sans disabled:opacity-50 inline-flex items-center gap-2">
+                  {(submitting || editing) ? <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> {editTarget ? "Updating…" : "Publishing…"}</> : (editTarget ? "Update listing" : "Publish listing")}
                 </button>
               </div>
             </form>
