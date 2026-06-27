@@ -10,12 +10,14 @@ import Footer from "@/components/layout/Footer";
 import PropertyCategory from "@/components/home/PropertyCategory";
 import TestimonialsSection from "@/components/home/Testimonial";
 import Navbar from "@/components/layout/Navbar";
+import PageNavbar from "@/components/layout/PageNavbar";
 
 const HomePage = () => {
   return (
     <div>
       <HeroSection />
-      <Navbar />
+      <PageNavbar />
+      {/* <Navbar /> */}
       <BrandStatementSection />
       <HowWeHelpSection />
       <PropertyCategory />

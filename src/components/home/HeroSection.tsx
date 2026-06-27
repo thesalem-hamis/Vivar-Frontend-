@@ -822,135 +822,287 @@
 //   );
 // }
 
+// "use client";
+
+// import { useState, useEffect, useRef } from "react";
+// import { ArrowUpRight } from "lucide-react";
+// import { motion, useScroll, useTransform } from "framer-motion";
+
+// import HERO_IMAGE from "../../assets/ikoyi-main.jpg";
+
+// export default function HeroSection() {
+//   const [scrolled, setScrolled] = useState(false);
+//   const h1Ref = useRef<HTMLHeadingElement>(null);
+
+//   // Hook into viewport scroll progress
+//   const { scrollY } = useScroll();
+
+//   // Map scroll progress to a premium light-up / pop-out effect
+//   const textOpacity = useTransform(scrollY, [0, 250], [0.85, 1]);
+//   const textFilter = useTransform(
+//     scrollY,
+//     [0, 250],
+//     ["brightness(1) contrast(1)", "brightness(1.25) contrast(1.05)"],
+//   );
+//   const textScale = useTransform(scrollY, [0, 300], [1, 1.015]);
+
+//   useEffect(() => {
+//     document.documentElement.style.scrollBehavior = "smooth";
+
+//     const onScroll = () => {
+//       setScrolled(window.scrollY > 10);
+//     };
+
+//     window.addEventListener("scroll", onScroll, { passive: true });
+//     return () => window.removeEventListener("scroll", onScroll);
+//   }, []);
+
+//   // Framer Motion staggered orchestration variants for entrance reveal
+//   const containerVariants = {
+//     hidden: {},
+//     visible: {
+//       transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+//     },
+//   };
+
+//   return (
+//     <div className="bg-white min-h-screen w-full relative flex items-start justify-center font-sans overflow-x-hidden selection:bg-[#D4E9B9] selection:text-[#0E292F]">
+//       {/* Deep Forest Green Gradient Layer under the Glass */}
+//       <div className="absolute inset-0 bg-white pointer-events-none z-0" />
+
+//       {/* ── TRANSFORM FLUID OVERLAY CONTAINER ── */}
+//       <div
+//         className={`
+//           relative z-10 w-full overflow-hidden flex flex-col justify-between bg-[#040c0e] shadow-2xl
+//           transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-top will-change-[transform,border-radius]
+//           ${
+//             scrolled
+//               ? "scale-100 mt-0 rounded-none min-h-screen"
+//               : "scale-[0.96] md:scale-[0.98] mt-2 md:mt-3 rounded-[16px] md:rounded-[20px] min-h-[98vh]"
+//           }
+//         `}
+//       >
+//         {/* Core Background Image */}
+//         <img
+//           className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-0"
+//           src={HERO_IMAGE}
+//           alt="Lagos Real Estate Background"
+//         />
+
+//         {/* Dynamic Rich Overlays over Image Canvas (Darkened for readability) */}
+//         <div className="absolute inset-0 bg-black/45 mix-blend-multiply pointer-events-none z-0" />
+//         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-transparent pointer-events-none z-0" />
+//         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none z-0" />
+
+//         {/* ── HERO CONTENT WRAPPER ── */}
+//         {/* Top padding ensures content breathes beneath the standalone global navbar */}
+//         <div className="relative z-10 flex-1 pt-28 md:pt-36 pb-14 px-6 md:px-12 lg:px-16 w-full flex flex-col justify-end">
+//           <motion.div
+//             variants={containerVariants}
+//             initial="hidden"
+//             animate="visible"
+//             className="max-w-[1440px] w-full mx-auto flex flex-col items-start"
+//           >
+//             {/* Scaled Heading with Drop Shadows for Visual Contrast */}
+//             <motion.h1
+//               ref={h1Ref}
+//               style={{
+//                 opacity: textOpacity,
+//                 filter: textFilter,
+//                 scale: textScale,
+//               }}
+//               className="w-full font-serif font-light text-white mb-8 text-left
+//                 text-[2.2rem] sm:text-[2.8rem] md:text-[3.4rem] lg:text-[3.8rem] xl:text-[4.2rem]
+//                 leading-[1.1] tracking-tight max-w-[95%] will-change-[transform,opacity,filter]
+//                 drop-shadow-md"
+//             >
+//               <motion.span className="block select-none">
+//                 Lagos Real Estate.
+//               </motion.span>
+//               <motion.span className="block select-none">
+//                 Intelligently Curated.
+//               </motion.span>
+//             </motion.h1>
+
+//             {/* Sub-Headline Text Row */}
+//             <motion.div className="w-full flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-2">
+//               {/* Subtitle Paragraph description with crisp overlay shadow */}
+//               <div className="w-full max-w-2xl">
+//                 <p className="text-white text-sm sm:text-base md:text-[1.05rem] lg:text-[1.1rem] leading-relaxed font-light tracking-wide drop-shadow-sm">
+//                   We unravel complex property markets with data intelligence,
+//                   local compliance, and verified premium portfolios for
+//                   seamless high-yield asset acquisitions.
+//                 </p>
+//               </div>
+
+//               {/* Sharp and Precise Premium Action Button */}
+//               <div className="shrink-0 self-start lg:self-end">
+//                 <a
+//                   href="/portfolio"
+//                   className="inline-flex items-center gap-6 sm:gap-10 pl-5 pr-2 py-2 rounded-[8px] bg-white text-[#0E292F] hover:bg-[#0E292F] hover:text-white border border-white transition-all duration-300 shadow-xl group font-sans text-[10px] sm:text-[11px] font-bold tracking-widest uppercase whitespace-nowrap"
+//                 >
+//                   <span>Discover Our Platform</span>
+//                   <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-[6px] bg-[#0E292F] text-white group-hover:bg-white group-hover:text-[#0E292F] transition-all duration-300">
+//                     <ArrowUpRight size={15} strokeWidth={2.5} />
+//                   </div>
+//                 </a>
+//               </div>
+//             </motion.div>
+//           </motion.div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 
-import HERO_IMAGE from "../../assets/ikoyi-main.jpg";
+// Update this path to point to your premium video clip asset
+import HERO_VIDEO from "@/assets/mainhero.mp4";
 
 export default function HeroSection() {
   const [scrolled, setScrolled] = useState(false);
-  const h1Ref = useRef<HTMLHeadingElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Hook into viewport scroll progress
   const { scrollY } = useScroll();
 
-  // Map scroll progress to a premium light-up / pop-out effect
-  const textOpacity = useTransform(scrollY, [0, 250], [0.85, 1]);
-  const textFilter = useTransform(
-    scrollY,
-    [0, 250],
-    ["brightness(1) contrast(1)", "brightness(1.25) contrast(1.05)"],
-  );
-  const textScale = useTransform(scrollY, [0, 300], [1, 1.015]);
+  // Smooth out fluid container scale transitions using springs
+  const rawScale = useTransform(scrollY, [0, 400], [1, 1.03]);
+  const containerScale = useSpring(rawScale, { stiffness: 100, damping: 30 });
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
-
-    const onScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Framer Motion staggered orchestration variants for entrance reveal
+  const titleLine1 = "Premium Asset Acquisition.";
+  const titleLine2 = "Institutional Standards.";
+
   const containerVariants = {
     hidden: {},
     visible: {
-      transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+      transition: { staggerChildren: 0.04, delayChildren: 0.1 },
     },
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { type: "spring", stiffness: 70, damping: 14 }
+    },
+  };
+
+  const elementFadeUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 } }
   };
 
   return (
     <div className="bg-white min-h-screen w-full relative flex items-start justify-center font-sans overflow-x-hidden selection:bg-[#D4E9B9] selection:text-[#0E292F]">
-      {/* Deep Forest Green Gradient Layer under the Glass */}
       <div className="absolute inset-0 bg-white pointer-events-none z-0" />
 
-      {/* ── TRANSFORM FLUID OVERLAY CONTAINER ── */}
-      <div
+      {/* ── FLUID SCROLL-TO-FULLSCREEN CONTAINER ── */}
+      <motion.div
+        ref={containerRef}
+        style={{ scale: scrolled ? 1 : containerScale }}
         className={`
-          relative z-10 w-full overflow-hidden flex flex-col justify-between bg-[#040c0e] shadow-2xl
-          transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-top will-change-[transform,border-radius]
+          relative z-10 overflow-hidden flex flex-col justify-between bg-[#040c0e] shadow-2xl
+          transition-all duration-1000 cubic-bezier(0.16, 1, 0.3, 1) origin-top will-change-[transform,border-radius]
           ${
             scrolled
-              ? "scale-100 mt-0 rounded-none min-h-screen"
-              : "scale-[0.96] md:scale-[0.98] mt-2 md:mt-3 rounded-[16px] md:rounded-[20px] min-h-[98vh]"
+              ? "mt-0 rounded-none min-h-screen w-full mx-0"
+              : "mt-1.5 md:mt-3 rounded-[16px] md:rounded-[24px] min-h-[96vh] w-[calc(100%-12px)] md:w-[calc(100%-24px)] mx-1.5 md:mx-3"
           }
         `}
       >
-        {/* Core Background Image */}
-        <img
-          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-0"
-          src={HERO_IMAGE}
-          alt="Lagos Real Estate Background"
-        />
+        {/* Core Video Background */}
+        <div className="absolute inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
+          <video
+            className="absolute inset-0 w-full h-full object-cover select-none scale-105"
+            src={HERO_VIDEO}
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div className="absolute inset-0 bg-black/20 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+        </div>
 
-        {/* Dynamic Rich Overlays over Image Canvas (Darkened for readability) */}
-        <div className="absolute inset-0 bg-black/45 mix-blend-multiply pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-transparent pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none z-0" />
-
-        {/* ── HERO CONTENT WRAPPER ── */}
-        {/* Top padding ensures content breathes beneath the standalone global navbar */}
-        <div className="relative z-10 flex-1 pt-28 md:pt-36 pb-14 px-6 md:px-12 lg:px-16 w-full flex flex-col justify-end">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="max-w-[1440px] w-full mx-auto flex flex-col items-start"
-          >
-            {/* Scaled Heading with Drop Shadows for Visual Contrast */}
+        {/* ── LOWER-ANCHORED HERO CONTENT WRAPPER ── */}
+        <div className="relative z-10 flex-1 pt-40 pb-6 md:pb-10 px-6 md:px-12 lg:px-16 w-full flex flex-col justify-end">
+          <div className="max-w-[1440px] w-full mx-auto flex flex-col items-start">
+            
+            {/* Reduced Headline Font Scale */}
             <motion.h1
-              ref={h1Ref}
-              style={{
-                opacity: textOpacity,
-                filter: textFilter,
-                scale: textScale,
-              }}
-              className="w-full font-serif font-light text-white mb-8 text-left
-                text-[2.2rem] sm:text-[2.8rem] md:text-[3.4rem] lg:text-[3.8rem] xl:text-[4.2rem]
-                leading-[1.1] tracking-tight max-w-[95%] will-change-[transform,opacity,filter]
-                drop-shadow-md"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="w-full font-serif font-light text-white mb-4 text-left
+                text-[1.8rem] sm:text-[2.4rem] md:text-[3rem] lg:text-[3.3rem] xl:text-[3.6rem]
+                leading-[1.1] tracking-tight max-w-[95%] drop-shadow-xl overflow-hidden"
             >
-              <motion.span className="block select-none">
-                Lagos Real Estate.
-              </motion.span>
-              <motion.span className="block select-none">
-                Intelligently Curated.
-              </motion.span>
+              <span className="block overflow-hidden pb-0.5">
+                {titleLine1.split("").map((char, index) => (
+                  <motion.span key={index} variants={letterVariants} className="inline-block whitespace-pre">
+                    {char}
+                  </motion.span>
+                ))}
+              </span>
+              <span className="block overflow-hidden font-light text-white/95">
+                {titleLine2.split("").map((char, index) => (
+                  <motion.span key={index} variants={letterVariants} className="inline-block whitespace-pre">
+                    {char}
+                  </motion.span>
+                ))}
+              </span>
             </motion.h1>
 
-            {/* Sub-Headline Text Row */}
-            <motion.div className="w-full flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-2">
-              {/* Subtitle Paragraph description with crisp overlay shadow */}
-              <div className="w-full max-w-2xl">
-                <p className="text-white text-sm sm:text-base md:text-[1.05rem] lg:text-[1.1rem] leading-relaxed font-light tracking-wide drop-shadow-sm">
-                  We unravel complex property markets with data intelligence,
-                  local compliance, and verified premium portfolios for
-                  seamless high-yield asset acquisitions.
-                </p>
-              </div>
+            {/* Sub-Headline & Action Content Block */}
+            <div className="w-full flex flex-col items-start gap-5 max-w-2xl">
+              
+              <motion.p 
+                variants={elementFadeUp}
+                initial="hidden"
+                animate="visible"
+                className="text-white text-xs sm:text-sm md:text-[0.95rem] lg:text-[1rem] leading-relaxed font-semibold tracking-wide max-w-xl drop-shadow-md"
+              >
+                Discover verified homes, land, commercial assets, and investment opportunities 
+                across Ikoyi, Victoria Island, Banana Island, and Lekki.
+              </motion.p>
 
-              {/* Sharp and Precise Premium Action Button */}
-              <div className="shrink-0 self-start lg:self-end">
-                <a
+              <motion.div 
+                variants={elementFadeUp}
+                initial="hidden"
+                animate="visible"
+                className="shrink-0 pt-1"
+              >
+                <motion.a
                   href="/portfolio"
-                  className="inline-flex items-center gap-6 sm:gap-10 pl-5 pr-2 py-2 rounded-[8px] bg-white text-[#0E292F] hover:bg-[#0E292F] hover:text-white border border-white transition-all duration-300 shadow-xl group font-sans text-[10px] sm:text-[11px] font-bold tracking-widest uppercase whitespace-nowrap"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-8 pl-5 pr-2 py-2 rounded-[10px] bg-white text-[#0E292F] transition-all duration-300 shadow-2xl group font-sans text-[10px] sm:text-[11px] font-bold tracking-widest uppercase whitespace-nowrap border border-white"
                 >
-                  <span>Discover Our Platform</span>
-                  <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-[6px] bg-[#0E292F] text-white group-hover:bg-white group-hover:text-[#0E292F] transition-all duration-300">
-                    <ArrowUpRight size={15} strokeWidth={2.5} />
+                  <span className="group-hover:translate-x-1 transition-transform duration-300">Discover Our Platform</span>
+                  <div className="flex items-center justify-center w-8 h-8 rounded-[6px] bg-[#0E292F] text-white group-hover:bg-[#1d4f5b] transition-all duration-300">
+                    <ArrowUpRight size={14} strokeWidth={2.5} className="group-hover:rotate-45 transition-transform duration-300" />
                   </div>
-                </a>
-              </div>
-            </motion.div>
-          </motion.div>
+                </motion.a>
+              </motion.div>
+            </div>
+
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
