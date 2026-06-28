@@ -9,6 +9,7 @@ import DashboardPage from "@/pages/admin/DashboardPage";
 import UsersPage from "@/pages/admin/UsersPage";
 import PropertiesPage from "@/pages/admin/PropertiesPage";
 import LoginPage from "@/pages/admin/LoginPage";
+import ContactUsPage from "@/pages/ContactUsPage";
 
 export default function AppRouter() {
   return (
@@ -16,6 +17,7 @@ export default function AppRouter() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
+        <Route path="contact" element={<ContactUsPage />} />
         <Route path="properties" element={<PropertiesListingPage />} />
         <Route path="properties/:id" element={<PropertyDetailPage />} />
       </Route>
