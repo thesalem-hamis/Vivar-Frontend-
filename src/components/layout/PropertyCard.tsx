@@ -2,16 +2,24 @@
 
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, BedDouble, Bath, Maximize, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  MapPin,
+  BedDouble,
+  Bath,
+  Maximize,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 export default function PropertyCard({ property }: { property: any }) {
   const navigate = useNavigate();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const images = property.property_images && property.property_images.length > 0
-    ? property.property_images.map((img: any) => img.url)
-    : [];
+  const images =
+    property.property_images && property.property_images.length > 0
+      ? property.property_images.map((img: any) => img.url)
+      : [];
 
   const formatPrice = (num: number) => {
     return num.toLocaleString();
@@ -40,18 +48,20 @@ export default function PropertyCard({ property }: { property: any }) {
   };
 
   return (
-    <div onClick={handleClick} className="group bg-white rounded-2xl border border-gray-200 p-3.5 shadow-[0_2px_15px_rgba(0,0,0,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.07)] transition-all duration-400 flex flex-col gap-4 font-sans cursor-pointer">
-      
+    <div className="group bg-white rounded-2xl border border-gray-200 p-3.5 shadow-[0_2px_15px_rgba(0,0,0,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.07)] transition-all duration-400 flex flex-col gap-4 font-sans cursor-pointer">
       {/* ── MULTI-SCROLL IMAGE CAROUSEL LAYER ── */}
       <div className="relative aspect-[1.75/1] w-full overflow-hidden rounded-xl bg-gray-50 group/carousel">
-        <div 
+        <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
           className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-none"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {displayImages.map((imgUrl: string, idx: number) => (
-            <div key={idx} className="w-full h-full shrink-0 snap-start snap-always">
+            <div
+              key={idx}
+              className="w-full h-full shrink-0 snap-start snap-always"
+            >
               <img
                 src={imgUrl}
                 alt={`${property.title} view ${idx + 1}`}
@@ -71,15 +81,19 @@ export default function PropertyCard({ property }: { property: any }) {
 
         {displayImages.length > 1 && (
           <>
-            <button 
+            <button
               onClick={() => scrollToIndex(Math.max(0, activeIndex - 1))}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/80 text-gray-800 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity shadow-sm disabled:opacity-0 z-10"
               disabled={activeIndex === 0}
             >
               <ChevronLeft size={14} strokeWidth={2.5} />
             </button>
-            <button 
-              onClick={() => scrollToIndex(Math.min(displayImages.length - 1, activeIndex + 1))}
+            <button
+              onClick={() =>
+                scrollToIndex(
+                  Math.min(displayImages.length - 1, activeIndex + 1),
+                )
+              }
               className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/80 text-gray-800 flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity shadow-sm disabled:opacity-0 z-10"
               disabled={activeIndex === displayImages.length - 1}
             >
@@ -102,36 +116,37 @@ export default function PropertyCard({ property }: { property: any }) {
       </div>
 
       {/* ── METADATA & CONTENT AREA ── */}
-      <div className="px-0.5 space-y-3.5 flex-1 flex flex-col justify-between">
-        
+      <div
+        onClick={handleClick}
+        className="px-0.5 space-y-3.5 flex-1 flex flex-col justify-between"
+      >
         <div className="space-y-1.5">
           <h4 className="text-2xl font-sans font-bold text-gray-900 tracking-tight">
             ₦{formatPrice(property.price)}
           </h4>
 
           <div className="items-center gap-1 text-[17px] mb-2 text-gray-900 font-bold tracking-wide font-sans">
-            <span className="line-clamp-1">
-              {property.title}
-            </span>
+            <span className="line-clamp-1">{property.title}</span>
           </div>
 
           <div className="flex items-center gap-1 text-[11px] text-gray-500 font-normal leading-relaxed line-clamp-2 pt-0.5 font-sans">
             <MapPin size={11} className="shrink-0 text-[#3D7188]" />
             <span className="line-clamp-1">
-                {[property.address, property.city, property.state].filter(Boolean).join(", ")}
+              {[property.address, property.city, property.state]
+                .filter(Boolean)
+                .join(", ")}
             </span>
           </div>
         </div>
 
         {/* Footer Action Tray */}
         <div className="flex items-end justify-between gap-4 border-t border-gray-100 pt-3">
-          
           <div className="flex items-center gap-2 font-sans">
             <div className="h-6 px-2 inline-flex items-center gap-1 text-[12px] font-bold text-gray-900">
               <BedDouble size={12} className="text-[#3D7188]" />
               <span>{property.bedrooms} Bed</span>
             </div>
-            
+
             <div className="h-6 px-2 inline-flex items-center gap-1 text-[12px] font-bold text-gray-900">
               <Bath size={12} className="text-[#3D7188]" />
               <span>{property.bathrooms} Bath</span>
@@ -142,7 +157,7 @@ export default function PropertyCard({ property }: { property: any }) {
             </div> */}
           </div>
 
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               handleClick();
@@ -340,5 +355,3 @@ export default function PropertyCard({ property }: { property: any }) {
 //     </motion.div>
 //   );
 // }
-
-

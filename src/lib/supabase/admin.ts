@@ -1,21 +1,23 @@
-import { supabase } from './client'
+import { supabase } from "./client";
 
 async function isAdmin(): Promise<boolean> {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return false
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
 
   const { data } = await supabase
-    .from('admin_users')
-    .select('user_id')
-    .eq('user_id', user.id)
-    .single()
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .single();
 
-  return !!data
+  return !!data;
 }
 
 async function requireAdmin() {
-  if (!await isAdmin()) {
-    throw new Error('Unauthorized: Admin access required')
+  if (!(await isAdmin())) {
+    throw new Error("Unauthorized: Admin access required");
   }
 }
 
@@ -24,34 +26,31 @@ async function requireAdmin() {
 // ==========================================
 
 export async function getAllUsers() {
-  await requireAdmin()
+  await requireAdmin();
   const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  return data
+    .from("profiles")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
 }
 
 export async function getUserById(userId: string) {
-  await requireAdmin()
+  await requireAdmin();
   const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single()
-  if (error) throw error
-  return data
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data;
 }
 
 export async function deleteUser(userId: string) {
-  await requireAdmin()
-  const { error } = await supabase
-    .from('profiles')
-    .delete()
-    .eq('id', userId)
-  if (error) throw error
-  return { success: true }
+  await requireAdmin();
+  const { error } = await supabase.from("profiles").delete().eq("id", userId);
+  if (error) throw error;
+  return { success: true };
 }
 
 // ==========================================
@@ -59,28 +58,31 @@ export async function deleteUser(userId: string) {
 // ==========================================
 
 export async function getVisitorStats() {
-  await requireAdmin()
+  await requireAdmin();
 
   const { count: totalViews } = await supabase
-    .from('page_views')
-    .select('*', { count: 'exact', head: true })
+    .from("page_views")
+    .select("*", { count: "exact", head: true });
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date().toISOString().split("T")[0];
   const { count: todayViews } = await supabase
-    .from('page_views')
-    .select('*', { count: 'exact', head: true })
-    .gte('created_at', today)
+    .from("page_views")
+    .select("*", { count: "exact", head: true })
+    .gte("created_at", today);
 
   const { count: thisWeekViews } = await supabase
-    .from('page_views')
-    .select('*', { count: 'exact', head: true })
-    .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+    .from("page_views")
+    .select("*", { count: "exact", head: true })
+    .gte(
+      "created_at",
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    );
 
   return {
     totalViews: totalViews || 0,
     todayViews: todayViews || 0,
     thisWeekViews: thisWeekViews || 0,
-  }
+  };
 }
 
 // ==========================================
@@ -88,204 +90,270 @@ export async function getVisitorStats() {
 // ==========================================
 
 export async function createProperty(data: {
-  title: string
-  description?: string
-  price: number
-  type?: string
-  category?: string
-  bedrooms?: number
-  bathrooms?: number
-  area_sqft?: number
-  address?: string
-  city?: string
-  state?: string
-  country?: string
-  documents?: string
-  amenities?: string[]
-  tags?: string[]
-  map_embed?: string
+  title: string;
+  description?: string;
+  price: number;
+  type?: string;
+  category?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  area_sqft?: number;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  documents?: string;
+  amenities?: string[];
+  tags?: string[];
+  map_embed?: string;
 }) {
-  await requireAdmin()
+  await requireAdmin();
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Validate listing type against allowed values
-  const validListingTypes = ['sale', 'rent', 'commercial', 'land']
-  const listingType = validListingTypes.includes(data.type || '') ? data.type : 'sale'
+  const validListingTypes = ["sale", "rent", "commercial", "land"];
+  const listingType = validListingTypes.includes(data.type || "")
+    ? data.type
+    : "sale";
 
   const { data: property, error } = await supabase
-    .from('properties')
+    .from("properties")
     .insert({
-      agent_id: user!.id,                    // Required - NOT NULL column
+      agent_id: user!.id, // Required - NOT NULL column
       title: data.title,
       description: data.description || null,
       price: data.price,
-      property_type: listingType,            // Required - has check constraint
+      property_type: listingType, // Required - has check constraint
       listing_type: listingType,
-      category: data.category || 'Apartment',
+      category: data.category || "Apartment",
       bedrooms: data.bedrooms || 0,
       bathrooms: data.bathrooms || 0,
       area_sqft: data.area_sqft || null,
-      location: data.address || '',          // Required - PostGIS column
+      location: data.address || "", // Required - PostGIS column
       address: data.address || null,
       city: data.city || null,
       state: data.state || null,
-      country: data.country || 'Nigeria',
+      country: data.country || "Nigeria",
       documents: data.documents || null,
       amenities: data.amenities || [],
       tags: data.tags || [],
       map_embed: data.map_embed || null,
-      status: 'available'
+      status: "available",
     } as any)
     .select()
-    .single()
+    .single();
 
-  if (error) throw error
-  
+  if (error) throw error;
+
   return {
     ...property,
-    property_images: []
-  }
+    property_images: [],
+  };
 }
 
 // For public users — they can see available properties (no admin check)
 export async function getPublicProperties() {
   const { data: properties, error } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('status', 'available')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  
+    .from("properties")
+    .select("*")
+    .eq("status", "available")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
   if (properties && properties.length > 0) {
-    const propertyIds = properties.map((p: any) => p.id)
+    const propertyIds = properties.map((p: any) => p.id);
     const { data: images } = await supabase
-      .from('property_images')
-      .select('*')
-      .in('property_id', propertyIds)
-      .order('order_index', { ascending: true })
-    
+      .from("property_images")
+      .select("*")
+      .in("property_id", propertyIds)
+      .order("order_index", { ascending: true });
+
     return properties.map((property: any) => ({
       ...property,
-      property_images: (images || []).filter((img: any) => img.property_id === property.id)
-    }))
+      property_images: (images || []).filter(
+        (img: any) => img.property_id === property.id,
+      ),
+    }));
   }
-  
-  return properties || []
+
+  return properties || [];
+}
+
+export async function searchPublicProperties(
+  cat?: string,
+  loc?: string,
+  type?: string,
+  rooms?: string,
+) {
+  let query = supabase.from("properties").select("*").eq("status", "available");
+
+  if (cat && cat !== "all") {
+    query = query.eq("listing_type", cat);
+  }
+
+  if (loc && loc.trim() !== "") {
+    query = query.or(
+      `city.ilike.%${loc}%,state.ilike.%${loc}%,country.ilike.%${loc}%`,
+    );
+  }
+
+  if (type && type !== "all") {
+    query = query.eq("category", type);
+  }
+
+  if (rooms && rooms !== "all") {
+    const bedroomCount = parseInt(rooms, 10);
+    if (!isNaN(bedroomCount)) {
+      query = query.eq("bedrooms", bedroomCount);
+    }
+  }
+
+  const { data: properties, error } = await query.order("created_at", {
+    ascending: false,
+  });
+
+  if (error) throw error;
+
+  if (properties && properties.length > 0) {
+    const propertyIds = properties.map((p: any) => p.id);
+    const { data: images } = await supabase
+      .from("property_images")
+      .select("*")
+      .in("property_id", propertyIds)
+      .order("order_index", { ascending: true });
+
+    return properties.map((property: any) => ({
+      ...property,
+      property_images: (images || []).filter(
+        (img: any) => img.property_id === property.id,
+      ),
+    }));
+  }
+
+  return properties || [];
 }
 
 // For admin — sees all properties including sold/rented
 export async function getAllProperties() {
-  await requireAdmin()
-  
+  await requireAdmin();
+
   const { data: properties, error } = await supabase
-    .from('properties')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  
+    .from("properties")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
   if (properties && properties.length > 0) {
-    const propertyIds = properties.map((p: any) => p.id)
+    const propertyIds = properties.map((p: any) => p.id);
     const { data: images } = await supabase
-      .from('property_images')
-      .select('*')
-      .in('property_id', propertyIds)
-      .order('order_index', { ascending: true })
-    
+      .from("property_images")
+      .select("*")
+      .in("property_id", propertyIds)
+      .order("order_index", { ascending: true });
+
     return properties.map((property: any) => ({
       ...property,
-      property_images: (images || []).filter((img: any) => img.property_id === property.id)
-    }))
+      property_images: (images || []).filter(
+        (img: any) => img.property_id === property.id,
+      ),
+    }));
   }
-  
-  return properties || []
+
+  return properties || [];
 }
 
 // Get single property (public)
 export async function getPropertyById(propertyId: string) {
   const { data: property, error } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('id', propertyId)
-    .single()
-  if (error) throw error
-  
+    .from("properties")
+    .select("*")
+    .eq("id", propertyId)
+    .single();
+  if (error) throw error;
+
   if (property) {
     const { data: images } = await supabase
-      .from('property_images')
-      .select('*')
-      .eq('property_id', propertyId)
-      .order('order_index', { ascending: true })
-    
+      .from("property_images")
+      .select("*")
+      .eq("property_id", propertyId)
+      .order("order_index", { ascending: true });
+
     return {
       ...property,
-      property_images: images || []
-    }
+      property_images: images || [],
+    };
   }
-  
-  return property
+
+  return property;
 }
 
 export async function deleteProperty(propertyId: string) {
-  await requireAdmin()
+  await requireAdmin();
 
   const { data: images } = await supabase
-    .from('property_images')
-    .select('file_path')
-    .eq('property_id', propertyId)
+    .from("property_images")
+    .select("file_path")
+    .eq("property_id", propertyId);
 
   if (images && images.length > 0) {
-    const paths = (images as any[]).map((img: any) => img.file_path)
-    await supabase.storage.from('property-images').remove(paths)
+    const paths = (images as any[]).map((img: any) => img.file_path);
+    await supabase.storage.from("property-images").remove(paths);
   }
 
   const { error } = await supabase
-    .from('properties')
+    .from("properties")
     .delete()
-    .eq('id', propertyId)
-  if (error) throw error
-  return { success: true }
+    .eq("id", propertyId);
+  if (error) throw error;
+  return { success: true };
 }
 
-export async function updateProperty(propertyId: string, data: {
-  title: string
-  description?: string
-  price: number
-  listing_type?: string
-  category?: string
-  bedrooms?: number
-  bathrooms?: number
-  area_sqft?: number
-  address?: string
-  city?: string
-  state?: string
-  country?: string
-  documents?: string
-  amenities?: string[]
-  tags?: string[]
-  map_embed?: string
-  status?: string
-}) {
-  await requireAdmin()
+export async function updateProperty(
+  propertyId: string,
+  data: {
+    title: string;
+    description?: string;
+    price: number;
+    listing_type?: string;
+    category?: string;
+    bedrooms?: number;
+    bathrooms?: number;
+    area_sqft?: number;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    documents?: string;
+    amenities?: string[];
+    tags?: string[];
+    map_embed?: string;
+    status?: string;
+  },
+) {
+  await requireAdmin();
 
-  const validListingTypes = ['sale', 'rent', 'commercial', 'land']
-  const listingType = data.listing_type && validListingTypes.includes(data.listing_type) 
-    ? data.listing_type 
-    : 'sale'
+  const validListingTypes = ["sale", "rent", "commercial", "land"];
+  const listingType =
+    data.listing_type && validListingTypes.includes(data.listing_type)
+      ? data.listing_type
+      : "sale";
 
   const { data: property, error } = await supabase
-    .from('properties')
+    .from("properties")
     .update({
       title: data.title,
       description: data.description || null,
       price: data.price,
-      property_type: listingType,            // Required - has check constraint
+      property_type: listingType, // Required - has check constraint
       listing_type: listingType,
-      category: data.category || 'Apartment',
+      category: data.category || "Apartment",
       bedrooms: data.bedrooms ?? 0,
       bathrooms: data.bathrooms ?? 0,
       area_sqft: data.area_sqft || null,
-      location: data.address || '',          // Required - PostGIS column
+      location: data.address || "", // Required - PostGIS column
       address: data.address || null,
       city: data.city || null,
       state: data.state || null,
@@ -294,24 +362,24 @@ export async function updateProperty(propertyId: string, data: {
       amenities: data.amenities || [],
       tags: data.tags || [],
       map_embed: data.map_embed || null,
-      status: data.status || 'available',
+      status: data.status || "available",
     } as any)
-    .eq('id', propertyId)
+    .eq("id", propertyId)
     .select()
-    .single()
+    .single();
 
-  if (error) throw error
-  
+  if (error) throw error;
+
   const { data: images } = await supabase
-    .from('property_images')
-    .select('*')
-    .eq('property_id', propertyId)
-    .order('order_index', { ascending: true })
-  
+    .from("property_images")
+    .select("*")
+    .eq("property_id", propertyId)
+    .order("order_index", { ascending: true });
+
   return {
     ...property,
-    property_images: images || []
-  }
+    property_images: images || [],
+  };
 }
 
 // ==========================================
@@ -319,23 +387,23 @@ export async function updateProperty(propertyId: string, data: {
 // ==========================================
 
 export async function getAllBookings() {
-  await requireAdmin()
+  await requireAdmin();
   const { data, error } = await supabase
-    .from('bookings')
-    .select('*, properties(title)')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  return data
+    .from("bookings")
+    .select("*, properties(title)")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
 }
 
 export async function deleteBooking(bookingId: string) {
-  await requireAdmin()
+  await requireAdmin();
   const { error } = await supabase
-    .from('bookings')
+    .from("bookings")
     .delete()
-    .eq('id', bookingId)
-  if (error) throw error
-  return { success: true }
+    .eq("id", bookingId);
+  if (error) throw error;
+  return { success: true };
 }
 
 // ==========================================
@@ -343,23 +411,20 @@ export async function deleteBooking(bookingId: string) {
 // ==========================================
 
 export async function getAllReviews() {
-  await requireAdmin()
+  await requireAdmin();
   const { data, error } = await supabase
-    .from('reviews')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  return data
+    .from("reviews")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data;
 }
 
 export async function deleteReview(reviewId: string) {
-  await requireAdmin()
-  const { error } = await supabase
-    .from('reviews')
-    .delete()
-    .eq('id', reviewId)
-  if (error) throw error
-  return { success: true }
+  await requireAdmin();
+  const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+  if (error) throw error;
+  return { success: true };
 }
 
 // ==========================================
@@ -367,22 +432,25 @@ export async function deleteReview(reviewId: string) {
 // ==========================================
 
 export async function adminLogin(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) throw error
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (error) throw error;
 
-  const isAdminUser = await isAdmin()
+  const isAdminUser = await isAdmin();
   if (!isAdminUser) {
-    await supabase.auth.signOut()
-    throw new Error('Unauthorized: Admin access required')
+    await supabase.auth.signOut();
+    throw new Error("Unauthorized: Admin access required");
   }
 
-  return { user: data.user, session: data.session }
+  return { user: data.user, session: data.session };
 }
 
 export async function adminLogout() {
-  const { error } = await supabase.auth.signOut()
-  if (error) throw error
-  return { success: true }
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
+  return { success: true };
 }
 
 // ==========================================
@@ -390,20 +458,20 @@ export async function adminLogout() {
 // ==========================================
 
 export async function getDashboardStats() {
-  await requireAdmin()
+  await requireAdmin();
   const [
     { count: usersCount },
     { count: propertiesCount },
     { count: bookingsCount },
     { count: reviewsCount },
   ] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('properties').select('*', { count: 'exact', head: true }),
-    supabase.from('bookings').select('*', { count: 'exact', head: true }),
-    supabase.from('reviews').select('*', { count: 'exact', head: true }),
-  ])
+    supabase.from("profiles").select("*", { count: "exact", head: true }),
+    supabase.from("properties").select("*", { count: "exact", head: true }),
+    supabase.from("bookings").select("*", { count: "exact", head: true }),
+    supabase.from("reviews").select("*", { count: "exact", head: true }),
+  ]);
 
-  const visitorStats = await getVisitorStats()
+  const visitorStats = await getVisitorStats();
 
   return {
     users: usersCount || 0,
@@ -413,7 +481,7 @@ export async function getDashboardStats() {
     totalViews: visitorStats.totalViews,
     todayViews: visitorStats.todayViews,
     thisWeekViews: visitorStats.thisWeekViews,
-  }
+  };
 }
 
 // ==========================================
@@ -423,27 +491,27 @@ export async function getDashboardStats() {
 export async function uploadPropertyImages(
   propertyId: string,
   files: File[],
-  primaryFileIndex: number = 0
+  primaryFileIndex: number = 0,
 ) {
-  await requireAdmin()
-  const uploadedImages: any[] = []
+  await requireAdmin();
+  const uploadedImages: any[] = [];
 
   for (let i = 0; i < files.length; i++) {
-    const file = files[i]
-    const fileExt = file.name.split('.').pop()
-    const filePath = `${propertyId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+    const file = files[i];
+    const fileExt = file.name.split(".").pop();
+    const filePath = `${propertyId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('property-images')
-      .upload(filePath, file, { cacheControl: '3600', upsert: false })
-    if (uploadError) throw uploadError
+      .from("property-images")
+      .upload(filePath, file, { cacheControl: "3600", upsert: false });
+    if (uploadError) throw uploadError;
 
     const { data: urlData } = supabase.storage
-      .from('property-images')
-      .getPublicUrl(filePath)
+      .from("property-images")
+      .getPublicUrl(filePath);
 
     const { data: image, error: dbError } = await supabase
-      .from('property_images')
+      .from("property_images")
       .insert({
         property_id: propertyId,
         url: urlData.publicUrl,
@@ -452,44 +520,46 @@ export async function uploadPropertyImages(
         order_index: i,
       } as any)
       .select()
-      .single()
-    if (dbError) throw dbError
-    uploadedImages.push(image)
+      .single();
+    if (dbError) throw dbError;
+    uploadedImages.push(image);
   }
-  return uploadedImages
+  return uploadedImages;
 }
 
 export async function getPropertyImages(propertyId: string) {
   const { data, error } = await supabase
-    .from('property_images')
-    .select('*')
-    .eq('property_id', propertyId)
-    .order('order_index', { ascending: true })
-  if (error) throw error
-  return data
+    .from("property_images")
+    .select("*")
+    .eq("property_id", propertyId)
+    .order("order_index", { ascending: true });
+  if (error) throw error;
+  return data;
 }
 
 export async function deletePropertyImage(imageId: string) {
-  await requireAdmin()
+  await requireAdmin();
   const { data: image, error: fetchError } = await supabase
-    .from('property_images')
-    .select('file_path')
-    .eq('id', imageId)
-    .single()
-  if (fetchError) throw fetchError
+    .from("property_images")
+    .select("file_path")
+    .eq("id", imageId)
+    .single();
+  if (fetchError) throw fetchError;
 
-  const img = image as any
-  await supabase.storage.from('property-images').remove([img.file_path])
+  const img = image as any;
+  await supabase.storage.from("property-images").remove([img.file_path]);
 
   const { error: dbError } = await supabase
-    .from('property_images')
+    .from("property_images")
     .delete()
-    .eq('id', imageId)
-  if (dbError) throw dbError
-  return { success: true }
+    .eq("id", imageId);
+  if (dbError) throw dbError;
+  return { success: true };
 }
 
 export function getImagePublicUrl(filePath: string): string {
-  const { data } = supabase.storage.from('property-images').getPublicUrl(filePath)
-  return data.publicUrl
+  const { data } = supabase.storage
+    .from("property-images")
+    .getPublicUrl(filePath);
+  return data.publicUrl;
 }

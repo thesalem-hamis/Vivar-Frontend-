@@ -72,7 +72,7 @@
 //     // Filter by category/type
 //     if (selectedType !== "All Properties") {
 //       const propertyType = property.listing_type || property.type || property.category || "";
-//       const matchesCategory = 
+//       const matchesCategory =
 //         propertyType.toLowerCase() === selectedType.toLowerCase() ||
 //         property.category?.toLowerCase() === selectedType.toLowerCase();
 //       if (!matchesCategory) return false;
@@ -82,7 +82,7 @@
 //     if (searchValue.trim()) {
 //       const searchLower = searchValue.toLowerCase().trim();
 //       const searchTerms = searchLower.split(/\s+/);
-      
+
 //       const searchableText = [
 //         property.title,
 //         property.address,
@@ -109,7 +109,7 @@
 
 //       {/* ── PANORAMIC HERO OVERLAY CONTAINER ── */}
 //       <header className="relative w-full h-[60vh] min-h-[440px] max-h-[600px] bg-[#0E292F] overflow-hidden flex items-end">
-        
+
 //         {/* Core Widescreen Dynamic Background Image Canvas */}
 //         <img
 //           src={HERO_BG_IMAGE}
@@ -119,7 +119,7 @@
 
 //         {/* Dynamic Shadow Veil for Clean Typography Legibility */}
 //         <div className="absolute inset-0 bg-black/40 mix-blend-multiply pointer-events-none z-0" />
-//         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none z-0" />      
+//         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none z-0" />
 
 //         {/* ── LOWER HERO TEXT TRACK ── */}
 //         <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 pb-16 sm:pb-20 flex flex-col items-start text-white">
@@ -133,7 +133,7 @@
 //             <h1 className="font-serif font-light text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight mb-4 drop-shadow-md">
 //               Our Featured Listings
 //             </h1>
-            
+
 //             {/* Short Subheadline Description Block */}
 //             <p className="text-white/80 font-sans font-light text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl drop-shadow-sm">
 //               Explore a curated selection of premium properties across Lagos’ most sought-after neighbourhoods.
@@ -154,8 +154,8 @@
 //         <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16">
 //           <div className="flex flex-col gap-1 border-b border-gray-100 pb-3">
 //             <nav className="text-[11px] font-bold text-[#0E292F] tracking-wide">
-//               <a href="/" className="hover:underline transition-all">Home</a> 
-//               <span className="text-black font-normal mx-1.5">›</span> 
+//               <a href="/" className="hover:underline transition-all">Home</a>
+//               <span className="text-black font-normal mx-1.5">›</span>
 //               <span className="text-gray-400 font-medium">Listings</span>
 //             </nav>
 //             <h2 className="font-serif text-3xl font-bold text-gray-900 tracking-tight pt-1">
@@ -181,13 +181,13 @@
 //       {/* Symmetrical Dual Column Block Structure */}
 //       <main className="bg-white max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 py-4">
 //         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-          
+
 //           {/* Box sidebar elements on the Left */}
-//           <SidebarFilters 
-//             selectedType={selectedType} 
-//             setSelectedType={setSelectedType} 
-//             categories={CATEGORIES} 
-//             cities={CITIES} 
+//           <SidebarFilters
+//             selectedType={selectedType}
+//             setSelectedType={setSelectedType}
+//             categories={CATEGORIES}
+//             cities={CITIES}
 //           />
 
 //           {/* Cards flow neatly on the Right */}
@@ -263,8 +263,8 @@
 
 // const elementFadeUp = {
 //   hidden: { opacity: 0, y: 15 },
-//   visible: { 
-//     opacity: 1, 
+//   visible: {
+//     opacity: 1,
 //     y: 0,
 //     transition: { duration: 0.6, ease: [0.25, 1, 0.5, 1] }
 //   }
@@ -364,7 +364,7 @@
 
 //   return (
 //     <div className="min-h-screen bg-white text-[#0E292F] font-sans antialiased relative overflow-x-hidden">
-      
+
 //       {/* ── CUSTOM REPEATING GRID MASK BACKGROUND ── */}
 //       <div
 //         className="absolute inset-0 z-0 pointer-events-none"
@@ -424,10 +424,10 @@
 //                   )}
 //                 </div>
 //               </div>
-              
+
 //               <div className="hidden sm:flex items-center gap-2 text-[11px] font-bold text-[#0E292F]">
 //                 <span className="text-stone-400 font-medium">Sort:</span>
-//                 <select 
+//                 <select
 //                   value={sortBy}
 //                   onChange={(e) => setSortBy(e.target.value)}
 //                   className="bg-transparent border-none focus:ring-0 cursor-pointer text-[11px] font-black uppercase tracking-wider text-[#0E292F] focus:outline-none"
@@ -465,24 +465,24 @@
 //                   ))}
 //                 </div>
 //               ) : filteredProperties.length === 0 ? (
-                
+
 //                 /* ── HIGHER POSITIONED FALLBACK STATE ── */
 //                 <div className="flex flex-col items-center justify-center text-center pt-4 pb-12 px-6 w-full max-w-xl mx-auto lg:mt-2">
-//                   <img 
-//                     src={FALLBACK_IMAGE.src || FALLBACK_IMAGE} 
-//                     alt="No properties uploaded" 
+//                   <img
+//                     src={FALLBACK_IMAGE.src || FALLBACK_IMAGE}
+//                     alt="No properties uploaded"
 //                     className="w-36 h-auto object-contain opacity-80 mb-6 select-none pointer-events-none"
 //                   />
-                  
+
 //                   <h3 className="font-sans text-xl font-bold text-[#0E292F] mb-2 tracking-tight">
 //                     No property has been uploaded yet
 //                   </h3>
-                  
+
 //                   <p className="text-stone-400 font-sans text-xs max-w-xs mb-8 leading-relaxed">
 //                     We are constantly expanding our portfolio with premium properties across Lagos. Explore our comprehensive guide in the meantime.
 //                   </p>
 
-//                   <motion.div 
+//                   <motion.div
 //                     // variants={elementFadeUp}
 //                     initial="hidden"
 //                     animate="visible"
@@ -538,7 +538,10 @@ import SidebarFilters from "@/components/layout/SideBarFilter";
 import PropertyPageHero from "@/components/property/PropertyPageHero";
 
 import FALLBACK_IMAGE from "@/assets/svg.png";
-import { getPublicProperties } from "@/lib/supabase/admin";
+import {
+  getPublicProperties,
+  searchPublicProperties,
+} from "@/lib/supabase/admin";
 
 interface Property {
   id: string | number;
@@ -629,52 +632,76 @@ export default function PropertiesListingPage() {
   }, []);
 
   // Intercept SearchBar updates
-  const handleSearchBarSubmit = (filters: {
+  const handleSearchBarSubmit = async (filters: {
     dealType: string | null;
     location: string | null;
     homeType: string | null;
     beds: string | null;
   }) => {
     setSearchFilters(filters);
+    try {
+      setLoading(true);
+      const data = await searchPublicProperties(
+        filters.dealType as string,
+        filters.location as string,
+        filters.homeType as string,
+        filters.beds as string,
+      );
+      setProperties((data as Property[]) || []);
+    } catch (error) {
+      console.error("Failed to load properties:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredProperties = useMemo(() => {
-    let result = properties.filter((property) => {
-      // 1. Sidebar Category Filters
-      if (selectedType !== "All Properties") {
-        const propertyType = property.listing_type || property.type || property.category || "";
-        const matchesCategory =
-          propertyType.toLowerCase() === selectedType.toLowerCase() ||
-          property.category?.toLowerCase() === selectedType.toLowerCase();
-        if (!matchesCategory) return false;
-      }
+    // let result = properties.filter((property) => {
+    //   // 1. Sidebar Category Filters
+    //   if (selectedType !== "All Properties") {
+    //     const propertyType =
+    //       property.listing_type || property.type || property.category || "";
+    //     const matchesCategory =
+    //       propertyType.toLowerCase() === selectedType.toLowerCase() ||
+    //       property.category?.toLowerCase() === selectedType.toLowerCase();
+    //     if (!matchesCategory) return false;
+    //   }
 
-      // 2. SearchBar Parameter - Category / Deal Type
-      if (searchFilters.dealType) {
-        const pType = property.listing_type || property.type || property.category || "";
-        if (pType.toLowerCase() !== searchFilters.dealType.toLowerCase()) return false;
-      }
+    //   // 2. SearchBar Parameter - Category / Deal Type
+    //   if (searchFilters.dealType) {
+    //     const pType =
+    //       property.listing_type || property.type || property.category || "";
+    //     if (pType.toLowerCase() !== searchFilters.dealType.toLowerCase())
+    //       return false;
+    //   }
 
-      // 3. SearchBar Parameter - Location / City
-      if (searchFilters.location) {
-        const pCity = property.city || property.address || "";
-        if (!pCity.toLowerCase().includes(searchFilters.location.toLowerCase())) return false;
-      }
+    //   // 3. SearchBar Parameter - Location / City
+    //   if (searchFilters.location) {
+    //     const pCity = property.city || property.address || "";
+    //     if (!pCity.toLowerCase().includes(searchFilters.location.toLowerCase()))
+    //       return false;
+    //   }
 
-      // 4. SearchBar Parameter - Home / Property Type
-      if (searchFilters.homeType) {
-        const pCategory = property.category || property.type || "";
-        if (!pCategory.toLowerCase().includes(searchFilters.homeType.toLowerCase())) return false;
-      }
+    //   // 4. SearchBar Parameter - Home / Property Type
+    //   if (searchFilters.homeType) {
+    //     const pCategory = property.category || property.type || "";
+    //     if (
+    //       !pCategory
+    //         .toLowerCase()
+    //         .includes(searchFilters.homeType.toLowerCase())
+    //     )
+    //       return false;
+    //   }
 
-      // 5. SearchBar Parameter - Bedrooms
-      if (searchFilters.beds) {
-        const pBeds = property.beds ? String(property.beds) : "";
-        if (pBeds !== searchFilters.beds) return false;
-      }
+    //   // 5. SearchBar Parameter - Bedrooms
+    //   if (searchFilters.beds) {
+    //     const pBeds = property.beds ? String(property.beds) : "";
+    //     if (pBeds !== searchFilters.beds) return false;
+    //   }
 
-      return true;
-    });
+    //   return true;
+    // });
+    let result = properties;
 
     // Handle Sorting States
     if (sortBy === "Price: High to Low") {
@@ -688,13 +715,11 @@ export default function PropertiesListingPage() {
         return dateB - dateA;
       });
     }
-
     return result;
   }, [properties, selectedType, searchFilters, sortBy]);
 
   return (
     <div className="min-h-screen bg-white text-[#0E292F] font-sans antialiased relative overflow-x-hidden">
-      
       {/* ── CUSTOM REPEATING GRID MASK BACKGROUND ── */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
@@ -727,19 +752,24 @@ export default function PropertiesListingPage() {
         <PropertyPageHero />
 
         {/* ── SEARCH ── */}
-        <section className="border-b border-stone-100/60">
-          <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 py-10">
+        <section className="border-b relative -top-8 border-stone-100/60">
+          <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16">
             <SearchBar onSearch={handleSearchBarSubmit} />
           </div>
         </section>
 
         {/* ── BREADCRUMB + META ── */}
-        <section className="border-b border-stone-100/60">
+        <section className="border-b -m-t-16 border-stone-100/60">
           <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-16 py-5">
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-1.5">
                 <nav className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.1em] uppercase">
-                  <a href="/" className="text-[#3D7188] hover:text-[#0E292F] transition-colors">Home</a>
+                  <a
+                    href="/"
+                    className="text-[#3D7188] hover:text-[#0E292F] transition-colors"
+                  >
+                    Home
+                  </a>
                   <span className="text-stone-300">›</span>
                   <span className="text-[#0E292F]">Listings</span>
                 </nav>
@@ -748,17 +778,19 @@ export default function PropertiesListingPage() {
                     All Listings
                   </h2>
                   {!loading && (
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0E292F]/[0.06] text-[#0E292F] text-[10px] font-bold tracking-wider uppercase border border-stone-200/40 ring-1 ring-[#0E292F]/5 select-none">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                      <span>{filteredProperties.length} Properties</span>
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#0E292F]/[0.06] text-[#0E292F] text-[10px] font-bold tracking-wider uppercase border border-stone-200 ring-1 ring-[#0E292F]/5 select-none">
+                      <span className="text-sm">
+                        {filteredProperties.length}
+                      </span>
+                      <span>Properties</span>
                     </span>
                   )}
                 </div>
               </div>
-              
+
               <div className="hidden sm:flex items-center gap-2 text-[11px] font-bold text-[#0E292F]">
                 <span className="text-stone-400 font-medium">Sort:</span>
-                <select 
+                <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="bg-transparent border-none focus:ring-0 cursor-pointer text-[11px] font-black uppercase tracking-wider text-[#0E292F] focus:outline-none"
@@ -776,7 +808,6 @@ export default function PropertiesListingPage() {
         {/* ── MAIN GRID ── */}
         <main className="max-w-[1440px] mx-auto w-full px-6 md:px-12 lg:px-16 pt-6 pb-16 flex-grow">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 items-start w-full">
-
             {/* Sidebar Filters */}
             <div className="lg:col-span-1 lg:order-last">
               <SidebarFilters
@@ -796,31 +827,37 @@ export default function PropertiesListingPage() {
                   ))}
                 </div>
               ) : filteredProperties.length === 0 ? (
-                
                 /* ── HIGHER POSITIONED FALLBACK STATE ── */
                 <div className="flex flex-col items-center justify-center text-center pt-4 pb-12 px-6 w-full max-w-xl mx-auto lg:mt-2">
-                  <img 
-                    src={FALLBACK_IMAGE.src || FALLBACK_IMAGE} 
-                    alt="No properties uploaded" 
+                  <img
+                    src={FALLBACK_IMAGE.src || FALLBACK_IMAGE}
+                    alt="No properties uploaded"
                     className="w-36 h-auto object-contain opacity-80 mb-6 select-none pointer-events-none"
                   />
-                  
+
                   <h3 className="font-sans text-xl font-bold text-[#0E292F] mb-2 tracking-tight">
                     No property has been uploaded yet
                   </h3>
-                  
+
                   <p className="text-stone-400 font-sans text-xs max-w-xs mb-8 leading-relaxed">
-                    We are constantly expanding our portfolio with premium properties across Lagos. Explore our comprehensive guide in the meantime.
+                    We are constantly expanding our portfolio with premium
+                    properties across Lagos. Explore our comprehensive guide in
+                    the meantime.
                   </p>
 
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="shrink-0 pt-1"
                   >
                     <motion.a
                       href="/portfolio"
-                      whileHover={{ scale: 1.04, y: -2, backgroundColor: "#0E292F", color: "#FFFFFF" }}
+                      whileHover={{
+                        scale: 1.04,
+                        y: -2,
+                        backgroundColor: "#0E292F",
+                        color: "#FFFFFF",
+                      }}
                       whileTap={{ scale: 0.98 }}
                       className="inline-flex items-center gap-8 pl-5 pr-2 py-2 rounded-[10px] bg-white text-[#0E292F] transition-all duration-300 shadow-none group font-sans text-[10px] sm:text-[11px] font-bold tracking-widest uppercase whitespace-nowrap border border-stone-200"
                     >
@@ -828,12 +865,15 @@ export default function PropertiesListingPage() {
                         Our Property Guide
                       </span>
                       <div className="flex items-center justify-center w-8 h-8 rounded-[6px] bg-[#0E292F] text-white group-hover:bg-white group-hover:text-[#0E292F] transition-all duration-300">
-                        <ArrowUpRight size={14} strokeWidth={2.5} className="group-hover:rotate-45 transition-transform duration-300" />
+                        <ArrowUpRight
+                          size={14}
+                          strokeWidth={2.5}
+                          className="group-hover:rotate-45 transition-transform duration-300"
+                        />
                       </div>
                     </motion.a>
                   </motion.div>
                 </div>
-
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
                   {filteredProperties.map((property, i) => (
@@ -841,7 +881,11 @@ export default function PropertiesListingPage() {
                       key={property.id}
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+                      transition={{
+                        delay: i * 0.04,
+                        duration: 0.4,
+                        ease: [0.25, 1, 0.5, 1],
+                      }}
                     >
                       <PropertyCard property={property} />
                     </motion.div>
