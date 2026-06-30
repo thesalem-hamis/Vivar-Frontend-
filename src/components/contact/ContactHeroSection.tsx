@@ -49,10 +49,10 @@ export default function ContactHeroSection() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             {/* Left Column: Info & Details */}
             <div className="flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 text-xs font-medium text-teal-900 mb-4 w-fit">
+              {/* <div className="inline-flex items-center gap-2 text-xs font-medium text-teal-900 mb-4 w-fit">
                 <Mail className="w-3.5 h-3.5 text-teal-800" />
                 Contact
-              </div>
+              </div> */}
 
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-4">
                 How can we help you today?

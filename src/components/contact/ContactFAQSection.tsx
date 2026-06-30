@@ -105,13 +105,13 @@ export default function ContactFAQ() {
           support and brokerage advisory team anytime.
         </motion.p>
 
-        <motion.button
+        {/* <motion.button
           custom={0.3}
           variants={leftColumnVariants}
           className="group relative rounded-full px-7 py-3 border border-gray-300 text-gray-700 font-medium text-sm transition-colors duration-300 hover:bg-teal-600 hover:border-teal-600 hover:text-white"
         >
           Contact Support
-        </motion.button>
+        </motion.button> */}
       </motion.div>
 
       {/* Right Column: Accordion FAQ List */}
