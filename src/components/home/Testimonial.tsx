@@ -77,12 +77,12 @@ export default function FUITestimonialWithSlide(): React.JSX.Element {
 
       <div className="w-full mx-auto relative z-10">
         
-        {/* ── HEADER BLOCK (Mobile Left / Desktop Right) ── */}
-        <div className="w-full max-w-7xl mx-auto px-6 lg:px-16 mb-14 md:mb-20 text-left md:text-right">
+        {/* ── CENTERED HEADER BLOCK ── */}
+        <div className="w-full max-w-7xl mx-auto px-6 lg:px-16 mb-14 md:mb-20 text-center">
           <span className="text-xs font-semibold tracking-[0.2em] text-[#3D7188] uppercase mb-3 block opacity-80 font-sans">
             Testimonial
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-[#0E292F] tracking-tight max-w-3xl md:ml-auto md:mr-0 leading-tight md:leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-[#0E292F] tracking-tight max-w-3xl mx-auto leading-tight md:leading-tight">
             Words of praise from others <br className="hidden md:inline" /> about our presence
           </h1>
         </div>
@@ -119,18 +119,18 @@ export default function FUITestimonialWithSlide(): React.JSX.Element {
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
     <MagicCard 
-      className="flex flex-col bg-slate-50/50 border-2 border-[#0E292F]/15 rounded-2xl p-6 md:p-8 w-[320px] sm:w-[420px] md:w-[500px] h-full justify-between shadow-[0_4px_25px_rgba(14,41,47,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.02)] hover:border-[#3D7188]/40 transition-all duration-300 ease-out select-none font-sans"
+      className="flex flex-col bg-slate-50/50 border-2 border-[#0E292F] rounded-2xl p-6 md:p-8 w-[320px] sm:w-[420px] md:w-[500px] h-full justify-between shadow-[0_4px_25px_rgba(14,41,47,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.04)] hover:border-[#3D7188] transition-all duration-300 ease-out select-none font-sans"
       gradientColor="rgba(61, 113, 136, 0.08)"
     >
       <div>
         <Quote className="text-slate-300 transform rotate-180 mb-4" size={24} fill="currentColor" strokeWidth={0} />
-        <p className="text-[14px] sm:text-[15px] text-slate-500 font-light leading-relaxed tracking-wide text-pretty">
+        <p className="text-[14px] sm:text-[15px] text-slate-600 font-normal leading-relaxed tracking-wide text-pretty">
           {testimonial.quote}
         </p>
       </div>
 
-      <div className="mt-6 pt-5 border-t border-[#0E292F]/[0.06] flex items-center gap-3">
-        <div className="h-9 w-9 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center shrink-0 text-slate-400 font-semibold text-xs uppercase">
+      <div className="mt-6 pt-5 border-t border-[#0E292F]/[0.08] flex items-center gap-3">
+        <div className="h-9 w-9 rounded-full bg-white border-2 border-[#0E292F]/20 flex items-center justify-center shrink-0 text-[#0E292F] font-semibold text-xs uppercase">
           {testimonial.name.slice(0, 2)}
         </div>
         <div className="flex flex-col">

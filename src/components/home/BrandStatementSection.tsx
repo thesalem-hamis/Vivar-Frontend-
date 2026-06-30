@@ -246,169 +246,13 @@
 // }
 
 
-// "use client";
-
-// import { useRef } from "react";
-// import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-// import { cn } from "@/lib/utils";
-// import { GridPattern } from "@/components/ui/grid-pattern";
-
-// export default function BrandStatementSection() {
-//   const containerRef = useRef<HTMLDivElement>(null);
-
-//   // Track scroll timeline over the entire section container
-//   const { scrollYProgress } = useScroll({
-//     target: containerRef,
-//     offset: ["start start", "end end"],
-//   });
-
-//   // Smooth out the progress tracking slightly for a premium feel
-//   const smoothProgress = useSpring(scrollYProgress, {
-//     stiffness: 50,
-//     damping: 28,
-//     mass: 0.5,
-//   });
-
-//   const pieces = [
-//     {
-//       id: "01",
-//       title: "Verified Listings Only",
-//       body: "Built on uncompromising care, Vivar Realty delivers pre-vetted listings and expert property valuations to eliminate transactional vulnerability across high-end assets."
-//     },
-//     {
-//       id: "02",
-//       title: "Premium Placement",
-//       body: "We safely guide private clients and institutional funds through strategic real estate acquisitions across the core zones of Ikoyi, Lekki, and major metropolitan hubs."
-//     },
-//     {
-//       id: "03",
-//       title: "Absolute Transparency",
-//       body: "Bridging international portfolios seamlessly across the UK, US, and Canada with total legal compliance. Where the stakes are high, Vivar ensures absolute safety."
-//     }
-//   ];
-
-//   // ── EXCLUSIVE SLIDE-DECK SCROLL TIMELINES ──
-//   const opacity1 = useTransform(smoothProgress, [0, 0.05, 0.28, 0.33], [1, 1, 1, 0]);
-//   const y1 = useTransform(smoothProgress, [0, 0.28, 0.33], [0, 0, -40]);
-
-//   const opacity2 = useTransform(smoothProgress, [0.28, 0.33, 0.61, 0.66], [0, 1, 1, 0]);
-//   const y2 = useTransform(smoothProgress, [0.28, 0.33, 0.61, 0.66], [40, 0, 0, -40]);
-
-//   const opacity3 = useTransform(smoothProgress, [0.61, 0.66, 0.95, 1], [0, 1, 1, 1]);
-//   const y3 = useTransform(smoothProgress, [0.61, 0.66], [40, 0]);
-
-//   const slideTransforms = [
-//     { opacity: opacity1, y: y1 },
-//     { opacity: opacity2, y: y2 },
-//     { opacity: opacity3, y: y3 }
-//   ];
-
-//   return (
-//     /* Pinning window space for presentation flow timeline */
-//     <div ref={containerRef} className="relative w-full h-[400vh] bg-white">
-      
-//       {/* ── STICKY BACKDROP ENGINE WITH DASHED GRID ── */}
-//       <div className="sticky top-0 h-screen w-full overflow-hidden z-0 pointer-events-none">
-//         <GridPattern
-//           width={30}
-//           height={30}
-//           x={-1}
-//           y={-1}
-//           strokeDasharray={"4 2"}
-//           className={cn(
-//             "[mask-image:radial-gradient(450px_circle_at_center,white,transparent)] opacity-70"
-//           )}
-//         />
-//       </div>
-
-//       {/* ── STICKY INTERACTIVE VIEWPORT INTERFACE ── */}
-//       <div className="absolute inset-0 sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-6 sm:px-10 md:px-16 lg:px-24 z-10 pointer-events-none">
-        
-//         {/* Luxury Top Separator Line */}
-//         <div className="absolute top-0 left-0 w-full h-[1px] bg-black/5 z-20" />
-
-//         {/* ── POWERPOINT SLIDE CONTAINER STACK ── */}
-//         <div className="w-full max-w-7xl mx-auto relative flex items-center justify-center">
-          
-//           {pieces.map((item, idx) => (
-//             <motion.div
-//               key={idx}
-//               style={{ 
-//                 opacity: slideTransforms[idx].opacity, 
-//                 y: slideTransforms[idx].y 
-//               }}
-//               className="absolute w-full grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-20 items-center md:items-start"
-//             >
-//               {/* Left Column: Dark Green Index Tracker + Increased Title Weights */}
-//               <div className="md:col-span-5 flex flex-col items-start gap-2 text-left">
-//                 <span className="text-sm font-sans font-semibold text-[#0E292F] tracking-wider tabular-nums">
-//                   {item.id}
-//                 </span>
-//                 <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-light text-black tracking-tight leading-[1.15]">
-//                   {item.title}
-//                 </h3>
-//               </div>
-
-//               {/* Right Column: Large Poppins Typographic Body */}
-//               <div className="md:col-span-7 text-left">
-//                 <p className="text-xl sm:text-2xl md:text-3xl lg:text-[35px] xl:text-[38px] font-poppins font-light text-black leading-[1.4] tracking-wide">
-//                   {item.body}
-//                 </p>
-//               </div>
-//             </motion.div>
-//           ))}
-
-//         </div>
-
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef } from "react";
+import { motion } from "framer-motion";
 
 export default function BrandStatementSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Check if mobile on mount and resize
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 35,
-    damping: 26,
-    mass: 0.6,
-  });
-
-  const pieces = [
-    {
-      title: "Verified Listings Only",
-      body: "Built on uncompromising care, Vivar Realty delivers pre-vetted listings and expert property valuations to eliminate transactional vulnerability across high-end assets."
-    },
-    {
-      title: "Premium Placement",
-      body: "We safely guide private clients and institutional funds through strategic real estate acquisitions across the core zones of Ikoyi, Lekki, and major metropolitan hubs."
-    },
-    {
-      title: "Absolute Transparency",
-      body: "Bridging international portfolios seamlessly across the UK, US, and Canada with total legal compliance. Where the stakes are high, Vivar ensures absolute safety."
-    }
-  ];
+  const targetRef = useRef<HTMLDivElement>(null);
 
   const stats = [
     { value: "20+", label: "Years Experience" },
@@ -419,21 +263,19 @@ export default function BrandStatementSection() {
     { value: "100%", label: "Transparent Process" },
   ];
 
-  // Slide timelines
-  const opacity1 = useTransform(smoothProgress, [0, 0.05, 0.28, 0.33], [1, 1, 1, 0]);
-  const y1 = useTransform(smoothProgress, [0, 0.28, 0.33], [0, 0, -40]);
-
-  const opacity2 = useTransform(smoothProgress, [0.28, 0.33, 0.61, 0.66], [0, 1, 1, 0]);
-  const y2 = useTransform(smoothProgress, [0.28, 0.33, 0.61, 0.66], [40, 0, 0, -40]);
-
-  const opacity3 = useTransform(smoothProgress, [0.61, 0.66, 0.95, 1], [0, 1, 1, 1]);
-  const y3 = useTransform(smoothProgress, [0.61, 0.66], [40, 0]);
-
-  const slideTransforms = [
-    { opacity: opacity1, y: y1 },
-    { opacity: opacity2, y: y2 },
-    { opacity: opacity3, y: y3 }
+  const headingText = "Not just an agent, but a trusted partner in every transaction.";
+  const headingLines = [
+    "Not just an agent, but a trusted partner",
+    "in every transaction."
   ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.1 }
+    }
+  };
 
   const statVariants = {
     hidden: { opacity: 0, y: 15 },
@@ -445,9 +287,9 @@ export default function BrandStatementSection() {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-[400vh] bg-[#f9fafb]">
+    <div ref={targetRef} className="min-h-screen w-full bg-[#f9fafb] relative">
       
-      {/* ── CUSTOM INLINE TOP LEFT FADE DASHED GRID ── */}
+      {/* Dashed Top Left Fade Grid */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
@@ -472,45 +314,57 @@ export default function BrandStatementSection() {
         }}
       />
 
-      {/* ── STICKY INTERACTIVE VIEWPORT INTERFACE ── */}
-      <div className="absolute inset-0 sticky top-0 h-screen w-full flex flex-col justify-between overflow-hidden px-6 sm:px-10 md:px-16 lg:px-24 pt-12 md:pt-20 md:pb-12 z-10 pointer-events-none">
+      {/* Main Structural Frame */}
+      <div className="relative min-h-screen w-full flex flex-col justify-center z-10 px-6 sm:px-10 md:px-16 lg:px-24 py-12 md:py-20 max-w-7xl mx-auto">
         
-        {/* Luxury Top Boundary Rule Line */}
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-stone-200/60 z-20" />
+        {/* Editorial Masthead */}
+        <div className="w-full mb-8 md:mb-10">
+          {/* Desktop H1: With exact custom array line breaks */}
+          <motion.h1 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="hidden md:block text-4xl lg:text-5xl font-serif font-light leading-[1.2] tracking-tight text-[#0E292F] text-right select-none max-w-4xl ml-auto"
+          >
+            {headingLines.map((line, lineIdx) => (
+              <span key={lineIdx} className="block overflow-hidden py-1">
+                {line.split(" ").map((word, wordIdx) => (
+                  <motion.span
+                    key={`${lineIdx}-${wordIdx}`}
+                    className="inline-block mr-[0.25em]"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </span>
+            ))}
+          </motion.h1>
 
-        {/* ── MAIN CONTENT LAYER (PADDED BOTTOM TO PUSH SLIDES UP AWAY FROM THE CREDENTIAL BANNER) ── */}
-        <div className="flex-1 w-full max-w-7xl mx-auto relative flex items-center justify-center md:pb-32 pb-20">
-          
-          {pieces.map((item, idx) => (
-            <motion.div
-              key={idx}
-              style={{ 
-                opacity: slideTransforms[idx].opacity, 
-                y: slideTransforms[idx].y 
-              }}
-              className="absolute w-full grid grid-cols-1 md:grid-cols-12 gap-y-6 md:gap-x-12 lg:gap-x-16 items-center md:items-start"
-            >
-              {/* Left Side: Elegant Header (No index numbers, translated slightly higher than the body copy) */}
-              <div className="md:col-span-6 flex flex-col items-start text-left w-full md:-translate-y-8">
-                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-serif font-light text-black tracking-tight leading-[1.18] relative">
-                  {item.title}
-                </h3>
-              </div>
-
-              {/* Right Side: Body text matches baseline default positioning */}
-              <div className="md:col-span-6 text-left flex items-center md:justify-end">
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-[25px] font-poppins font-light text-stone-600 leading-[1.55] tracking-wide max-w-[480px]">
-                  {item.body}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-
+          {/* Mobile H1: Natural flowing text string, slightly larger text size */}
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="block md:hidden text-3xl font-serif font-light leading-[1.25] tracking-tight text-[#0E292F] text-left select-none"
+          >
+            {headingText}
+          </motion.h1>
         </div>
 
-        {/* ── FOOTER CANVAS: CREDENTIAL BANNER (LOCKED CONSTANT VISIBILITY ON ALL VIEWPORTS) ── */}
-        <div className="w-screen relative left-1/2 right-1/2 -mx-[50vw] bg-[#0E292F] shrink-0 pt-10 pb-10 md:mt-0 mt-auto shadow-xl">
-          <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 lg:px-24 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-8 text-center justify-center items-center">
+        {/* Narrative Copy Block */}
+        <div className="w-full flex flex-col text-left md:text-right md:ml-auto max-w-xl mb-10 md:mb-16">
+          <p className="text-sm sm:text-base text-black/80 font-light leading-relaxed tracking-wide font-sans">
+            Built on uncompromising care, Vivar Realty eliminates transactional vulnerability across high-end assets, 
+            safely guiding private and institutional capital through strategic real estate acquisitions in Ikoyi, 
+            Lekki, and major metropolitan hubs.
+          </p>
+        </div>
+
+        {/* Stats Section - Brought up on mobile using pt-6 instead of pt-12 */}
+        <div className="w-full pt-6 md:pt-12 border-t border-gray-200/60">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-10 gap-x-8 text-center justify-center items-center">
             {stats.map((stat, idx) => (
               <motion.div
                 key={idx}
@@ -521,10 +375,10 @@ export default function BrandStatementSection() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center justify-center gap-1.5 cursor-pointer group"
               >
-                <span className="text-2xl md:text-3xl font-light tracking-tight text-white font-sans group-hover:text-stone-300 transition-colors duration-300 whitespace-nowrap">
+                <span className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-[#0E292F] font-sans group-hover:text-[#3D7188] transition-colors duration-300">
                   {stat.value}
                 </span>
-                <span className="text-[9px] font-medium tracking-wider text-stone-300 uppercase leading-tight max-w-[130px] font-sans">
+                <span className="text-[9px] sm:text-[10px] font-medium tracking-wider text-[#3D7188] uppercase leading-tight max-w-[130px] font-sans">
                   {stat.label}
                 </span>
               </motion.div>
@@ -536,3 +390,4 @@ export default function BrandStatementSection() {
     </div>
   );
 }
+

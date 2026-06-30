@@ -11,18 +11,21 @@ import PropertyCategory from "@/components/home/PropertyCategory";
 import TestimonialsSection from "@/components/home/Testimonial";
 import Navbar from "@/components/layout/Navbar";
 import PageNavbar from "@/components/layout/PageNavbar";
+import FeaturedListingsSection from "@/components/home/FeaturedListingsSection";
+import Locations from "@/components/home/Locations";
 
 const HomePage = () => {
   return (
     <div>
       <HeroSection />
-      <PageNavbar />
-      {/* <Navbar /> */}
+      {/* <PageNavbar /> */}
+      <Navbar />
       <BrandStatementSection />
+      <FeaturedListingsSection /> 
       <HowWeHelpSection />
-      <PropertyCategory />
-      {/* <FeaturedListingsSection /> this component should be the card component for search "see more properties" */}
+      <Locations />
       <LeadMagnetSection />
+      <PropertyCategory />
       <TrustSocialProofSection />
       <TestimonialsSection />
       <InsightsPreviewSection />

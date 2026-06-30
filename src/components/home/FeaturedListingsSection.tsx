@@ -1,140 +1,119 @@
 "use client";
 
-import { useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import BestCard from "@/components/layout/BestCard";
 
 const listings = [
   {
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200&auto=format&fit=crop",
-    name: "Eko Pearl",
-    description: "This 3 bedroom luxury apartment offers elevated waterfront living within a prestigious residential...",
-    location: "Lekki Phase 1, Lagos",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop",
+    id: "cuddle-cadwell",
     name: "Cuddle by Cadwell",
-    description: "Cuddle is an ongoing luxury residential development located in one of the most prestigious neighborhoods in...",
-    location: "Victoria Island, Lagos",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop",
-    name: "Solis Residence",
-    description: "Step into refined luxury in this modern fully detached home located in the prestigious Pinnock Beach Estate...",
-    location: "Lekki, Lagos",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop",
-    name: "4 Bourdillon",
-    description: "Step into the epitome of luxury — every detail of this residence speaks to uncompromising quality...",
+    description: "Cuddle is an ongoing luxury residential development located in one of the most prestigious neighborhoods in Ikoyi.",
     location: "Ikoyi, Lagos",
+    image: "/properties/cuddle.jpg"
   },
+  {
+    id: "solis-residence",
+    name: "Solis Residence",
+    description: "Step into refined luxury in this modern fully detached home located in the prestigious Pinnock Beach Estate.",
+    location: "Lekki, Lagos",
+    image: "/properties/solis.jpg"
+  },
+  {
+    id: "4-bourdillon",
+    name: "4 Bourdillon",
+    description: "Step into the epitome of luxury living at 4 Bourdillon, where every detail is crafted to offer a sophisticated lifestyle.",
+    location: "Ikoyi, Lagos",
+    image: "/properties/bourdillon.jpg"
+  },
+  {
+    id: "azuri-towers",
+    name: "Azuri Towers",
+    description: "Azuri Towers is a landmark mixed-use luxury development located in the prestigious Marina District of Eko Atlantic.",
+    location: "Eko Atlantic, Lagos",
+    image: "/properties/azuri.jpg"
+  },
+  {
+    id: "giovanni-vista",
+    name: "The Giovanni Vista",
+    description: "An architectural marvel offering sprawling penthouses with pristine panoramic ocean views.",
+    location: "Victoria Island, Lagos",
+    image: "/properties/giovanni.jpg"
+  },
+  {
+    id: "pinnock-manor",
+    name: "Pinnock Manor",
+    description: "Exclusive contemporary villas crafted with structural precision, premium security systems, and private automation.",
+    location: "Lekki Phase 1, Lagos",
+    image: "/properties/pinnock.jpg"
+  },
+  {
+    id: "banana-promenade",
+    name: "Banana Promenade",
+    description: "Ultra-premium waterfront mansions redefining baseline opulence with private boat docks and resort styling.",
+    location: "Banana Island, Lagos",
+    image: "/properties/banana.jpg"
+  }
 ];
 
-// const fadeUp = {
-//   hidden: { opacity: 0, y: 28 },
-//   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
-// };
+const infiniteLoopList = [...listings, ...listings];
 
 export default function FeaturedListingsSection() {
-  const trackRef = useRef<HTMLDivElement>(null);
-
   return (
-    <section className="w-full py-24 md:py-32 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-16">
+    /* Stone White Section Background */
+    <section className="w-full py-20 md:py-28 bg-[#f9fafb] overflow-hidden flex flex-col items-center">
+      
+      {/* Centered Typography Header */}
+      <div className="max-w-3xl mx-auto px-6 text-center mb-12 md:mb-14">
+        <h2 className="text-3xl sm:text-4xl font-serif font-light text-[#0E292F] tracking-tight leading-tight mb-4">
+          Current Featured Listings
+        </h2>
+        <p className="text-sm text-black/60 font-light leading-relaxed max-w-lg mx-auto font-sans">
+          A handpicked selection of premium architectural masterpieces and high performing real estate assets across premier zones.
+        </p>
+      </div>
 
-        {/* Heading */}
+      {/* Infinite Marquee Swiper Container */}
+      <div className="relative w-full overflow-hidden flex items-center mb-16">
+        
+        {/* Subtle background-colored fade bounds */}
+        <div className="absolute inset-y-0 left-0 w-4 md:w-8 bg-gradient-to-r from-[#f9fafb]/80 to-transparent z-20 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-4 md:w-8 bg-gradient-to-l from-[#f9fafb]/80 to-transparent z-20 pointer-events-none" />
+
         <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          // variants={fadeUp}
-          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12"
+          className="flex gap-6 shrink-0 px-2"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{
+            ease: "linear",
+            duration: 35,
+            repeat: Infinity,
+          }}
+          whileHover={{ animationPlayState: "paused" }}
         >
-          <div>
-            <span className="text-[11px] font-bold tracking-[0.25em] text-[#3D7188] uppercase mb-3 block">
-              Curated for the Discerning Buyer
-            </span>
-            <h2 className="text-4xl sm:text-5xl font-normal text-[#0E292F] tracking-[-0.04em] leading-[1.1]">
-              Current Featured<br />Listings
-            </h2>
-          </div>
-          <a
-            href="/properties"
-            className="inline-flex items-center gap-4 pl-5 pr-2 py-2 rounded-[8px] bg-[#0E292F] text-white
-              hover:bg-white hover:text-[#0E292F] border border-[#0E292F] transition-all duration-300 group
-              text-[10px] font-bold tracking-widest uppercase whitespace-nowrap self-start sm:self-auto"
-          >
-            <span>View All Properties</span>
-            <div className="flex items-center justify-center w-8 h-8 rounded-[6px] bg-white text-[#0E292F]
-              group-hover:bg-[#0E292F] group-hover:text-white transition-all duration-300">
-              <ArrowUpRight size={14} strokeWidth={2.5} />
-            </div>
-          </a>
+          {infiniteLoopList.map((item, idx) => (
+            <BestCard key={`${item.id}-${idx}`} item={item} />
+          ))}
         </motion.div>
       </div>
 
-      {/* Horizontal scroll track */}
-      <div
-        ref={trackRef}
-        className="flex gap-4 overflow-x-auto scrollbar-none px-6 lg:px-16 pb-4"
-        style={{ WebkitOverflowScrolling: "touch", scrollSnapType: "x mandatory" }}
+      {/* Primary Link Button - Stone White base flipped to Green overlay on hover */}
+      <a
+        href="/properties"
+        className="inline-flex items-center gap-6 pl-15 pr-5.5 py-2.5 rounded-[8px] bg-[#f9fafb] text-[#0E292F]
+          hover:bg-[#0E292F] hover:text-white hover: border border-[#0E292F] transition-all duration-300 group
+          text-[11px] font-bold tracking-[0.18em] uppercase whitespace-nowrap shadow-sm"
       >
-        {listings.map((item, idx) => (
-          <motion.a
-            key={idx}
-            href="/properties"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
-            // variants={fadeUp}
-            transition={{ delay: idx * 0.07 }}
-            style={{ scrollSnapAlign: "start" }}
-            className="relative flex-none w-[72vw] sm:w-[44vw] lg:w-[30vw] xl:w-[26vw]
-              aspect-[3/4] rounded-2xl overflow-hidden group cursor-pointer block no-underline"
-          >
-            {/* Photo */}
-            <img
-              src={item.image}
-              alt={item.name}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-            />
+        <span>See all our listings</span>
+        <div className="flex items-center justify-center w-9 h-9 rounded-[6px] bg-[#0E292F] text-white
+          group-hover:bg-[#f9fafb] group-hover:text-[#0E292F] transition-all duration-300 overflow-hidden">
+          <ArrowUpRight 
+            size={15} 
+            strokeWidth={2.5} 
+            className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" 
+          />
+        </div>
+      </a>
 
-            {/* Dark gradient from bottom */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: "linear-gradient(to top, #0E292F 0%, rgba(14,41,47,0.7) 38%, rgba(14,41,47,0.15) 62%, transparent 100%)",
-              }}
-            />
-
-            {/* Bottom text block */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-2">
-              <h3 className="text-white text-xl font-semibold tracking-tight leading-tight">
-                {item.name}
-              </h3>
-              <p className="text-white/65 text-[13px] font-light leading-[1.55] line-clamp-2">
-                {item.description}
-              </p>
-
-              {/* Location + arrow row */}
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
-                <span className="text-[10px] font-medium tracking-[0.12em] uppercase text-white/45">
-                  {item.location}
-                </span>
-                <div className="w-7 h-7 rounded-full border border-white/20 flex items-center justify-center
-                  group-hover:bg-white group-hover:border-white transition-all duration-300">
-                  <ArrowUpRight size={13} strokeWidth={2} className="text-white group-hover:text-[#0E292F] transition-colors duration-300" />
-                </div>
-              </div>
-            </div>
-          </motion.a>
-        ))}
-
-        {/* trailing space */}
-        <div className="flex-none w-6 lg:w-16" />
-      </div>
     </section>
   );
 }
