@@ -456,6 +456,15 @@ import {
   Maximize2,
   ArrowUpRight,
   Loader2,
+  Key,
+  Waves,
+  Car,
+  Dumbbell,
+  HelpCircle,
+  Tv,
+  Utensils,
+  Wifi,
+  Wind,
 } from "lucide-react";
 import { FaWhatsapp, FaRegComment, FaRegStar } from "react-icons/fa6";
 
@@ -570,45 +579,39 @@ export default function PropertyDetailPage() {
     { name: "Governor's Consent", available: false },
   ];
 
-  const features = property?.features || [
-    {
-      name: "24hrs Electricity",
-      icon: <Zap className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    {
-      name: "24hrs Security",
-      icon: <Shield className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    {
-      name: "Borehole",
-      icon: <Droplets className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    { name: "CCTV", icon: <Video className="w-3.5 h-3.5 text-[#3D7188]" /> },
-    {
-      name: "Waste disposal & management",
-      icon: <Trash2 className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    {
-      name: "Tennis Court",
-      icon: <Milestone className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    {
-      name: "Security House",
-      icon: <Shield className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    {
-      name: "Green area / Garden",
-      icon: <Milestone className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    {
-      name: "Golf Court",
-      icon: <Milestone className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-    {
-      name: "Call to Access / ID pass",
-      icon: <Shield className="w-3.5 h-3.5 text-[#3D7188]" />,
-    },
-  ];
+  const iconClass = "w-3.5 h-3.5 text-[#3D7188]";
+
+  const AMENITY_ICON_MAP: Record<string, React.ReactNode> = {
+    "24-hour Electricity / Power Backup": <Zap className={iconClass} />,
+    "Dedicated Transformer": <Zap className={iconClass} />,
+    "Borehole / Water Treatment Plant": <Droplets className={iconClass} />,
+    "Smart Home Automation": <Key className={iconClass} />,
+    "CCTV Surveillance": <Video className={iconClass} />,
+    "24/7 Security Personnel": <Shield className={iconClass} />,
+    "Gated Estate Access": <Shield className={iconClass} />,
+    "Swimming Pool": <Waves className={iconClass} />,
+    "Fully Equipped Gym / Fitness Center": <Dumbbell className={iconClass} />,
+    "Ample Car Parking": <Car className={iconClass} />,
+    "Air Conditioning": <Wind className={iconClass} />,
+    "En-suite Bedrooms": <Shield className={iconClass} />,
+    "Fully Fitted Kitchen": <Utensils className={iconClass} />,
+    "WiFi / Internet Connectivity": <Wifi className={iconClass} />,
+    "DSTV / Cable TV": <Tv className={iconClass} />,
+    "Elevator / Lift": <Milestone className={iconClass} />,
+    "Children's Play Area / Playground": <Milestone className={iconClass} />,
+    "Private Garden / Outdoor Space": <Milestone className={iconClass} />,
+    "Concierge Services": <Shield className={iconClass} />,
+    "Cleaning / Laundry Services": <Trash2 className={iconClass} />,
+    "Water Heaters": <Droplets className={iconClass} />,
+    "Balcony / Terrace": <Milestone className={iconClass} />,
+  };
+
+  const savedFeatures: string[] = property?.amenities || [];
+
+  const features = savedFeatures.map((featureName: string) => ({
+    name: featureName,
+    icon: AMENITY_ICON_MAP[featureName] || <HelpCircle className={iconClass} />, // Fallback icon if none found
+  }));
 
   /* ── LOADING ── */
   if (loading)

@@ -196,7 +196,7 @@ export async function searchPublicProperties(
 
   if (loc && loc.trim() !== "") {
     query = query.or(
-      `city.ilike.%${loc}%,state.ilike.%${loc}%,country.ilike.%${loc}%`,
+      `city.ilike.%${loc}%,state.ilike.%${loc}%,country.ilike.%${loc}%,location.ilike.%${loc}%`,
     );
   }
 

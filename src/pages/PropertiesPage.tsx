@@ -836,13 +836,12 @@ export default function PropertiesListingPage() {
                   />
 
                   <h3 className="font-sans text-xl font-bold text-[#0E292F] mb-2 tracking-tight">
-                    No property has been uploaded yet
+                    No Matches Found
                   </h3>
 
                   <p className="text-stone-400 font-sans text-xs max-w-xs mb-8 leading-relaxed">
-                    We are constantly expanding our portfolio with premium
-                    properties across Lagos. Explore our comprehensive guide in
-                    the meantime.
+                    We couldn't find any properties matching your exact search.
+                    Explore our comprehensive guide in the meantime.
                   </p>
 
                   <motion.div
