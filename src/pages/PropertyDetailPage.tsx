@@ -428,9 +428,7 @@ import logoMain from "@/assets/logo_main.png";
 
 import {
   ArrowLeft,
-  Bookmark,
   CheckCircle2,
-  XCircle,
   X,
   ChevronLeft,
   ChevronRight,
@@ -449,7 +447,6 @@ import {
   MapPin,
   Share2,
   Heart,
-  Eye,
   Images,
   ChevronDown,
   BedDouble,
@@ -467,7 +464,7 @@ import {
   Wifi,
   Wind,
 } from "lucide-react";
-import { FaWhatsapp, FaRegComment, FaRegStar } from "react-icons/fa6";
+import { FaWhatsapp } from "react-icons/fa6";
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -1391,9 +1388,6 @@ export default function PropertyDetailPage() {
 /* ── MAP CARD ── */
 function MapCard({ property }: { property: any }) {
   const address = property.address || "12a Aso Street, Parkview Estate, Ikoyi";
-  const lat = property.lat || 6.455;
-  const lng = property.lng || 3.4322;
-
   const embedQuery = encodeURIComponent(address);
 
   return (

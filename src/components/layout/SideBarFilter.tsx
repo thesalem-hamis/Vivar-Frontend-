@@ -7,14 +7,13 @@ import { ChevronDown } from "lucide-react";
 interface SidebarFiltersProps {
   selectedType: string;
   setSelectedType: (type: string) => void;
-  categories: { name: string; count?: number }[];
+  categories?: { name: string; count?: number }[];
   cities: string[];
 }
 
 export default function SidebarFilters({
   selectedType,
   setSelectedType,
-  categories,
   cities,
 }: SidebarFiltersProps) {
   const [isResidentialOpen, setIsResidentialOpen] = useState(true);

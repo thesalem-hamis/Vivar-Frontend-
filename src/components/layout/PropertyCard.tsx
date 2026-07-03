@@ -6,7 +6,6 @@ import {
   MapPin,
   BedDouble,
   Bath,
-  Maximize,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";

@@ -830,7 +830,7 @@ export default function PropertiesListingPage() {
                 /* ── HIGHER POSITIONED FALLBACK STATE ── */
                 <div className="flex flex-col items-center justify-center text-center pt-4 pb-12 px-6 w-full max-w-xl mx-auto lg:mt-2">
                   <img
-                    src={FALLBACK_IMAGE.src || FALLBACK_IMAGE}
+                    src={FALLBACK_IMAGE as unknown as string}
                     alt="No properties uploaded"
                     className="w-36 h-auto object-contain opacity-80 mb-6 select-none pointer-events-none"
                   />

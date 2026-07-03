@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   getAllProperties,
   createProperty,
@@ -433,58 +433,7 @@ export default function PropertiesPage() {
     return () => unsubscribe();
   }, []);
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Extract amenities directly from your parent's formData
-  const selectedAmenities = formData.amenities || [];
-  console.log(selectedAmenities);
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(
-      event: MouseEvent | globalThis.MouseEvent,
-    ): void {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside as unknown as EventListener,
-    );
-    return () =>
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside as unknown as EventListener,
-      );
-  }, []);
-
-  // Toggle selection inside the parent's formData state
-  const toggleAmenity = (amenity: string): void => {
-    const updatedAmenities = selectedAmenities.includes(amenity)
-      ? selectedAmenities.filter((item) => item !== amenity)
-      : [...selectedAmenities, amenity];
-
-    setFormData((prev: any) => ({
-      ...prev,
-      amenities: updatedAmenities,
-    }));
-  };
-
-  // Remove a specific tag
-  const removeTag = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    amenity: string,
-  ): void => {
-    e.stopPropagation(); // Stop dropdown from opening/closing
-    setFormData((prev: any) => ({
-      ...prev,
-      amenities: selectedAmenities.filter((item) => item !== amenity),
-    }));
-  };
 
   const generateMapEmbed = () => {
     if (!formData.address && !formData.city) return undefined;
