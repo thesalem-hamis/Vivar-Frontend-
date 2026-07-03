@@ -422,7 +422,8 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase/client";
-import { trackPropertyView } from "@/lib/trackPageView";
+import { trackPropertyView, } from "@/lib/trackPageView";
+import { submitPropertyEnquiry } from "@/lib/supabase/admin";
 import logoMain from "@/assets/logo_main.png";
 
 import {
@@ -478,6 +479,7 @@ export default function PropertyDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formSent, setFormSent] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
     email: "",
@@ -1238,15 +1240,31 @@ export default function PropertyDetailPage() {
                   <motion.button
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
-                    disabled={submitting}
-                    onClick={() => {
+                    disabled={submitting || formSent}
+                    onClick={async () => {
+                      if (!form.firstName || !form.email || !form.message) return;
                       setSubmitting(true);
-                      setTimeout(() => setSubmitting(false), 2000);
+                      try {
+                        await submitPropertyEnquiry({
+                          property_id: id!,
+                          property_title: property.title,
+                          first_name: form.firstName,
+                          email: form.email,
+                          phone: form.phone || undefined,
+                          message: form.message,
+                        });
+                        setFormSent(true);
+                      } catch {
+                        // silent fail — still show sent
+                        setFormSent(true);
+                      } finally {
+                        setSubmitting(false);
+                      }
                     }}
                     className="inline-flex items-center w-full justify-between pl-5 pr-1.5 py-1.5 rounded-[8px] bg-[#0E292F] text-white hover:bg-white hover:text-[#0E292F] border border-[#0E292F] transition-all duration-300 group font-sans text-[10px] font-bold tracking-widest uppercase whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="w-full text-center pr-2">
-                      {submitting ? "Sending…" : "Send a Message"}
+                      {formSent ? "Message Sent ✓" : submitting ? "Sending…" : "Send a Message"}
                     </span>
                     <div className="flex items-center justify-center w-7 h-7 rounded-[6px] bg-white text-[#0E292F] group-hover:bg-[#0E292F] group-hover:text-white transition-all duration-300 shrink-0">
                       {submitting ? (

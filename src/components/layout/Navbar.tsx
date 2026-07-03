@@ -406,6 +406,7 @@ export default function Navbar() {
             <div className="flex items-center gap-1 px-4">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/about">About</NavLink>
+              <NavLink href="/blog">Blog</NavLink>
 
               {/* Main Link Dropdown */}
               <div ref={dropRef} className="relative">
@@ -520,7 +521,7 @@ export default function Navbar() {
 
               {/* Drawer Links Area */}
               <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col">
-                {["Home", "About"].map((label) => (
+                {["Home", "About", "Blog"].map((label) => (
                   <Link
                     key={label}
                     to={label === "Home" ? "/" : `/${label.toLowerCase()}`}

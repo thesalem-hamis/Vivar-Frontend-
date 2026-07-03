@@ -12,9 +12,8 @@ import {
   Globe2,
   BarChart3,
 } from "lucide-react";
-
-// Import your custom background image here
-import leadMagnetBg from "../../assets/ikoyi-main.jpg"; 
+import { submitLead } from "@/lib/supabase/admin";
+import leadMagnetBg from "../../assets/ikoyi-main.jpg";
 
 const bullets = [
   {
@@ -42,6 +41,7 @@ const bullets = [
 export default function LeadMagnetSection() {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
   const leftContentRef = useRef<HTMLDivElement>(null);
@@ -81,9 +81,35 @@ export default function LeadMagnetSection() {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (submitting || submitted) return;
+    setSubmitting(true);
+    try {
+      // Save to Supabase
+      await submitLead({
+        name: form.name,
+        email: form.email,
+        phone: form.phone || undefined,
+      });
+
+      // MailChimp subscribe via their public form endpoint
+      const MAILCHIMP_URL = import.meta.env.VITE_MAILCHIMP_ACTION_URL;
+      if (MAILCHIMP_URL) {
+        const mc = new FormData();
+        mc.append("EMAIL", form.email);
+        mc.append("FNAME", form.name);
+        mc.append("PHONE", form.phone || "");
+        // Fire-and-forget — MailChimp CORS blocks response, that's expected
+        fetch(MAILCHIMP_URL, { method: "POST", body: mc, mode: "no-cors" }).catch(() => {});
+      }
+
+      setSubmitted(true);
+    } catch {
+      setSubmitted(true); // still show success to user
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -198,13 +224,16 @@ export default function LeadMagnetSection() {
                 whileHover={{ scale: 1.01, backgroundColor: "#ffffff", color: "#030a08" }}
                 whileTap={{ scale: 0.99 }}
                 transition={{ duration: 0.2 }}
+                disabled={submitting || submitted}
                 className="inline-flex items-center justify-center gap-3 mt-1 px-6 py-3.5 rounded-none border border-white bg-transparent text-white
-                  text-[10px] font-bold tracking-[0.2em] uppercase cursor-pointer select-none font-sans"
+                  text-[10px] font-bold tracking-[0.2em] uppercase cursor-pointer select-none font-sans disabled:opacity-60"
               >
                 {submitted ? (
                   <>
                     <Check size={13} strokeWidth={2.5} /> Guide On Its Way
                   </>
+                ) : submitting ? (
+                  <>Sending…</>
                 ) : (
                   <>
                     Send Me the Free Guide

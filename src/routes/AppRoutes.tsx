@@ -10,6 +10,13 @@ import UsersPage from "@/pages/admin/UsersPage";
 import PropertiesPage from "@/pages/admin/PropertiesPage";
 import LoginPage from "@/pages/admin/LoginPage";
 import ContactUsPage from "@/pages/ContactUsPage";
+import BlogsPage from "@/pages/BlogsPage";
+import BlogDetailPage from "@/pages/BlogDetailPage";
+import EnquiryPage from "@/pages/EnquiryPage";
+import AdminBlogsPage from "@/pages/admin/BlogsPage";
+import EnquiriesPage from "@/pages/admin/EnquiriesPage";
+import PropertyEnquiriesPage from "@/pages/admin/PropertyEnquiriesPage";
+import LeadsPage from "@/pages/admin/LeadsPage";
 
 export default function AppRouter() {
   return (
@@ -18,6 +25,9 @@ export default function AppRouter() {
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="contact" element={<ContactUsPage />} />
+        <Route path="enquiry" element={<EnquiryPage />} />
+        <Route path="blog" element={<BlogsPage />} />
+        <Route path="blog/:slug" element={<BlogDetailPage />} />
         <Route path="properties" element={<PropertiesListingPage />} />
         <Route path="properties/:id" element={<PropertyDetailPage />} />
       </Route>
@@ -27,6 +37,10 @@ export default function AppRouter() {
         <Route index element={<DashboardPage />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="properties" element={<PropertiesPage />} />
+        <Route path="blogs" element={<AdminBlogsPage />} />
+        <Route path="enquiries" element={<EnquiriesPage />} />
+        <Route path="property-enquiries" element={<PropertyEnquiriesPage />} />
+        <Route path="leads" element={<LeadsPage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
     </Routes>

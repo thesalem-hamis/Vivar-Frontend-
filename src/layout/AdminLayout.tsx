@@ -183,6 +183,10 @@ import {
   LogOut,
   AlignJustify,
   X,
+  FileText,
+  MessageSquare,
+  Home,
+  Users,
 } from "lucide-react";
 import Logo from "@/assets/logo_black.png";
 
@@ -190,6 +194,10 @@ const navItems = [
   { to: "/admin", icon: PieChart, label: "Dashboard", end: true },
   { to: "/admin/users", icon: UsersRound, label: "Users" },
   { to: "/admin/properties", icon: Building2, label: "Properties" },
+  { to: "/admin/blogs", icon: FileText, label: "Blogs" },
+  { to: "/admin/enquiries", icon: MessageSquare, label: "Enquiries" },
+  { to: "/admin/property-enquiries", icon: Home, label: "Property Enquiries" },
+  { to: "/admin/leads", icon: Users, label: "Guide Leads" },
 ];
 
 export default function AdminLayout() {

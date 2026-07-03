@@ -485,6 +485,221 @@ export async function getDashboardStats() {
 }
 
 // ==========================================
+// BLOGS
+// ==========================================
+
+export async function getAllBlogs() {
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getPublishedBlogs() {
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .eq("published", true)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getBlogBySlug(slug: string) {
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function createBlog(data: {
+  title: string;
+  body: string;
+  image_url?: string;
+  cta_label?: string;
+  cta_url?: string;
+  published?: boolean;
+}) {
+  await requireAdmin();
+  const slug = data.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  const { data: blog, error } = await supabase
+    .from("blogs")
+    .insert({ ...data, slug })
+    .select()
+    .single();
+  if (error) throw error;
+  return blog;
+}
+
+export async function updateBlog(
+  id: string,
+  data: {
+    title?: string;
+    body?: string;
+    image_url?: string;
+    cta_label?: string;
+    cta_url?: string;
+    published?: boolean;
+  },
+) {
+  await requireAdmin();
+  const updates: any = { ...data };
+  if (data.title) {
+    updates.slug = data.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  }
+  const { data: blog, error } = await supabase
+    .from("blogs")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return blog;
+}
+
+export async function deleteBlog(id: string) {
+  await requireAdmin();
+  const { error } = await supabase.from("blogs").delete().eq("id", id);
+  if (error) throw error;
+  return { success: true };
+}
+
+export async function uploadBlogImage(file: File): Promise<string> {
+  await requireAdmin();
+  const ext = file.name.split(".").pop();
+  const filePath = `blog/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+  const { error } = await supabase.storage
+    .from("property-images")
+    .upload(filePath, file, { cacheControl: "3600", upsert: false });
+  if (error) throw error;
+  const { data } = supabase.storage.from("property-images").getPublicUrl(filePath);
+  return data.publicUrl;
+}
+
+// ==========================================
+// ENQUIRIES (General)
+// ==========================================
+
+export async function submitEnquiry(data: {
+  name: string;
+  phone: string;
+  message: string;
+  property_type?: string;
+}) {
+  const { data: enquiry, error } = await supabase
+    .from("enquiries")
+    .insert(data)
+    .select()
+    .single();
+  if (error) throw error;
+  return enquiry;
+}
+
+export async function getAllEnquiries() {
+  await requireAdmin();
+  const { data, error } = await supabase
+    .from("enquiries")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function deleteEnquiry(id: string) {
+  await requireAdmin();
+  const { error } = await supabase.from("enquiries").delete().eq("id", id);
+  if (error) throw error;
+  return { success: true };
+}
+
+// ==========================================
+// PROPERTY ENQUIRIES
+// ==========================================
+
+export async function submitPropertyEnquiry(data: {
+  property_id: string;
+  property_title: string;
+  first_name: string;
+  email: string;
+  phone?: string;
+  message: string;
+}) {
+  const { data: enquiry, error } = await supabase
+    .from("property_enquiries")
+    .insert(data)
+    .select()
+    .single();
+  if (error) throw error;
+  return enquiry;
+}
+
+export async function getAllPropertyEnquiries() {
+  await requireAdmin();
+  const { data, error } = await supabase
+    .from("property_enquiries")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function deletePropertyEnquiry(id: string) {
+  await requireAdmin();
+  const { error } = await supabase
+    .from("property_enquiries")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+  return { success: true };
+}
+
+// ==========================================
+// LEADS (Guide downloads)
+// ==========================================
+
+export async function submitLead(data: {
+  name: string;
+  email: string;
+  phone?: string;
+}) {
+  const { data: lead, error } = await supabase
+    .from("leads")
+    .insert(data)
+    .select()
+    .single();
+  if (error) throw error;
+  return lead;
+}
+
+export async function getAllLeads() {
+  await requireAdmin();
+  const { data, error } = await supabase
+    .from("leads")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function deleteLead(id: string) {
+  await requireAdmin();
+  const { error } = await supabase.from("leads").delete().eq("id", id);
+  if (error) throw error;
+  return { success: true };
+}
+
+// ==========================================
 // IMAGES
 // ==========================================
 
