@@ -12,6 +12,7 @@ import TestimonialsSection from "@/components/home/Testimonial";
 import Navbar from "@/components/layout/Navbar";
 import FeaturedListingsSection from "@/components/home/FeaturedListingsSection";
 import Locations from "@/components/home/Locations";
+import Inquiry from "@/components/home/Inquiry";
 
 const HomePage = () => {
   return (
@@ -22,6 +23,7 @@ const HomePage = () => {
       <BrandStatementSection />
       <FeaturedListingsSection /> 
       <HowWeHelpSection />
+      <Inquiry />
       <Locations />
       <LeadMagnetSection />
       <PropertyCategory />
