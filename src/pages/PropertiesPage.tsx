@@ -542,6 +542,7 @@ import {
   getPublicProperties,
   searchPublicProperties,
 } from "@/lib/supabase/admin";
+import Footer from "@/components/layout/Footer";
 
 interface Property {
   id: string | number;
@@ -895,6 +896,7 @@ export default function PropertiesListingPage() {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

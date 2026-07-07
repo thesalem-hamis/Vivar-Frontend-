@@ -265,12 +265,16 @@ import { Link } from "react-router-dom";
 import { ChevronRight, ChevronDown, ArrowUpRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import LOGO_DEFAULT from "../../assets/logo_main.png";   // shown when NOT scrolled
+import LOGO_DEFAULT from "../../assets/logo_main.png"; // shown when NOT scrolled
 import LOGO_SCROLLED from "../../assets/logo_white.png"; // shown when scrolled (dark bg)
 
 // Updated to use the correct client-side routing paths from Navbar
 const investDropdown = [
-  { label: "Properties", sub: "Explore our property portfolio", to: "/properties" },
+  {
+    label: "Properties",
+    sub: "Explore our property portfolio",
+    to: "/properties",
+  },
   { label: "Projects", sub: "Active development projects", to: "#" },
   { label: "Invest with Us", sub: "Partnership & investment options", to: "#" },
 ];
@@ -289,7 +293,10 @@ export default function PageNavbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setInvestOpen(false);
       }
@@ -312,21 +319,28 @@ export default function PageNavbar() {
   };
 
   return (
-    <div ref={containerRef} className="fixed top-4 left-0 right-0 z-50 w-full px-4 font-sans pointer-events-none">
+    <div
+      ref={containerRef}
+      className="fixed top-4 left-0 right-0 z-50 w-full px-4 font-sans pointer-events-none"
+    >
       <div className="max-w-[440px] sm:max-w-[490px] mx-auto relative pointer-events-auto">
-
         {/* ── CAPSULE BAR BAR ── */}
         <div
           className={`
             w-full rounded-[18px] px-4 py-2.5 flex items-center justify-between shadow-xl transition-all duration-500 ease-out
-            ${scrolled
-              ? "bg-[#0E292F]/95 border border-white/20 backdrop-blur-md"
-              : "bg-white border border-neutral-100"
+            ${
+              scrolled
+                ? "bg-[#0E292F]/95 border border-white/20 backdrop-blur-md"
+                : "bg-white border border-neutral-100"
             }
           `}
         >
           {/* Logo — Link wrapper to root home path */}
-          <Link to="/" onClick={handleClose} className="pl-0.5 flex items-center justify-center transition-opacity hover:opacity-90">
+          <Link
+            to="/"
+            onClick={handleClose}
+            className="pl-0.5 flex items-center justify-center transition-opacity hover:opacity-90"
+          >
             <AnimatePresence mode="wait">
               {scrolled ? (
                 <motion.img
@@ -338,7 +352,9 @@ export default function PageNavbar() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                   className="h-10 sm:h-11 w-auto object-contain"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
                 />
               ) : (
                 <motion.img
@@ -350,7 +366,9 @@ export default function PageNavbar() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                   className="h-10 sm:h-11 w-auto object-contain"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
                 />
               )}
             </AnimatePresence>
@@ -361,9 +379,10 @@ export default function PageNavbar() {
             onClick={() => setIsOpen(!isOpen)}
             className={`
               flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 active:scale-95
-              ${scrolled
-                ? "bg-white/20 hover:bg-white/30"
-                : "bg-[#0E292F] hover:bg-[#143941]"
+              ${
+                scrolled
+                  ? "bg-white/20 hover:bg-white/30"
+                  : "bg-[#0E292F] hover:bg-[#143941]"
               }
             `}
             aria-label="Toggle Navigation Menu"
@@ -407,7 +426,6 @@ export default function PageNavbar() {
               className="absolute top-full left-0 right-0 mt-2 bg-white rounded-[20px] shadow-2xl border border-neutral-100 overflow-hidden p-2.5 flex flex-col gap-0.5 origin-top z-50"
             >
               <div className="flex flex-col">
-
                 {/* 1. Home Link */}
                 <Link
                   to="/"
@@ -437,9 +455,35 @@ export default function PageNavbar() {
                     className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all"
                   />
                 </Link>
+                <Link
+                  to="/blog"
+                  onClick={handleClose}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-lg hover:bg-neutral-50 group transition-colors duration-150"
+                >
+                  <span className="text-neutral-800 font-medium text-[14px] tracking-tight group-hover:text-[#0E292F] transition-colors">
+                    Blog
+                  </span>
+                  <ChevronRight
+                    size={14}
+                    className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all"
+                  />
+                </Link>
+                <Link
+                  to="/properties"
+                  onClick={handleClose}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-lg hover:bg-neutral-50 group transition-colors duration-150"
+                >
+                  <span className="text-neutral-800 font-medium text-[14px] tracking-tight group-hover:text-[#0E292F] transition-colors">
+                    Properties
+                  </span>
+                  <ChevronRight
+                    size={14}
+                    className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all"
+                  />
+                </Link>
 
                 {/* 3. Invest with Us Menu Accordion Dropdown */}
-                <div>
+                {/* <div>
                   <button
                     onClick={() => setInvestOpen((o) => !o)}
                     className="w-full flex items-center justify-between px-3.5 py-3 rounded-lg hover:bg-neutral-50 group transition-colors duration-150"
@@ -493,23 +537,7 @@ export default function PageNavbar() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
-
-                {/* 4. Contact Link */}
-                <Link
-                  to="/contact"
-                  onClick={handleClose}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-lg hover:bg-neutral-50 group transition-colors duration-150"
-                >
-                  <span className="text-neutral-800 font-medium text-[14px] tracking-tight group-hover:text-[#0E292F] transition-colors">
-                    Contact
-                  </span>
-                  <ChevronRight
-                    size={14}
-                    className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all"
-                  />
-                </Link>
-
+                </div> */}
               </div>
 
               {/* Master Premium CTA Button -> /contact */}
@@ -523,7 +551,6 @@ export default function PageNavbar() {
             </motion.div>
           )}
         </AnimatePresence>
-
       </div>
     </div>
   );

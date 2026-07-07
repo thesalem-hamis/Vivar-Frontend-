@@ -422,7 +422,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase/client";
-import { trackPropertyView, } from "@/lib/trackPageView";
+import { trackPropertyView } from "@/lib/trackPageView";
 import { submitPropertyEnquiry } from "@/lib/supabase/admin";
 import logoMain from "@/assets/logo_main.png";
 
@@ -694,14 +694,14 @@ export default function PropertyDetailPage() {
                 onClick={() => navigate("/")}
                 className="hover:text-[#3D7188] transition-colors"
               >
-                {property.state}
+                Home
               </button>
               <ChevronRight className="w-3 h-3 text-[#0E292F]/25" />
               <button
                 onClick={() => navigate("/properties")}
                 className="hover:text-[#3D7188] transition-colors"
               >
-                {property.lga}
+                Properties
               </button>
               <ChevronRight className="w-3 h-3 text-[#0E292F]/25" />
               <span className="text-[#0E292F]/75">{property.city}</span>
@@ -1239,7 +1239,8 @@ export default function PropertyDetailPage() {
                     whileTap={{ scale: 0.98 }}
                     disabled={submitting || formSent}
                     onClick={async () => {
-                      if (!form.firstName || !form.email || !form.message) return;
+                      if (!form.firstName || !form.email || !form.message)
+                        return;
                       setSubmitting(true);
                       try {
                         await submitPropertyEnquiry({
@@ -1261,7 +1262,11 @@ export default function PropertyDetailPage() {
                     className="inline-flex items-center w-full justify-between pl-5 pr-1.5 py-1.5 rounded-[8px] bg-[#0E292F] text-white hover:bg-white hover:text-[#0E292F] border border-[#0E292F] transition-all duration-300 group font-sans text-[10px] font-bold tracking-widest uppercase whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="w-full text-center pr-2">
-                      {formSent ? "Message Sent ✓" : submitting ? "Sending…" : "Send a Message"}
+                      {formSent
+                        ? "Message Sent ✓"
+                        : submitting
+                          ? "Sending…"
+                          : "Send a Message"}
                     </span>
                     <div className="flex items-center justify-center w-7 h-7 rounded-[6px] bg-white text-[#0E292F] group-hover:bg-[#0E292F] group-hover:text-white transition-all duration-300 shrink-0">
                       {submitting ? (

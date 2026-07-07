@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getBlogBySlug } from "@/lib/supabase/admin";
-import { ArrowLeft, ArrowUpRight, Loader2 } from "lucide-react";
+import { getBlogBySlug, getPublishedBlogs } from "@/lib/supabase/admin";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  ChevronLeft,
+  Loader2,
+} from "lucide-react";
 import DOMPurify from "dompurify";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
+import Footer from "@/components/layout/Footer";
+import PageNavbar from "@/components/layout/PageNavbar";
 
 export default function BlogDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  const [blogs, setBlogs] = useState<any[]>([]);
   const navigate = useNavigate();
   const [blog, setBlog] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [mLoading, setMLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,6 +30,12 @@ export default function BlogDetailPage() {
       .catch((e) => setError(e.message || "Post not found"))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    getPublishedBlogs()
+      .then(setBlogs)
+      .finally(() => setMLoading(false));
+  }, []);
 
   const cleanHtml = DOMPurify.sanitize(blog?.body_html, {
     ADD_TAGS: ["iframe"],
@@ -65,6 +81,7 @@ export default function BlogDetailPage() {
         <meta property="og:image" content={blog?.image_url} />
       </Helmet>
       <div className="min-h-screen bg-white text-[#0E292F] font-sans">
+        <PageNavbar />
         <section className="relative w-full h-[60vh] min-h-[440px] max-h-[600px] bg-[#0E292F] overflow-hidden flex items-end">
           {/* Core Widescreen Corporate Image Canvas */}
           <img
@@ -92,7 +109,7 @@ export default function BlogDetailPage() {
 
               {/* Short Subheadline */}
               <p className="text-white/80 font-sans font-light text-sm sm:text-base md:text-lg leading-relaxed max-w-3xl drop-shadow-sm">
-                Description is written here.
+                {blog.sub_title}
               </p>
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#3D7188] mb-4">
                 {new Date(blog.created_at).toLocaleDateString("en-US", {
@@ -104,30 +121,156 @@ export default function BlogDetailPage() {
             </motion.div>
           </div>
         </section>
+        <div className="px-6 md:px-16 py-5">
+          <a
+            href="/blog"
+            className="flex items-center text-blue-500 hover:text-blue-700"
+          >
+            <ChevronLeft className="size-5" />
+            Back to Blog
+          </a>
+        </div>
+        <div className="grid lg:grid-cols-3 mx-auto px-6 md:px-16 py-12">
+          <article className="max-w-3xl lg:col-span-2">
+            <div
+              className="text-[15px] leading-relaxed text-[#0E292F]/80 whitespace-pre-line"
+              dangerouslySetInnerHTML={{ __html: cleanHtml }}
+            />
 
-        <article className="max-w-3xl mx-auto px-6 py-12">
-          <div
-            className="text-[15px] leading-relaxed text-[#0E292F]/80 whitespace-pre-line"
-            dangerouslySetInnerHTML={{ __html: cleanHtml }}
-          />
+            {blog.cta_label && blog.cta_url && (
+              <div className="mt-10 pt-8 border-t border-[#0E292F]/8">
+                <a
+                  href={blog.cta_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-between pl-5 pr-1.5 py-1.5 rounded-[8px] bg-[#0E292F] text-white hover:bg-white hover:text-[#0E292F] border border-[#0E292F] transition-all duration-300 group font-sans text-[10px] font-bold tracking-widest uppercase"
+                >
+                  <span className="pr-3">{blog.cta_label}</span>
+                  <div className="flex items-center justify-center w-7 h-7 rounded-[6px] bg-white text-[#0E292F] group-hover:bg-[#0E292F] group-hover:text-white transition-all duration-300">
+                    <ArrowUpRight size={13} strokeWidth={2.5} />
+                  </div>
+                </a>
+              </div>
+            )}
+          </article>
+          <article className="grid gap-6 lg:gap-8">
+            <h3 className="font-semibold text-3xl">You might also Like</h3>
+            {mLoading ? (
+              <>
+                {[1, 2, 3].map((idx) => (
+                  <div key={idx} className="flex flex-col gap-5 animate-pulse">
+                    {/* Image & Category Badge Skeleton */}
+                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200">
+                      {/* Category Badge Placeholder */}
+                      <div className="absolute top-4 left-4 h-6 w-20 rounded-[6px] bg-slate-300/80" />
+                      {/* Content Skeleton */}
+                      <div className="flex flex-col gap-3">
+                        {/* Date Placeholder */}
+                        <div className="h-3 w-24 rounded bg-slate-200" />
 
-          {blog.cta_label && blog.cta_url && (
-            <div className="mt-10 pt-8 border-t border-[#0E292F]/8">
-              <a
-                href={blog.cta_url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-between pl-5 pr-1.5 py-1.5 rounded-[8px] bg-[#0E292F] text-white hover:bg-white hover:text-[#0E292F] border border-[#0E292F] transition-all duration-300 group font-sans text-[10px] font-bold tracking-widest uppercase"
-              >
-                <span className="pr-3">{blog.cta_label}</span>
-                <div className="flex items-center justify-center w-7 h-7 rounded-[6px] bg-white text-[#0E292F] group-hover:bg-[#0E292F] group-hover:text-white transition-all duration-300">
-                  <ArrowUpRight size={13} strokeWidth={2.5} />
-                </div>
-              </a>
-            </div>
-          )}
-        </article>
+                        {/* Title Placeholders (2 lines for realism) */}
+                        <div className="flex flex-col gap-2">
+                          <div className="h-5 w-11/12 rounded bg-slate-200" />
+                          <div className="h-5 w-2/3 rounded bg-slate-200" />
+                        </div>
+
+                        {/* Teaser Paragraph Placeholders (3 lines) */}
+                        <div className="flex flex-col gap-1.5 mt-1">
+                          <div className="h-3.5 w-full rounded bg-slate-100" />
+                          <div className="h-3.5 w-full rounded bg-slate-100" />
+                          <div className="h-3.5 w-4/5 rounded bg-slate-100" />
+                        </div>
+
+                        {/* "Read More" Link Placeholder */}
+                        <div className="h-3.5 w-28 rounded bg-slate-200 mt-2" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                {blogs.slice(0, 4).map((a, idx) => {
+                  const cleanHtml = DOMPurify.sanitize(a.body_html, {
+                    FORBID_TAGS: ["img"],
+                  });
+                  const plainText = cleanHtml.replace(/<[^>]*>/g, " ");
+
+                  const first50Words = plainText
+                    .trim()
+                    .split(/\s+/)
+                    .slice(0, 50)
+                    .join(" ");
+                  const teaserText =
+                    plainText.split(/\s+/).length > 50
+                      ? `${first50Words}...`
+                      : first50Words;
+                  return (
+                    <motion.a
+                      key={a.title}
+                      href={`/blog/${a.slug}`}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: "-60px" }}
+                      // variants={fadeUp}
+                      transition={{ delay: idx * 0.1 }}
+                      className="group relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-slate-900 shadow-sm hover:shadow-lg transition-shadow duration-300"
+                    >
+                      {/* 1. The Background Image */}
+                      <img
+                        src={a.image_url}
+                        alt={a.title}
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        loading="lazy"
+                      />
+
+                      {/* 2. The Gradient Overlay (Crucial for text legibility) */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0E292F]/90 via-[#0E292F]/40 to-transparent transition-opacity duration-300 group-hover:from-[#0E292F]/95" />
+
+                      {/* 3. Category Badge (Top Left) */}
+                      <span className="absolute top-4 left-4 px-3 py-1.5 rounded-[6px] text-[10px] font-bold tracking-[0.15em] uppercase bg-white text-[#0E292F] shadow-xs">
+                        {a.category}
+                      </span>
+
+                      {/* 4. Text Content Wrapper (Overlayed on bottom) */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col gap-2.5 z-10">
+                        {/* Date */}
+                        <span className="text-[10px] font-bold tracking-[0.2em] text-[#3D7188] uppercase">
+                          {new Date(a.created_at).toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+
+                        {/* Title */}
+                        <h3 className="text-xl font-semibold text-white tracking-tight leading-snug group-hover:text-slate-200 transition-colors duration-300 line-clamp-2">
+                          {a.title}
+                        </h3>
+
+                        {/* Teaser Paragraph */}
+                        <p className="text-xs text-white/70 font-light leading-relaxed line-clamp-2">
+                          {teaserText}
+                        </p>
+
+                        {/* Read More Link */}
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] uppercase text-white mt-1.5 group-hover:text-[#3D7188] transition-colors duration-300">
+                          Read More
+                          <ArrowRight
+                            size={12}
+                            className="transition-transform duration-300 group-hover:translate-x-1"
+                          />
+                        </span>
+                      </div>
+                    </motion.a>
+                  );
+                })}
+              </>
+            )}
+          </article>
+        </div>
       </div>
+      <Footer />
     </>
   );
 }

@@ -18,10 +18,10 @@ const HomePage = () => {
   return (
     <div>
       <HeroSection />
-      {/* <PageNavbar /> */}
+      {/* <PageNavbar />  */}
       <Navbar />
       <BrandStatementSection />
-      <FeaturedListingsSection /> 
+      <FeaturedListingsSection />
       <HowWeHelpSection />
       <Inquiry />
       <Locations />

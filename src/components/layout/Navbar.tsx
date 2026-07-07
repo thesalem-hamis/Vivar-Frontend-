@@ -52,7 +52,7 @@
 //       {/* ── GLOBAL STICKY HEADER CONTAINER ── */}
 //       <header className="fixed top-0 left-0 right-0 z-50 w-full px-6 md:px-12 py-4 transition-all duration-300 pointer-events-none">
 //         <div className="max-w-[1440px] mx-auto w-full flex items-center justify-between gap-4 pointer-events-auto">
-          
+
 //           {/* Logo / Mobile Wrapper */}
 //           <div
 //             className={`
@@ -315,7 +315,11 @@ import LOGO_MAIN from "../../assets/logo_white.png";
 import LOGO_BLACK from "../../assets/logo_main.png";
 
 const investDropdown = [
-  { label: "Properties", sub: "Explore our property portfolio", to: "/properties" },
+  {
+    label: "Properties",
+    sub: "Explore our property portfolio",
+    to: "/properties",
+  },
   { label: "Projects", sub: "Active development projects", to: "#" },
   { label: "Invest with Us", sub: "Partnership & investment options", to: "#" },
 ];
@@ -359,7 +363,6 @@ export default function Navbar() {
       {/* ── GLOBAL STICKY HEADER CONTAINER ── */}
       <header className="fixed top-0 left-0 right-0 z-50 w-full px-6 md:px-12 py-4 transition-all duration-300 pointer-events-none">
         <div className="max-w-[1440px] mx-auto w-full flex items-center justify-between gap-4 pointer-events-auto">
-          
           {/* Logo / Mobile Wrapper */}
           <div
             className={`
@@ -380,7 +383,7 @@ export default function Navbar() {
               <img
                 src={LOGO_MAIN}
                 alt="Logo"
-                className="h-12 sm:h-14 md:h-20 lg:h-24 w-auto object-contain transition-all duration-300 brightness-0 invert"
+                className={`h-12 sm:h-14 md:h-20 lg:h-24 w-auto object-contain transition-all duration-300 brightness-0 invert`}
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
@@ -407,9 +410,10 @@ export default function Navbar() {
               <NavLink href="/">Home</NavLink>
               <NavLink href="/about">About</NavLink>
               <NavLink href="/blog">Blog</NavLink>
+              <NavLink href="/properties">Properties</NavLink>
 
               {/* Main Link Dropdown */}
-              <div ref={dropRef} className="relative">
+              {/* <div ref={dropRef} className="relative">
                 <button
                   onClick={() => setDropOpen((o) => !o)}
                   className="flex items-center gap-1.5 px-3 py-2.5 rounded-[6px] transition-colors
@@ -461,7 +465,7 @@ export default function Navbar() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </div> */}
             </div>
 
             <a
@@ -521,7 +525,7 @@ export default function Navbar() {
 
               {/* Drawer Links Area */}
               <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col">
-                {["Home", "About", "Blog"].map((label) => (
+                {["Home", "About", "Blog", "Properties"].map((label) => (
                   <Link
                     key={label}
                     to={label === "Home" ? "/" : `/${label.toLowerCase()}`}
@@ -533,7 +537,7 @@ export default function Navbar() {
                   </Link>
                 ))}
 
-                <div>
+                {/* <div>
                   <button
                     onClick={() => setMobileDropOpen((o) => !o)}
                     className="w-full flex items-center justify-between py-5 text-[#0E292F]/90
@@ -565,16 +569,23 @@ export default function Navbar() {
                               border-b border-[#0E292F]/10 last:border-0 group"
                           >
                             <div>
-                              <p className="text-[#0E292F] text-base font-semibold">{item.label}</p>
-                              <p className="text-[#0E292F]/60 text-sm mt-0.5">{item.sub}</p>
+                              <p className="text-[#0E292F] text-base font-semibold">
+                                {item.label}
+                              </p>
+                              <p className="text-[#0E292F]/60 text-sm mt-0.5">
+                                {item.sub}
+                              </p>
                             </div>
-                            <ArrowUpRight size={16} className="text-[#0E292F]/40 group-hover:text-[#0E292F] transition-colors" />
+                            <ArrowUpRight
+                              size={16}
+                              className="text-[#0E292F]/40 group-hover:text-[#0E292F] transition-colors"
+                            />
                           </Link>
                         ))}
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </div> */}
 
                 <Link
                   to="/contact"
@@ -606,7 +617,13 @@ export default function Navbar() {
   );
 }
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+function NavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
   return (
     <a
       href={href}

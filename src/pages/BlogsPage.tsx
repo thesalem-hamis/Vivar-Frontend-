@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPublishedBlogs } from "@/lib/supabase/admin";
-import { ArrowUpRight, FileText, Loader2 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, FileText, Loader2 } from "lucide-react";
 import DOMPurify from "dompurify";
 import { motion } from "framer-motion";
 import TEAM_HERO_IMAGE from "@/assets/ikoyi-main.jpg";
+import Footer from "@/components/layout/Footer";
+import PageNavbar from "@/components/layout/PageNavbar";
 
 export default function BlogsPage() {
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -20,6 +22,7 @@ export default function BlogsPage() {
   return (
     <div className="min-h-screen bg-white text-[#0E292F] font-sans">
       {/* Hero */}
+      <PageNavbar />
       <section className="relative w-full h-[60vh] min-h-[440px] max-h-[600px] bg-[#0E292F] overflow-hidden flex items-end">
         {/* Core Widescreen Corporate Image Canvas */}
         <img
@@ -54,10 +57,40 @@ export default function BlogsPage() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
-          <div className="flex items-center justify-center py-24">
-            <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {[1, 2, 3].map((idx) => (
+              <div key={idx} className="flex flex-col gap-5 animate-pulse">
+                {/* Image & Category Badge Skeleton */}
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200">
+                  {/* Category Badge Placeholder */}
+                  <div className="absolute top-4 left-4 h-6 w-20 rounded-[6px] bg-slate-300/80" />
+                </div>
+
+                {/* Content Skeleton */}
+                <div className="flex flex-col gap-3">
+                  {/* Date Placeholder */}
+                  <div className="h-3 w-24 rounded bg-slate-200" />
+
+                  {/* Title Placeholders (2 lines for realism) */}
+                  <div className="flex flex-col gap-2">
+                    <div className="h-5 w-11/12 rounded bg-slate-200" />
+                    <div className="h-5 w-2/3 rounded bg-slate-200" />
+                  </div>
+
+                  {/* Teaser Paragraph Placeholders (3 lines) */}
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <div className="h-3.5 w-full rounded bg-slate-100" />
+                    <div className="h-3.5 w-full rounded bg-slate-100" />
+                    <div className="h-3.5 w-4/5 rounded bg-slate-100" />
+                  </div>
+
+                  {/* "Read More" Link Placeholder */}
+                  <div className="h-3.5 w-28 rounded bg-slate-200 mt-2" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : blogs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-neutral-400">
@@ -65,56 +98,77 @@ export default function BlogsPage() {
             <p className="text-sm font-medium">No posts published yet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogs.map((blog) => {
-              const cleanHtml = DOMPurify.sanitize(blog.body_html, {
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {blogs.slice(0, 4).map((a, idx) => {
+              const cleanHtml = DOMPurify.sanitize(a.body_html, {
                 FORBID_TAGS: ["img"],
               });
+              const plainText = cleanHtml.replace(/<[^>]*>/g, " ");
 
+              const first50Words = plainText
+                .trim()
+                .split(/\s+/)
+                .slice(0, 50)
+                .join(" ");
+              const teaserText =
+                plainText.split(/\s+/).length > 50
+                  ? `${first50Words}...`
+                  : first50Words;
               return (
-                <article
-                  key={blog.id}
-                  onClick={() => navigate(`/blog/${blog.slug}`)}
-                  className="group cursor-pointer bg-white border border-[#0E292F]/8 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300"
+                <motion.a
+                  key={a.title}
+                  href={`/blog/${a.slug}`}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-60px" }}
+                  // variants={fadeUp}
+                  transition={{ delay: idx * 0.1 }}
+                  className="group flex flex-col gap-5"
                 >
-                  {blog.image_url ? (
-                    <div className="h-48 overflow-hidden bg-neutral-100">
-                      <img
-                        src={blog.image_url}
-                        alt={blog.title}
-                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-48 bg-[#0E292F]/5 flex items-center justify-center">
-                      <FileText className="w-10 h-10 text-[#0E292F]/20" />
-                    </div>
-                  )}
-                  <div className="p-5">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3D7188] mb-2">
-                      {new Date(blog.created_at).toLocaleDateString("en-US", {
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
+                    <img
+                      src={a.image_url}
+                      alt={a.title}
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                      loading="lazy"
+                    />
+                    <span
+                      className="absolute top-4 left-4 px-3 py-1.5 rounded-[6px] text-[10px] font-bold tracking-[0.15em] uppercase
+                  bg-white/90 text-[#0E292F]"
+                    >
+                      {a.category}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <span className="text-[11px] font-bold tracking-[0.2em] text-[#3D7188] uppercase">
+                      {new Date(a.created_at).toLocaleDateString("en-US", {
                         month: "long",
                         day: "numeric",
                         year: "numeric",
                       })}
+                    </span>
+                    <h3 className="text-xl font-semibold text-[#0E292F] tracking-tight leading-snug group-hover:text-[#3D7188] transition-colors duration-300">
+                      {a.title}
+                    </h3>
+                    <p className="text-sm text-[#0E292F]/55 font-light leading-relaxed">
+                      {teaserText}
                     </p>
-                    <h2 className="font-serif text-[17px] font-bold text-[#0E292F] leading-snug mb-2 line-clamp-2">
-                      {blog.title}
-                    </h2>
-                    <p
-                      className="text-[13px] text-[#0E292F]/60 leading-relaxed line-clamp-3"
-                      dangerouslySetInnerHTML={{ __html: cleanHtml }}
-                    />
-                    <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-[#0E292F] group-hover:text-[#3D7188] transition-colors">
-                      Read more <ArrowUpRight className="w-3.5 h-3.5" />
-                    </div>
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-[#0E292F] mt-1">
+                      Read More
+                      <ArrowRight
+                        size={13}
+                        className="transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </span>
                   </div>
-                </article>
+                </motion.a>
               );
             })}
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

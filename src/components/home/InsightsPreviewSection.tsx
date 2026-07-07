@@ -1,7 +1,10 @@
 "use client";
 
+import { getPublishedBlogs } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
 
 const articles = [
   {
@@ -43,6 +46,15 @@ const articles = [
 // };
 
 export default function InsightsPreviewSection() {
+  const [blogs, setBlogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getPublishedBlogs()
+      .then(setBlogs)
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section className="w-full py-24 md:py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-16">
@@ -60,59 +72,115 @@ export default function InsightsPreviewSection() {
             Insights from the Property Market
           </h2>
           <p className="text-base md:text-lg text-[#0E292F]/60 font-light leading-relaxed">
-            Expert perspectives on Nigerian real estate &mdash; market
-            movements, investment strategies, and buying guides.
+            Expert perspectives on Nigerian real estate market movements,
+            investment strategies, and buying guides.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {articles.map((a, idx) => (
-            <motion.a
-              key={a.title}
-              href="/insights"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-60px" }}
-              // variants={fadeUp}
-              transition={{ delay: idx * 0.1 }}
-              className="group flex flex-col gap-5"
-            >
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-                <img
-                  src={a.image}
-                  alt={a.title}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                  loading="lazy"
-                />
-                <span
-                  className="absolute top-4 left-4 px-3 py-1.5 rounded-[6px] text-[10px] font-bold tracking-[0.15em] uppercase
-                  bg-white/90 text-[#0E292F]"
-                >
-                  {a.category}
-                </span>
-              </div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {[1, 2, 3].map((idx) => (
+              <div key={idx} className="flex flex-col gap-5 animate-pulse">
+                {/* Image & Category Badge Skeleton */}
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200">
+                  {/* Category Badge Placeholder */}
+                  <div className="absolute top-4 left-4 h-6 w-20 rounded-[6px] bg-slate-300/80" />
+                </div>
 
-              <div className="flex flex-col gap-3">
-                <span className="text-[11px] font-bold tracking-[0.2em] text-[#3D7188] uppercase">
-                  {a.date}
-                </span>
-                <h3 className="text-xl font-semibold text-[#0E292F] tracking-tight leading-snug group-hover:text-[#3D7188] transition-colors duration-300">
-                  {a.title}
-                </h3>
-                <p className="text-sm text-[#0E292F]/55 font-light leading-relaxed">
-                  {a.teaser}
-                </p>
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-[#0E292F] mt-1">
-                  Read More
-                  <ArrowRight
-                    size={13}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </span>
+                {/* Content Skeleton */}
+                <div className="flex flex-col gap-3">
+                  {/* Date Placeholder */}
+                  <div className="h-3 w-24 rounded bg-slate-200" />
+
+                  {/* Title Placeholders (2 lines for realism) */}
+                  <div className="flex flex-col gap-2">
+                    <div className="h-5 w-11/12 rounded bg-slate-200" />
+                    <div className="h-5 w-2/3 rounded bg-slate-200" />
+                  </div>
+
+                  {/* Teaser Paragraph Placeholders (3 lines) */}
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <div className="h-3.5 w-full rounded bg-slate-100" />
+                    <div className="h-3.5 w-full rounded bg-slate-100" />
+                    <div className="h-3.5 w-4/5 rounded bg-slate-100" />
+                  </div>
+
+                  {/* "Read More" Link Placeholder */}
+                  <div className="h-3.5 w-28 rounded bg-slate-200 mt-2" />
+                </div>
               </div>
-            </motion.a>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {blogs.slice(0, 4).map((a, idx) => {
+              const cleanHtml = DOMPurify.sanitize(a.body_html, {
+                FORBID_TAGS: ["img"],
+              });
+              const plainText = cleanHtml.replace(/<[^>]*>/g, " ");
+
+              const first50Words = plainText
+                .trim()
+                .split(/\s+/)
+                .slice(0, 50)
+                .join(" ");
+              const teaserText =
+                plainText.split(/\s+/).length > 50
+                  ? `${first50Words}...`
+                  : first50Words;
+              return (
+                <motion.a
+                  key={a.title}
+                  href={`/blog/${a.slug}`}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-60px" }}
+                  // variants={fadeUp}
+                  transition={{ delay: idx * 0.1 }}
+                  className="group flex flex-col gap-5"
+                >
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
+                    <img
+                      src={a.image_url}
+                      alt={a.title}
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                      loading="lazy"
+                    />
+                    <span
+                      className="absolute top-4 left-4 px-3 py-1.5 rounded-[6px] text-[10px] font-bold tracking-[0.15em] uppercase
+                  bg-white/90 text-[#0E292F]"
+                    >
+                      {a.category}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <span className="text-[11px] font-bold tracking-[0.2em] text-[#3D7188] uppercase">
+                      {new Date(a.created_at).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                    <h3 className="text-xl font-semibold text-[#0E292F] tracking-tight leading-snug group-hover:text-[#3D7188] transition-colors duration-300">
+                      {a.title}
+                    </h3>
+                    <p className="text-sm text-[#0E292F]/55 font-light leading-relaxed">
+                      {teaserText}
+                    </p>
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-[#0E292F] mt-1">
+                      Read More
+                      <ArrowRight
+                        size={13}
+                        className="transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </span>
+                  </div>
+                </motion.a>
+              );
+            })}
+          </div>
+        )}
 
         <motion.div
           initial="hidden"
@@ -122,7 +190,7 @@ export default function InsightsPreviewSection() {
           className="flex justify-center mt-16"
         >
           <a
-            href="/insights"
+            href="/blog"
             className="inline-flex items-center gap-6 pl-6 pr-2 py-2 rounded-[8px] bg-transparent text-[#0E292F]
               hover:bg-[#0E292F] hover:text-white border border-[#0E292F] transition-all duration-300 group
               text-[11px] font-bold tracking-widest uppercase whitespace-nowrap"
