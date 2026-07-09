@@ -113,6 +113,11 @@ export async function createProperty(data: {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const slug = data.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
   // Validate listing type against allowed values
   const validListingTypes = ["sale", "rent", "commercial", "land"];
   const listingType = validListingTypes.includes(data.type || "")
@@ -142,6 +147,7 @@ export async function createProperty(data: {
       tags: data.tags || [],
       map_embed: data.map_embed || null,
       status: "available",
+      slug,
     } as any)
     .select()
     .single();
@@ -160,6 +166,33 @@ export async function getPublicProperties() {
     .from("properties")
     .select("*")
     .eq("status", "available")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
+  if (properties && properties.length > 0) {
+    const propertyIds = properties.map((p: any) => p.id);
+    const { data: images } = await supabase
+      .from("property_images")
+      .select("*")
+      .in("property_id", propertyIds)
+      .order("order_index", { ascending: true });
+
+    return properties.map((property: any) => ({
+      ...property,
+      property_images: (images || []).filter(
+        (img: any) => img.property_id === property.id,
+      ),
+    }));
+  }
+
+  return properties || [];
+}
+
+export async function getFeaturedProperties() {
+  const { data: properties, error } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("featured", true)
     .order("created_at", { ascending: false });
   if (error) throw error;
 
@@ -289,6 +322,29 @@ export async function getPropertyById(propertyId: string) {
 
   return property;
 }
+export async function getPropertyBySlug(slug: string) {
+  const { data: property, error } = await supabase
+    .from("properties")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+  if (error) throw error;
+
+  if (property) {
+    const { data: images } = await supabase
+      .from("property_images")
+      .select("*")
+      .eq("property_id", property.id)
+      .order("order_index", { ascending: true });
+
+    return {
+      ...property,
+      property_images: images || [],
+    };
+  }
+
+  return property;
+}
 
 export async function deleteProperty(propertyId: string) {
   await requireAdmin();
@@ -331,6 +387,7 @@ export async function updateProperty(
     tags?: string[];
     map_embed?: string;
     status?: string;
+    featured: boolean;
   },
 ) {
   await requireAdmin();
@@ -340,6 +397,10 @@ export async function updateProperty(
     data.listing_type && validListingTypes.includes(data.listing_type)
       ? data.listing_type
       : "sale";
+  const slug = data.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 
   const { data: property, error } = await supabase
     .from("properties")
@@ -347,6 +408,7 @@ export async function updateProperty(
       title: data.title,
       description: data.description || null,
       price: data.price,
+      slug: slug,
       property_type: listingType, // Required - has check constraint
       listing_type: listingType,
       category: data.category || "Apartment",
@@ -497,11 +559,12 @@ export async function getAllBlogs() {
   return data || [];
 }
 
-export async function getPublishedBlogs() {
+export async function getPublishedBlogs(limit: number = 10000) {
   const { data, error } = await supabase
     .from("blogs")
     .select("*")
     .eq("published", true)
+    .limit(limit)
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data || [];
@@ -583,7 +646,9 @@ export async function uploadBlogImage(file: File): Promise<string> {
     .from("property-images")
     .upload(filePath, file, { cacheControl: "3600", upsert: false });
   if (error) throw error;
-  const { data } = supabase.storage.from("property-images").getPublicUrl(filePath);
+  const { data } = supabase.storage
+    .from("property-images")
+    .getPublicUrl(filePath);
   return data.publicUrl;
 }
 

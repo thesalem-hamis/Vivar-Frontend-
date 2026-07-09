@@ -54,6 +54,7 @@ interface PropertyFormData {
   amenities: string[];
   tags: string[];
   imageFiles: File[];
+  featured: boolean;
 }
 
 const initialFormData: PropertyFormData = {
@@ -73,6 +74,7 @@ const initialFormData: PropertyFormData = {
   amenities: [""],
   tags: [""],
   imageFiles: [],
+  featured: false,
 };
 
 export const AMENITIES_LIST: string[] = [
@@ -433,8 +435,6 @@ export default function PropertiesPage() {
     return () => unsubscribe();
   }, []);
 
-
-
   const generateMapEmbed = () => {
     if (!formData.address && !formData.city) return undefined;
     const address = [
@@ -523,6 +523,7 @@ export default function PropertiesPage() {
       amenities: property.amenities || [""],
       tags: property.tags || [""],
       imageFiles: [],
+      featured: property.featured,
     });
     setShowModal(true);
   };
@@ -556,6 +557,7 @@ export default function PropertiesPage() {
         tags: tags,
         map_embed: mapEmbed,
         status: editTarget.status,
+        featured: formData.featured,
       });
 
       if (formData.imageFiles.length > 0) {
@@ -1018,18 +1020,62 @@ export default function PropertiesPage() {
                 <div>
                   <SectionLabel label="Basic info" />
                   <div className="space-y-4">
-                    <Field label="Property title" required>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. 8 Units of 4 Bedroom Fully Furnished Apartments"
-                        value={formData.title}
-                        onChange={(e) =>
-                          setFormData({ ...formData, title: e.target.value })
-                        }
-                        className={inputCls}
-                      />
-                    </Field>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field label="Property title" required>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. 8 Units of 4 Bedroom Fully Furnished Apartments"
+                          value={formData.title}
+                          onChange={(e) =>
+                            setFormData({ ...formData, title: e.target.value })
+                          }
+                          className={inputCls}
+                        />
+                      </Field>
+                      <Field label="Featured" required>
+                        <div className="inline-grid grid-cols-2 p-1 w-full bg-slate-100 rounded-lg border border-slate-200">
+                          {/* Featured Option */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                featured: true,
+                              }))
+                            }
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-150 flex items-center gap-2 ${
+                              formData.featured
+                                ? "bg-[#0E292F] text-white shadow-sm"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            {formData.featured && (
+                              <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                            )}
+                            Featured
+                          </button>
+
+                          {/* Not Featured Option */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                featured: false,
+                              }))
+                            }
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
+                              !formData.featured
+                                ? "bg-[#0E292F] text-white shadow-sm"
+                                : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            Not Featured
+                          </button>
+                        </div>
+                      </Field>
+                    </div>
                     <Field label="Description">
                       <textarea
                         rows={3}

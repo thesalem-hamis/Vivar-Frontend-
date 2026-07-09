@@ -495,7 +495,7 @@ export default function PropertyDetailPage() {
       const { data, error: fetchError } = await supabase
         .from("properties")
         .select("*, property_images(*)")
-        .eq("id", id)
+        .eq("slug", id)
         .single();
       if (fetchError) throw fetchError;
       setProperty({

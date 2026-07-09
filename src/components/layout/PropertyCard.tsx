@@ -43,7 +43,7 @@ export default function PropertyCard({ property }: { property: any }) {
   const displayImages = images.length > 0 ? images : ["/placeholder.jpg"];
 
   const handleClick = () => {
-    navigate(`/properties/${property.id}`);
+    navigate(`/properties/${property.slug}`);
   };
 
   return (
