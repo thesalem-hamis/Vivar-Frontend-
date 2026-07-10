@@ -6,45 +6,6 @@ import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
 
-const articles = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop",
-    category: "Buying Guide",
-    title: "How to Buy Property in Ikoyi, Lagos. The Complete Guide",
-    teaser:
-      "Everything a serious buyer needs to know about pricing, due diligence, and timelines before making an offer in Ikoyi.",
-    date: "June 2026",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1200&auto=format&fit=crop",
-    category: "Market Report",
-    title: "Lekki Phase 1 vs Lekki Phase 2: The Better Investment in 2026?",
-    teaser:
-      "A side-by-side look at pricing trends, infrastructure, and appreciation potential across both corridors.",
-    date: "May 2026",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop",
-    category: "Diaspora Guide",
-    title: "How to Buy Nigerian Property from the UK; Step by Step",
-    teaser:
-      "A practical, remote-friendly walkthrough for diaspora clients investing back home without setting foot in Lagos.",
-    date: "May 2026",
-  },
-];
-
-// const fadeUp = {
-//   hidden: { opacity: 0, y: 28 },
-//   visible: {
-//     opacity: 1,
-//     y: 0,
-//     transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-//   },
-// };
-
 export default function InsightsPreviewSection() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +23,6 @@ export default function InsightsPreviewSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          // variants={fadeUp}
           className="max-w-2xl mx-auto text-center mb-16 md:mb-20"
         >
           <span className="text-[11px] font-bold tracking-[0.25em] text-[#3D7188] uppercase mb-4 block">
@@ -81,44 +41,36 @@ export default function InsightsPreviewSection() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {[1, 2, 3].map((idx) => (
               <div key={idx} className="flex flex-col gap-5 animate-pulse">
-                {/* Image & Category Badge Skeleton */}
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-200">
-                  {/* Category Badge Placeholder */}
                   <div className="absolute top-4 left-4 h-6 w-20 rounded-[6px] bg-slate-300/80" />
                 </div>
-
-                {/* Content Skeleton */}
                 <div className="flex flex-col gap-3">
-                  {/* Date Placeholder */}
                   <div className="h-3 w-24 rounded bg-slate-200" />
-
-                  {/* Title Placeholders (2 lines for realism) */}
                   <div className="flex flex-col gap-2">
                     <div className="h-5 w-11/12 rounded bg-slate-200" />
                     <div className="h-5 w-2/3 rounded bg-slate-200" />
                   </div>
-
-                  {/* Teaser Paragraph Placeholders (3 lines) */}
                   <div className="flex flex-col gap-1.5 mt-1">
                     <div className="h-3.5 w-full rounded bg-slate-100" />
                     <div className="h-3.5 w-full rounded bg-slate-100" />
                     <div className="h-3.5 w-4/5 rounded bg-slate-100" />
                   </div>
-
-                  {/* "Read More" Link Placeholder */}
                   <div className="h-3.5 w-28 rounded bg-slate-200 mt-2" />
                 </div>
               </div>
             ))}
           </div>
+        ) : blogs.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-[#0E292F]/50 text-sm">No insights published yet.</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {blogs.slice(0, 4).map((a, idx) => {
+            {blogs.slice(0, 3).map((a, idx) => {
               const cleanHtml = DOMPurify.sanitize(a.body_html, {
                 FORBID_TAGS: ["img"],
               });
               const plainText = cleanHtml.replace(/<[^>]*>/g, " ");
-
               const first50Words = plainText
                 .trim()
                 .split(/\s+/)
@@ -130,30 +82,27 @@ export default function InsightsPreviewSection() {
                   : first50Words;
               return (
                 <motion.a
-                  key={a.title}
+                  key={a.slug || a.id || idx}
                   href={`/blog/${a.slug}`}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: "-60px" }}
-                  // variants={fadeUp}
                   transition={{ delay: idx * 0.1 }}
                   className="group flex flex-col gap-5"
                 >
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
                     <img
-                      src={a.image_url}
+                      src={a.image_url || "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop"}
                       alt={a.title}
                       className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                       loading="lazy"
                     />
-                    <span
-                      className="absolute top-4 left-4 px-3 py-1.5 rounded-[6px] text-[10px] font-bold tracking-[0.15em] uppercase
-                  bg-white/90 text-[#0E292F]"
-                    >
-                      {a.category}
-                    </span>
+                    {a.category && (
+                      <span className="absolute top-4 left-4 px-3 py-1.5 rounded-[6px] text-[10px] font-bold tracking-[0.15em] uppercase bg-white/90 text-[#0E292F]">
+                        {a.category}
+                      </span>
+                    )}
                   </div>
-
                   <div className="flex flex-col gap-3">
                     <span className="text-[11px] font-bold tracking-[0.2em] text-[#3D7188] uppercase">
                       {new Date(a.created_at).toLocaleDateString("en-US", {
@@ -170,10 +119,7 @@ export default function InsightsPreviewSection() {
                     </p>
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-[#0E292F] mt-1">
                       Read More
-                      <ArrowRight
-                        size={13}
-                        className="transition-transform duration-300 group-hover:translate-x-1"
-                      />
+                      <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
                     </span>
                   </div>
                 </motion.a>
@@ -182,28 +128,26 @@ export default function InsightsPreviewSection() {
           </div>
         )}
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          // variants={fadeUp}
-          className="flex justify-center mt-16"
-        >
-          <a
-            href="/blog"
-            className="inline-flex items-center gap-6 pl-6 pr-2 py-2 rounded-[8px] bg-transparent text-[#0E292F]
-              hover:bg-[#0E292F] hover:text-white border border-[#0E292F] transition-all duration-300 group
-              text-[11px] font-bold tracking-widest uppercase whitespace-nowrap"
+        {blogs.length > 0 && (
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex justify-center mt-16"
           >
-            <span>View All Insights</span>
-            <div
-              className="flex items-center justify-center w-9 h-9 rounded-[6px] bg-[#0E292F] text-white
-              group-hover:bg-white group-hover:text-[#0E292F] transition-all duration-300"
+            <a
+              href="/blog"
+              className="inline-flex items-center gap-6 pl-6 pr-2 py-2 rounded-[8px] bg-transparent text-[#0E292F]
+                hover:bg-[#0E292F] hover:text-white border border-[#0E292F] transition-all duration-300 group
+                text-[11px] font-bold tracking-widest uppercase whitespace-nowrap"
             >
-              <ArrowUpRight size={15} strokeWidth={2.5} />
-            </div>
-          </a>
-        </motion.div>
+              <span>View All Insights</span>
+              <div className="flex items-center justify-center w-9 h-9 rounded-[6px] bg-[#0E292F] text-white group-hover:bg-white group-hover:text-[#0E292F] transition-all duration-300">
+                <ArrowUpRight size={15} strokeWidth={2.5} />
+              </div>
+            </a>
+          </motion.div>
+        )}
       </div>
     </section>
   );

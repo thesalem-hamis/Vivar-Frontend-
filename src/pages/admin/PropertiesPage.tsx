@@ -24,6 +24,8 @@ import {
   Check,
   ChevronDown,
   FilePen,
+  Star,
+  Sparkles,
 } from "lucide-react";
 
 import emptyStateImg from "@/assets/svg.png";
@@ -320,6 +322,7 @@ const statusStyles: Record<string, string> = {
   pending: "bg-[#FFFBEB] text-[#B45309] border-[#FEF3C7]",
   sold: "bg-[#FEF2F2] text-[#DC2626] border-[#FECACA]",
   rented: "bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]",
+  featured: "bg-yellow-100 text-yellow-800 border-yellow-200",
 };
 
 const typeStyles: Record<string, string> = {
@@ -387,6 +390,7 @@ export default function PropertiesPage() {
 
   const [editTarget, setEditTarget] = useState<any | null>(null);
   const [editing, setEditing] = useState(false);
+  const [featuring, setFeaturing] = useState<string | null>(null);
 
   const addToast = (message: string, type: "success" | "error") => {
     const id = Math.random().toString(36).substring(7);
@@ -434,6 +438,43 @@ export default function PropertiesPage() {
     );
     return () => unsubscribe();
   }, []);
+
+  const handleFeatureClick = async (property: any) => {
+    if (featuring) return;
+    setFeaturing(property.id);
+
+    const originalFeatured = property.featured;
+    const updatedFeatured = !originalFeatured;
+
+    // Optimistic UI update
+    setProperties((prev) =>
+      prev.map((p) =>
+        p.id === property.id ? { ...p, featured: updatedFeatured } : p,
+      ),
+    );
+
+    try {
+      await updateProperty(property.id, { featured: updatedFeatured });
+      addToast(
+        `Property ${updatedFeatured ? "featured" : "unfeatured"}`,
+        "success",
+      );
+    } catch (err: any) {
+      // Revert on error
+      setProperties((prev) =>
+        prev.map((p) =>
+          p.id === property.id ? { ...p, featured: originalFeatured } : p,
+        ),
+      );
+      addToast(
+        err.message ||
+          `Failed to ${updatedFeatured ? "feature" : "unfeature"} property`,
+        "error",
+      );
+    } finally {
+      setFeaturing(null);
+    }
+  };
 
   const generateMapEmbed = () => {
     if (!formData.address && !formData.city) return undefined;
@@ -521,9 +562,9 @@ export default function PropertiesPage() {
       country: property.country || "Nigeria",
       documents: property.documents || "",
       amenities: property.amenities || [""],
-      tags: property.tags || [""],
-      imageFiles: [],
+      tags: property.tags || [],
       featured: property.featured,
+      imageFiles: [],
     });
     setShowModal(true);
   };
@@ -578,7 +619,13 @@ export default function PropertiesPage() {
 
   const filteredProperties = properties.filter((p) => {
     if (selectedType !== "all" && p.type !== selectedType) return false;
-    if (selectedStatus !== "all" && p.status !== selectedStatus) return false;
+    if (selectedStatus !== "all") {
+      if (selectedStatus === "featured") {
+        if (!p.featured) return false;
+      } else if (p.status !== selectedStatus) {
+        return false;
+      }
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       return (
@@ -598,6 +645,7 @@ export default function PropertiesPage() {
       forRent: properties.filter((p) => p.type === "rent").length,
       commercial: properties.filter((p) => p.type === "commercial").length,
       land: properties.filter((p) => p.type === "land").length,
+      featured: properties.filter((p) => p.featured).length,
     }),
     [properties],
   );
@@ -812,6 +860,14 @@ export default function PropertiesPage() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0E292F]/60 via-transparent to-transparent" />
                 <div className="absolute top-3 left-3 flex gap-1.5">
+                  {property.featured && (
+                    <span
+                      className={`px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold border rounded-full ${getStyle(statusStyles, "featured")}`}
+                    >
+                      <Star className="w-2.5 h-2.5 inline-block mr-1" />
+                      Featured
+                    </span>
+                  )}
                   <span
                     className={`px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold border rounded-full ${getStyle(statusStyles, property.status)}`}
                   >
@@ -863,23 +919,55 @@ export default function PropertiesPage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-0.5">
-                    <button
-                      onClick={() => handleEditClick(property)}
-                      className="p-1.5 rounded-md text-[#9CA3AF] hover:text-blue-600 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 transition-all hover:scale-110 active:scale-95 hover:shadow-md hover:shadow-blue-200 hover:ring-2 hover:ring-blue-300"
-                    >
-                      <FilePen className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() =>
-                        setDeleteTarget({
-                          id: property.id,
-                          title: property.title,
-                        })
-                      }
-                      className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {/* Plus/Featured button with tooltip */}
+                    <div className="relative group/tooltip">
+                      <button
+                        onClick={() => handleFeatureClick(property)}
+                        className={`p-1.5 rounded-md transition-all hover:scale-110 active:scale-95 ${
+                          property.featured
+                            ? "text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50"
+                            : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50"
+                        }`}
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#0E292F] text-white text-[10px] rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        {property.featured
+                          ? "Remove from featured"
+                          : "Add to featured"}
+                      </span>
+                    </div>
+
+                    {/* Edit button with tooltip */}
+                    <div className="relative group/tooltip">
+                      <button
+                        onClick={() => handleEditClick(property)}
+                        className="p-1.5 rounded-md text-[#9CA3AF] hover:text-blue-600 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 transition-all hover:scale-110 active:scale-95"
+                      >
+                        <FilePen className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#0E292F] text-white text-[10px] rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        Edit property
+                      </span>
+                    </div>
+
+                    {/* Delete button with tooltip */}
+                    <div className="relative group/tooltip">
+                      <button
+                        onClick={() =>
+                          setDeleteTarget({
+                            id: property.id,
+                            title: property.title,
+                          })
+                        }
+                        className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#0E292F] text-white text-[10px] rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        Delete property
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -894,16 +982,22 @@ export default function PropertiesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#E5E7EB] bg-[#FAFAFA]">
-                {["Property", "Type", "Status", "Price", "Details", ""].map(
-                  (h) => (
-                    <th
-                      key={h}
-                      className="text-left text-[10px] uppercase tracking-[0.14em] text-[#9CA3AF] font-bold px-4 py-2.5 font-sans"
-                    >
-                      {h}
-                    </th>
-                  ),
-                )}
+                {[
+                  "Property",
+                  "Type",
+                  "Status",
+                  "Featured",
+                  "Price",
+                  "Details",
+                  "",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left text-[10px] uppercase tracking-[0.14em] text-[#9CA3AF] font-bold px-4 py-2.5 font-sans"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E5E7EB]">
@@ -951,6 +1045,16 @@ export default function PropertiesPage() {
                       {property.status}
                     </span>
                   </td>
+                  <td className="px-4 py-2.5">
+                    {property.featured && (
+                      <span
+                        className={`px-2 py-0.5 text-[10px] uppercase tracking-wide border font-semibold rounded-full ${getStyle(statusStyles, "featured")}`}
+                      >
+                        <Star className="w-2.5 h-2.5 inline-block mr-1" />
+                        Featured
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-2.5 text-sm font-bold text-[#0E292F] font-sans">
                     ₦{Number(property.price).toLocaleString()}
                   </td>
@@ -960,23 +1064,55 @@ export default function PropertiesPage() {
                   </td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center justify-end gap-0.5">
-                      <button
-                        onClick={() => handleEditClick(property)}
-                        className="p-1.5 rounded-md text-[#9CA3AF] hover:text-blue-600 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 transition-all hover:scale-110 active:scale-95 hover:shadow-md hover:shadow-blue-200 hover:ring-2 hover:ring-blue-300"
-                      >
-                        <FilePen className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() =>
-                          setDeleteTarget({
-                            id: property.id,
-                            title: property.title,
-                          })
-                        }
-                        className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2]"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      {/* Plus/Featured button with tooltip */}
+                      <div className="relative group/tooltip">
+                        <button
+                          onClick={() => handleFeatureClick(property)}
+                          className={`p-1.5 rounded-md transition-all hover:scale-110 active:scale-95 ${
+                            property.featured
+                              ? "text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50"
+                              : "text-gray-400 hover:text-yellow-500 hover:bg-yellow-50"
+                          }`}
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#0E292F] text-white text-[10px] rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                          {property.featured
+                            ? "Remove from featured"
+                            : "Add to featured"}
+                        </span>
+                      </div>
+
+                      {/* Edit button with tooltip */}
+                      <div className="relative group/tooltip">
+                        <button
+                          onClick={() => handleEditClick(property)}
+                          className="p-1.5 rounded-md text-[#9CA3AF] hover:text-blue-600 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 transition-all hover:scale-110 active:scale-95"
+                        >
+                          <FilePen className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#0E292F] text-white text-[10px] rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                          Edit property
+                        </span>
+                      </div>
+
+                      {/* Delete button with tooltip */}
+                      <div className="relative group/tooltip">
+                        <button
+                          onClick={() =>
+                            setDeleteTarget({
+                              id: property.id,
+                              title: property.title,
+                            })
+                          }
+                          className="p-1.5 rounded-md text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[#0E292F] text-white text-[10px] rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                          Delete property
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -1235,18 +1371,6 @@ export default function PropertiesPage() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Field label="Amenities">
-                        {/* <input
-                          type="text"
-                          placeholder="e.g. Swimming Pool, 24/7 Power, CCTV, Gym"
-                          value={formData.amenities}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              amenities: e.target.value,
-                            })
-                          }
-                          className={inputCls}
-                        /> */}
                         <MultiSelectField
                           name="amenities"
                           options={AMENITIES_LIST}

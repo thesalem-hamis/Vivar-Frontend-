@@ -160,7 +160,45 @@ export async function createProperty(data: {
   };
 }
 
+export async function updateProperty(
+  propertyId: string,
+  data: {
+    title?: string;
+    description?: string;
+    price?: number;
+    listing_type?: string;
+    category?: string;
+    bedrooms?: number;
+    bathrooms?: number;
+    area_sqft?: number;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    documents?: string;
+    amenities?: string[];
+    tags?: string[];
+    map_embed?: string;
+    status?: string;
+    featured?: boolean;
+  },
+) {
+  await requireAdmin();
+
+  const { data: property, error } = await supabase
+    .from("properties")
+    .update(data)
+    .eq("id", propertyId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return property;
+}
+
 // For public users — they can see available properties (no admin check)
+// Excludes featured properties to avoid duplicates on homepage
 export async function getPublicProperties() {
   const { data: properties, error } = await supabase
     .from("properties")
@@ -188,32 +226,36 @@ export async function getPublicProperties() {
   return properties || [];
 }
 
-export async function getFeaturedProperties() {
-  const { data: properties, error } = await supabase
+export const getFeaturedProperties = async () => {
+  const { data, error } = await supabase
     .from("properties")
-    .select("*")
+    .select(
+      `
+      id, 
+      title, 
+      description, 
+      price, 
+      listing_type, 
+      category, 
+      bedrooms, 
+      bathrooms, 
+      area_sqft, 
+      address, 
+      city, 
+      state, 
+      country, 
+      status, 
+      featured, 
+      property_images (id, url)
+      `,
+    )
     .eq("featured", true)
+    .eq("status", "available")
     .order("created_at", { ascending: false });
-  if (error) throw error;
 
-  if (properties && properties.length > 0) {
-    const propertyIds = properties.map((p: any) => p.id);
-    const { data: images } = await supabase
-      .from("property_images")
-      .select("*")
-      .in("property_id", propertyIds)
-      .order("order_index", { ascending: true });
-
-    return properties.map((property: any) => ({
-      ...property,
-      property_images: (images || []).filter(
-        (img: any) => img.property_id === property.id,
-      ),
-    }));
-  }
-
-  return properties || [];
-}
+  if (error) throw new Error(error.message);
+  return data;
+};
 
 export async function searchPublicProperties(
   cat?: string,
@@ -365,83 +407,6 @@ export async function deleteProperty(propertyId: string) {
     .eq("id", propertyId);
   if (error) throw error;
   return { success: true };
-}
-
-export async function updateProperty(
-  propertyId: string,
-  data: {
-    title: string;
-    description?: string;
-    price: number;
-    listing_type?: string;
-    category?: string;
-    bedrooms?: number;
-    bathrooms?: number;
-    area_sqft?: number;
-    address?: string;
-    city?: string;
-    state?: string;
-    country?: string;
-    documents?: string;
-    amenities?: string[];
-    tags?: string[];
-    map_embed?: string;
-    status?: string;
-    featured: boolean;
-  },
-) {
-  await requireAdmin();
-
-  const validListingTypes = ["sale", "rent", "commercial", "land"];
-  const listingType =
-    data.listing_type && validListingTypes.includes(data.listing_type)
-      ? data.listing_type
-      : "sale";
-  const slug = data.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
-  const { data: property, error } = await supabase
-    .from("properties")
-    .update({
-      title: data.title,
-      description: data.description || null,
-      price: data.price,
-      slug: slug,
-      property_type: listingType, // Required - has check constraint
-      listing_type: listingType,
-      category: data.category || "Apartment",
-      bedrooms: data.bedrooms ?? 0,
-      bathrooms: data.bathrooms ?? 0,
-      area_sqft: data.area_sqft || null,
-      location: data.address || "", // Required - PostGIS column
-      address: data.address || null,
-      city: data.city || null,
-      state: data.state || null,
-      country: data.country || null,
-      documents: data.documents || null,
-      amenities: data.amenities || [],
-      tags: data.tags || [],
-      map_embed: data.map_embed || null,
-      status: data.status || "available",
-    } as any)
-    .eq("id", propertyId)
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  const { data: images } = await supabase
-    .from("property_images")
-    .select("*")
-    .eq("property_id", propertyId)
-    .order("order_index", { ascending: true });
-
-  return {
-    ...property,
-    property_images: images || [],
-  };
 }
 
 // ==========================================

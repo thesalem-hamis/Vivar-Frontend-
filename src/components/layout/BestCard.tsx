@@ -4,10 +4,10 @@ import { ArrowUpRight } from "lucide-react";
 
 interface ListingItem {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  location: string;
-  image: string;
+  city: string;
+  property_images: { url: string }[];
 }
 
 interface BestCardProps {
@@ -15,6 +15,8 @@ interface BestCardProps {
 }
 
 export default function BestCard({ item }: BestCardProps) {
+  const image = item.property_images?.[0]?.url || "/properties/placeholder.jpg";
+  
   return (
     <a
       href={`/properties/${item.id}`}
@@ -23,8 +25,8 @@ export default function BestCard({ item }: BestCardProps) {
     >
       {/* Property Image */}
       <img
-        src={item.image}
-        alt={item.name}
+        src={image}
+        alt={item.title}
         loading="lazy"
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
       />
@@ -44,7 +46,7 @@ export default function BestCard({ item }: BestCardProps) {
       {/* Content Area */}
       <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 flex flex-col gap-1 z-10 text-left">
         <h3 className="text-white text-lg sm:text-xl font-serif font-light tracking-tight leading-tight group-hover:text-white/80 transition-colors duration-300">
-          {item.name}
+          {item.title}
         </h3>
         
         <p className="text-white/80 text-[12px] sm:text-[13px] font-sans font-light leading-relaxed line-clamp-2 max-w-[92%]">
@@ -54,7 +56,7 @@ export default function BestCard({ item }: BestCardProps) {
         {/* Location Row - Clean Squared Action Layout */}
         <div className="flex items-center justify-between mt-2 pt-3 border-t border-white/10">
           <span className="text-[9px] font-medium tracking-[0.15em] uppercase text-white font-sans">
-            {item.location}
+            {item.city}
           </span>
           <div className="w-7 h-7 rounded-[6px] border border-white/30 flex items-center justify-center bg-white/10
             group-hover:bg-white group-hover:border-white transition-all duration-300 overflow-hidden">
