@@ -47,6 +47,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
+import { PhoneInput } from "react-international-phone";
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -481,23 +482,34 @@ export default function PropertyDetailPage() {
               <h1 className="text-[16px] sm:text-[19px] font-bold text-black leading-snug mb-3">
                 {property.title}
               </h1>
-              {(property.beds > 0 || property.baths > 0 || property.area > 0) && (
+              {(property.beds > 0 ||
+                property.baths > 0 ||
+                property.area > 0) && (
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] text-[#0E292F]/80 mb-3 font-medium">
                   {property.beds > 0 && (
                     <span className="flex items-center gap-1.5">
-                      <BedDouble className="w-3.5 h-3.5 text-[#3D7188]" strokeWidth={1.75} />
+                      <BedDouble
+                        className="w-3.5 h-3.5 text-[#3D7188]"
+                        strokeWidth={1.75}
+                      />
                       {property.beds} Beds
                     </span>
                   )}
                   {property.baths > 0 && (
                     <span className="flex items-center gap-1.5">
-                      <Bath className="w-3.5 h-3.5 text-[#3D7188]" strokeWidth={1.75} />
+                      <Bath
+                        className="w-3.5 h-3.5 text-[#3D7188]"
+                        strokeWidth={1.75}
+                      />
                       {property.baths} Baths
                     </span>
                   )}
                   {property.area > 0 && (
                     <span className="flex items-center gap-1.5">
-                      <Maximize2 className="w-3.5 h-3.5 text-[#3D7188]" strokeWidth={1.75} />
+                      <Maximize2
+                        className="w-3.5 h-3.5 text-[#3D7188]"
+                        strokeWidth={1.75}
+                      />
                       {property.area.toLocaleString()} sq.ft
                     </span>
                   )}
@@ -551,7 +563,9 @@ export default function PropertyDetailPage() {
                   className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#3D7188] hover:text-[#0E292F] border-b border-[#3D7188]/30 hover:border-[#0E292F]/40 transition-colors pb-0.5"
                 >
                   {descExpanded ? "Show less" : "Read more"}
-                  <ChevronDown className={`w-3 h-3 transition-transform ${descExpanded ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`w-3 h-3 transition-transform ${descExpanded ? "rotate-180" : ""}`}
+                  />
                 </button>
               )}
             </div>
@@ -561,10 +575,18 @@ export default function PropertyDetailPage() {
                 { label: "Property type", value: property.category || "Land" },
                 { label: "Floors", value: property.floors },
                 { label: "Year built", value: property.yearBuilt },
-                { label: "Price/sqm", value: property.pricePerSqm !== "—" ? `₦${Number(property.pricePerSqm).toLocaleString()}` : "—" },
+                {
+                  label: "Price/sqm",
+                  value:
+                    property.pricePerSqm !== "—"
+                      ? `₦${Number(property.pricePerSqm).toLocaleString()}`
+                      : "—",
+                },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#0E292F]/30 mb-1.5">{label}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#0E292F]/30 mb-1.5">
+                    {label}
+                  </p>
                   <p className="text-[14px] font-bold text-black">{value}</p>
                 </div>
               ))}
@@ -574,18 +596,41 @@ export default function PropertyDetailPage() {
               <div className="p-6 sm:p-8">
                 <div className="grid grid-cols-2 gap-y-7 gap-x-6">
                   {[
-                    { Icon: Building2, value: property.category || "Land", label: "Property Type" },
-                    { Icon: Trees, value: `${property.area.toLocaleString()} SQM`, label: "Land Size" },
-                    { Icon: Clock, value: property.durationText, label: "on Listing" },
-                    { Icon: Network, value: property.listingId, label: "Listing ID" },
+                    {
+                      Icon: Building2,
+                      value: property.category || "Land",
+                      label: "Property Type",
+                    },
+                    {
+                      Icon: Trees,
+                      value: `${property.area.toLocaleString()} SQM`,
+                      label: "Land Size",
+                    },
+                    {
+                      Icon: Clock,
+                      value: property.durationText,
+                      label: "on Listing",
+                    },
+                    {
+                      Icon: Network,
+                      value: property.listingId,
+                      label: "Listing ID",
+                    },
                   ].map(({ Icon, value, label }) => (
                     <div key={label} className="flex items-start gap-3.5">
                       <div className="w-9 h-9 bg-[#F5F5F5] border border-[#0E292F]/8 flex items-center justify-center shrink-0 rounded-lg">
-                        <Icon className="w-4 h-4 text-[#3D7188]" strokeWidth={1.5} />
+                        <Icon
+                          className="w-4 h-4 text-[#3D7188]"
+                          strokeWidth={1.5}
+                        />
                       </div>
                       <div>
-                        <p className="text-[14px] font-bold text-black leading-tight mb-0.5">{value}</p>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#0E292F]/30">{label}</p>
+                        <p className="text-[14px] font-bold text-black leading-tight mb-0.5">
+                          {value}
+                        </p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#0E292F]/30">
+                          {label}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -593,16 +638,28 @@ export default function PropertyDetailPage() {
               </div>
 
               <div className="p-6 sm:p-8">
-                <h2 className="font-serif text-[18px] font-bold text-[#0E292F] tracking-tight mb-5">Documentation Status</h2>
+                <h2 className="font-serif text-[18px] font-bold text-[#0E292F] tracking-tight mb-5">
+                  Documentation Status
+                </h2>
                 <div className="space-y-4">
                   {docs.map((doc: { name: string; available: boolean }) => (
                     <div key={doc.name} className="flex items-center gap-3.5">
-                      <div className={`w-8 h-8 border flex items-center justify-center shrink-0 rounded-lg ${doc.available ? "bg-[#F0FBF6] border-[#0E9F6E]/15" : "bg-[#FEF2F2] border-red-100"}`}>
-                        {doc.available ? <CheckCircle2 className="w-3.5 h-3.5 text-[#0E9F6E]" /> : <AlertCircle className="w-3.5 h-3.5 text-red-400" />}
+                      <div
+                        className={`w-8 h-8 border flex items-center justify-center shrink-0 rounded-lg ${doc.available ? "bg-[#F0FBF6] border-[#0E9F6E]/15" : "bg-[#FEF2F2] border-red-100"}`}
+                      >
+                        {doc.available ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#0E9F6E]" />
+                        ) : (
+                          <AlertCircle className="w-3.5 h-3.5 text-red-400" />
+                        )}
                       </div>
                       <div>
-                        <p className="text-[13px] font-bold text-black">{doc.name}</p>
-                        <p className={`text-[10px] font-bold uppercase tracking-[0.08em] mt-0.5 ${doc.available ? "text-[#0E9F6E]" : "text-red-400"}`}>
+                        <p className="text-[13px] font-bold text-black">
+                          {doc.name}
+                        </p>
+                        <p
+                          className={`text-[10px] font-bold uppercase tracking-[0.08em] mt-0.5 ${doc.available ? "text-[#0E9F6E]" : "text-red-400"}`}
+                        >
                           {doc.available ? "Available" : "Not Available"}
                         </p>
                       </div>
@@ -612,16 +669,28 @@ export default function PropertyDetailPage() {
               </div>
 
               <div className="p-6 sm:p-8">
-                <h2 className="font-serif text-[18px] font-bold text-[#0E292F] tracking-tight mb-5">What's Special?</h2>
+                <h2 className="font-serif text-[18px] font-bold text-[#0E292F] tracking-tight mb-5">
+                  What's Special?
+                </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
-                  {features.map((feat: { name: string; icon?: React.ReactNode }, i: number) => (
-                    <div key={feat.name} className={`flex items-center gap-3 py-3 border-b border-[#0E292F]/5 ${i % 2 === 0 ? "sm:pr-6 sm:border-r sm:border-[#0E292F]/5" : "sm:pl-6"}`}>
-                      <div className="w-7 h-7 bg-[#F5F5F5] border border-[#0E292F]/6 flex items-center justify-center shrink-0 rounded-lg">
-                        {feat.icon}
+                  {features.map(
+                    (
+                      feat: { name: string; icon?: React.ReactNode },
+                      i: number,
+                    ) => (
+                      <div
+                        key={feat.name}
+                        className={`flex items-center gap-3 py-3 border-b border-[#0E292F]/5 ${i % 2 === 0 ? "sm:pr-6 sm:border-r sm:border-[#0E292F]/5" : "sm:pl-6"}`}
+                      >
+                        <div className="w-7 h-7 bg-[#F5F5F5] border border-[#0E292F]/6 flex items-center justify-center shrink-0 rounded-lg">
+                          {feat.icon}
+                        </div>
+                        <span className="text-[12px] font-medium text-[#0E292F]/80">
+                          {feat.name}
+                        </span>
                       </div>
-                      <span className="text-[12px] font-medium text-[#0E292F]/80">{feat.name}</span>
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
               </div>
             </div>
@@ -632,53 +701,69 @@ export default function PropertyDetailPage() {
             <div className="bg-white border border-[#0E292F]/8 overflow-hidden rounded-2xl">
               <div className="flex items-center gap-3 p-5 border-b border-[#0E292F]/6">
                 <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#F5F5F5] border border-[#0E292F]/10 flex items-center justify-center shrink-0">
-                  <img src={logoMain} alt="Vivar Realty" className="w-full h-full object-contain" />
+                  <img
+                    src={logoMain}
+                    alt="Vivar Realty"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
               </div>
 
               <div className="p-5 space-y-3">
                 <div>
-                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">First name *</label>
+                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">
+                    First name *
+                  </label>
                   <input
                     value={form.firstName}
-                    onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, firstName: e.target.value }))
+                    }
                     placeholder="First name"
                     className="w-full px-3 py-2.5 border border-[#0E292F]/12 text-[13px] text-[#0E292F] placeholder-[#0E292F]/25 focus:outline-none focus:border-[#3D7188] focus:ring-1 focus:ring-[#3D7188]/15 transition-colors bg-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">Email *</label>
+                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">
+                    Email *
+                  </label>
                   <input
                     type="email"
                     value={form.email}
-                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, email: e.target.value }))
+                    }
                     placeholder="Your email address"
                     className="w-full px-3 py-2.5 border border-[#0E292F]/12 text-[13px] text-[#0E292F] placeholder-[#0E292F]/25 focus:outline-none focus:border-[#3D7188] focus:ring-1 focus:ring-[#3D7188]/15 transition-colors bg-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">Phone number</label>
-                  <div className="flex gap-2">
-                    <div className="flex items-center gap-1.5 px-3 py-2.5 border border-[#0E292F]/12 text-[12px] text-[#0E292F]/60 shrink-0 bg-[#F5F5F5]">
-                      <span className="text-base leading-none">🇳🇬</span>
-                      <span className="text-[10px] font-bold">+234</span>
-                      <ChevronDown className="w-3 h-3 text-[#0E292F]/30" />
-                    </div>
-                    <input
-                      type="tel"
+                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">
+                    Phone number
+                  </label>
+                  <div className="border border-[#0E292F]/12 text-[13px] text-[#0E292F]">
+                    <PhoneInput
+                      defaultCountry="ng"
                       value={form.phone}
-                      onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                      placeholder="080 0000 0000"
-                      className="flex-1 px-3 py-2.5 border border-[#0E292F]/12 text-[13px] text-[#0E292F] placeholder-[#0E292F]/25 focus:outline-none focus:border-[#3D7188] focus:ring-1 focus:ring-[#3D7188]/15 transition-colors bg-white"
+                      onChange={(phone) => setForm((f) => ({ ...f, phone }))}
+                      inputClassName="!w-full !border-none !text-[13px] !text-[#0E292F] !bg-white !rounded-none !self-center"
+                      countrySelectorStyleProps={{
+                        buttonClassName:
+                          "!bg-[#F5F5F5] !border-r !border-[#0E292F]/12 !rounded-none !px-2 !h-[44px]",
+                      }}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">Message *</label>
+                  <label className="block text-[9px] font-bold uppercase tracking-[0.12em] text-black mb-1.5">
+                    Message *
+                  </label>
                   <textarea
                     rows={3}
                     value={form.message}
-                    onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, message: e.target.value }))
+                    }
                     placeholder="Ask the agent for more information about this property…"
                     className="w-full px-3 py-2.5 border border-[#0E292F]/12 text-[13px] text-[#0E292F] placeholder-[#0E292F]/25 focus:outline-none focus:border-[#3D7188] focus:ring-1 focus:ring-[#3D7188]/15 transition-colors resize-none bg-white"
                   />
@@ -690,11 +775,12 @@ export default function PropertyDetailPage() {
                     whileTap={{ scale: 0.98 }}
                     disabled={submitting || formSent}
                     onClick={async () => {
-                      if (!form.firstName || !form.email || !form.message) return;
+                      if (!form.firstName || !form.email || !form.message)
+                        return;
                       setSubmitting(true);
                       try {
                         await submitPropertyEnquiry({
-                          property_id: id!,
+                          property_id: property.id,
                           property_title: property.title,
                           first_name: form.firstName,
                           email: form.email,
@@ -702,11 +788,21 @@ export default function PropertyDetailPage() {
                           message: form.message,
                         });
                         setFormSent(true);
-                        setForm({ firstName: "", email: "", phone: "", message: "" });
+                        setForm({
+                          firstName: "",
+                          email: "",
+                          phone: "",
+                          message: "",
+                        });
                         setTimeout(() => setFormSent(false), 3000);
                       } catch {
                         setFormSent(true);
-                        setForm({ firstName: "", email: "", phone: "", message: "" });
+                        setForm({
+                          firstName: "",
+                          email: "",
+                          phone: "",
+                          message: "",
+                        });
                         setTimeout(() => setFormSent(false), 3000);
                       } finally {
                         setSubmitting(false);
@@ -715,10 +811,18 @@ export default function PropertyDetailPage() {
                     className="inline-flex items-center w-full justify-between pl-5 pr-1.5 py-1.5 rounded-[8px] bg-[#0E292F] text-white hover:bg-white hover:text-[#0E292F] border border-[#0E292F] transition-all duration-300 group font-sans text-[10px] font-bold tracking-widest uppercase whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="w-full text-center pr-2">
-                      {formSent ? "Message Sent ✓" : submitting ? "Sending…" : "Send a Message"}
+                      {formSent
+                        ? "Message Sent ✓"
+                        : submitting
+                          ? "Sending…"
+                          : "Send a Message"}
                     </span>
                     <div className="flex items-center justify-center w-7 h-7 rounded-[6px] bg-white text-[#0E292F] group-hover:bg-[#0E292F] group-hover:text-white transition-all duration-300 shrink-0">
-                      {submitting ? <Loader2 className="w-[13px] h-[13px] animate-spin" /> : <ArrowUpRight size={13} strokeWidth={2.5} />}
+                      {submitting ? (
+                        <Loader2 className="w-[13px] h-[13px] animate-spin" />
+                      ) : (
+                        <ArrowUpRight size={13} strokeWidth={2.5} />
+                      )}
                     </div>
                   </motion.button>
                 </div>
@@ -766,15 +870,34 @@ export default function PropertyDetailPage() {
           <div className="absolute top-5 left-5 bg-white/10 px-3 py-1.5 text-[10px] font-bold text-white tracking-[0.1em]">
             {currentImageIndex + 1} / {imageList.length}
           </div>
-          <div className="relative w-full max-w-5xl max-h-[84vh]" onClick={(e) => e.stopPropagation()}>
-            <img src={imageList[currentImageIndex]} alt="" className="w-full max-h-[84vh] object-contain" />
+          <div
+            className="relative w-full max-w-5xl max-h-[84vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={imageList[currentImageIndex]}
+              alt=""
+              className="w-full max-h-[84vh] object-contain"
+            />
           </div>
           {imageList.length > 1 && (
             <>
-              <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} className="absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-colors z-50">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrev();
+                }}
+                className="absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-colors z-50"
+              >
                 <ChevronLeft className="w-5 h-5 text-white" />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); handleNext(); }} className="absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-colors z-50">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNext();
+                }}
+                className="absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/15 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-colors z-50"
+              >
                 <ChevronRight className="w-5 h-5 text-white" />
               </button>
             </>
@@ -784,10 +907,17 @@ export default function PropertyDetailPage() {
               {imageList.map((src: string, i: number) => (
                 <button
                   key={i}
-                  onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(i); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentImageIndex(i);
+                  }}
                   className={`flex-shrink-0 w-14 h-10 overflow-hidden border-2 transition-all rounded-lg ${i === currentImageIndex ? "border-white opacity-100" : "border-transparent opacity-40 hover:opacity-70"}`}
                 >
-                  <img src={src} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={src}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -819,21 +949,36 @@ function MapCard({ property }: { property: any }) {
       </div>
       <div className="px-5 py-4 flex items-start justify-between gap-3">
         <div>
-          <p className="text-[8px] font-bold uppercase tracking-[0.16em] text-[#3D7188] mb-1">Location</p>
+          <p className="text-[8px] font-bold uppercase tracking-[0.16em] text-[#3D7188] mb-1">
+            Location
+          </p>
           <p className="font-serif text-[13px] font-bold text-[#0E292F] tracking-tight leading-snug">
             {property.city}, {property.state}
           </p>
-          <p className="text-[11px] text-[#0E292F]/35 font-medium mt-0.5 leading-snug">{address}</p>
+          <p className="text-[11px] text-[#0E292F]/35 font-medium mt-0.5 leading-snug">
+            {address}
+          </p>
         </div>
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${embedQuery}`, "_blank")}
+          onClick={() =>
+            window.open(
+              `https://www.google.com/maps/search/?api=1&query=${embedQuery}`,
+              "_blank",
+            )
+          }
           className="inline-flex items-center justify-between pl-3 pr-1 py-1 rounded-[8px] bg-[#0E292F] text-white hover:bg-white hover:text-[#0E292F] border border-[#0E292F] group/map font-sans text-[8px] font-bold tracking-widest uppercase whitespace-nowrap shrink-0 mt-0.5 transition-all duration-300"
         >
-          <span className="pr-2 group-hover/map:translate-x-0.5 transition-transform duration-300">Map</span>
+          <span className="pr-2 group-hover/map:translate-x-0.5 transition-transform duration-300">
+            Map
+          </span>
           <div className="flex items-center justify-center w-6 h-6 rounded-[5px] bg-white text-[#0E292F] group-hover/map:bg-[#0E292F] group-hover/map:text-white transition-all duration-300">
-            <ArrowUpRight size={11} strokeWidth={2.5} className="group-hover/map:rotate-45 transition-transform duration-300" />
+            <ArrowUpRight
+              size={11}
+              strokeWidth={2.5}
+              className="group-hover/map:rotate-45 transition-transform duration-300"
+            />
           </div>
         </motion.button>
       </div>

@@ -18,17 +18,21 @@ const PROPERTY_TYPES = [
 ];
 
 const PropertyInquiry = () => {
-  const [form, setForm] = useState({ 
-    name: "", 
-    phone: "", 
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
     message: "",
-    property_type: "" 
+    property_type: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
@@ -51,7 +55,7 @@ const PropertyInquiry = () => {
       });
 
       setSubmitted(true);
-      
+
       // Reset form after 3 seconds
       setTimeout(() => {
         setSubmitted(false);
@@ -66,9 +70,7 @@ const PropertyInquiry = () => {
   };
 
   return (
-    <section 
-      className="relative w-full min-h-[600px] flex items-center overflow-hidden bg-cover bg-center bg-gray-900"
-    >
+    <section className="relative w-full min-h-[600px] flex items-center overflow-hidden bg-cover bg-center bg-gray-900">
       {/* Global Glass Overlay */}
       <div className="absolute inset-0 z-[1] bg-[#0E292F]/70 backdrop-blur-[8px]" />
 
@@ -80,14 +82,18 @@ const PropertyInquiry = () => {
             <span className="italic font-light opacity-80">in mind?</span>
           </h2>
           <p className="text-white/70 max-w-md leading-relaxed">
-            Fill the form to get in touch with us. Connect with our lead consultants for a private viewing or detailed breakdown of investment opportunities.
+            Fill the form to get in touch with us. Connect with our lead
+            consultants for a private viewing or detailed breakdown of
+            investment opportunities.
           </p>
         </div>
 
         {/* Right Side: Form */}
         <div className="w-full max-w-md bg-white p-6 shadow-xl rounded-sm">
-          <h1 className="text-lg font-serif text-black mb-6">Got Any Inquiry?</h1>
-          
+          <h1 className="text-lg font-serif text-black mb-6">
+            Got Any Inquiry?
+          </h1>
+
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-sm">
               <p className="text-xs text-red-600">{error}</p>
@@ -117,9 +123,10 @@ const PropertyInquiry = () => {
                   defaultCountry="ng"
                   value={form.phone}
                   onChange={(phone) => setForm((f) => ({ ...f, phone }))}
-                  inputClassName="!w-full !border-none !text-[13px] !text-[#0E292F] !bg-white !rounded-none"
+                  inputClassName="!w-full !border-none !text-[13px] !text-[#0E292F] !bg-white !rounded-none !self-center"
                   countrySelectorStyleProps={{
-                    buttonClassName: "!bg-[#F5F5F5] !border-r !border-[#0E292F]/12 !rounded-none !h-[44px]",
+                    buttonClassName:
+                      "!bg-[#F5F5F5] !border-r !border-[#0E292F]/12 !rounded-none !px-2 !h-[44px]",
                   }}
                 />
               </div>
@@ -162,11 +169,11 @@ const PropertyInquiry = () => {
             </div>
 
             <motion.button
-              whileHover={{ 
-                scale: submitting ? 1 : 1.01, 
-                backgroundColor: submitting ? "#0E292F" : "#ffffff", 
+              whileHover={{
+                scale: submitting ? 1 : 1.01,
+                backgroundColor: submitting ? "#0E292F" : "#ffffff",
                 color: submitting ? "#ffffff" : "#0E292F",
-                borderColor: "#0E292F" 
+                borderColor: "#0E292F",
               }}
               whileTap={{ scale: submitting ? 1 : 0.99 }}
               onClick={handleSubmit}
@@ -175,7 +182,11 @@ const PropertyInquiry = () => {
             >
               {submitting ? (
                 <>
-                  <Loader2 size={13} strokeWidth={2.5} className="animate-spin" /> 
+                  <Loader2
+                    size={13}
+                    strokeWidth={2.5}
+                    className="animate-spin"
+                  />
                   Sending...
                 </>
               ) : submitted ? (

@@ -232,6 +232,7 @@ export const getFeaturedProperties = async () => {
     .select(
       `
       id, 
+      slug,
       title, 
       description, 
       price, 
