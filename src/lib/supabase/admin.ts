@@ -198,7 +198,6 @@ export async function getPublicProperties() {
     .from("properties")
     .select("*")
     .eq("status", "available")
-    .eq("featured", false) // Exclude featured - they're fetched separately
     .order("created_at", { ascending: false });
   if (error) throw error;
 
