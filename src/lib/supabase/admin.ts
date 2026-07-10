@@ -154,12 +154,51 @@ export async function createProperty(data: {
   };
 }
 
+export async function updateProperty(
+  propertyId: string,
+  data: {
+    title?: string;
+    description?: string;
+    price?: number;
+    listing_type?: string;
+    category?: string;
+    bedrooms?: number;
+    bathrooms?: number;
+    area_sqft?: number;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    documents?: string;
+    amenities?: string[];
+    tags?: string[];
+    map_embed?: string;
+    status?: string;
+    featured?: boolean;
+  },
+) {
+  await requireAdmin();
+
+  const { data: property, error } = await supabase
+    .from("properties")
+    .update(data)
+    .eq("id", propertyId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return property;
+}
+
 // For public users — they can see available properties (no admin check)
+// Excludes featured properties to avoid duplicates on homepage
 export async function getPublicProperties() {
   const { data: properties, error } = await supabase
     .from("properties")
     .select("*")
     .eq("status", "available")
+    .eq("featured", false) // Exclude featured - they're fetched separately
     .order("created_at", { ascending: false });
   if (error) throw error;
 
@@ -181,6 +220,37 @@ export async function getPublicProperties() {
 
   return properties || [];
 }
+
+export const getFeaturedProperties = async () => {
+  const { data, error } = await supabase
+    .from("properties")
+    .select(
+      `
+      id, 
+      title, 
+      description, 
+      price, 
+      listing_type, 
+      category, 
+      bedrooms, 
+      bathrooms, 
+      area_sqft, 
+      address, 
+      city, 
+      state, 
+      country, 
+      status, 
+      featured, 
+      property_images (id, url)
+      `
+    )
+    .eq("featured", true)
+    .eq("status", "available")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data;
+};
 
 export async function searchPublicProperties(
   cat?: string,
@@ -309,77 +379,6 @@ export async function deleteProperty(propertyId: string) {
     .eq("id", propertyId);
   if (error) throw error;
   return { success: true };
-}
-
-export async function updateProperty(
-  propertyId: string,
-  data: {
-    title: string;
-    description?: string;
-    price: number;
-    listing_type?: string;
-    category?: string;
-    bedrooms?: number;
-    bathrooms?: number;
-    area_sqft?: number;
-    address?: string;
-    city?: string;
-    state?: string;
-    country?: string;
-    documents?: string;
-    amenities?: string[];
-    tags?: string[];
-    map_embed?: string;
-    status?: string;
-  },
-) {
-  await requireAdmin();
-
-  const validListingTypes = ["sale", "rent", "commercial", "land"];
-  const listingType =
-    data.listing_type && validListingTypes.includes(data.listing_type)
-      ? data.listing_type
-      : "sale";
-
-  const { data: property, error } = await supabase
-    .from("properties")
-    .update({
-      title: data.title,
-      description: data.description || null,
-      price: data.price,
-      property_type: listingType, // Required - has check constraint
-      listing_type: listingType,
-      category: data.category || "Apartment",
-      bedrooms: data.bedrooms ?? 0,
-      bathrooms: data.bathrooms ?? 0,
-      area_sqft: data.area_sqft || null,
-      location: data.address || "", // Required - PostGIS column
-      address: data.address || null,
-      city: data.city || null,
-      state: data.state || null,
-      country: data.country || null,
-      documents: data.documents || null,
-      amenities: data.amenities || [],
-      tags: data.tags || [],
-      map_embed: data.map_embed || null,
-      status: data.status || "available",
-    } as any)
-    .eq("id", propertyId)
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  const { data: images } = await supabase
-    .from("property_images")
-    .select("*")
-    .eq("property_id", propertyId)
-    .order("order_index", { ascending: true });
-
-  return {
-    ...property,
-    property_images: images || [],
-  };
 }
 
 // ==========================================
