@@ -75,10 +75,10 @@ export default function ContactHeroSection() {
                       Email
                     </p>
                     <a
-                      href="mailto:info@vivar.com"
+                      href="mailto:info@vivar.global"
                       className="text-base font-semibold text-gray-900 hover:text-teal-900 transition-colors"
                     >
-                      info@vivar.com
+                      info@vivar.global
                     </a>
                   </div>
                 </div>
@@ -96,7 +96,8 @@ export default function ContactHeroSection() {
                       href="tel:+18001234567"
                       className="text-base font-semibold text-gray-900 hover:text-teal-900 transition-colors"
                     >
-                      +1 (800) 123-4567
+                      
+                        "+234 703 888 8111"
                     </a>
                   </div>
                 </div>
@@ -111,7 +112,7 @@ export default function ContactHeroSection() {
                       Location
                     </p>
                     <p className="text-base font-semibold text-gray-900">
-                      Silicon Valley, CA 94043 United States
+                      7b Ondo Street, Osborne Foreshore Estate, Phase 1, Lagos, Nigeria. 
                     </p>
                   </div>
                 </div>
@@ -119,8 +120,8 @@ export default function ContactHeroSection() {
             </div>
 
             {/* Right Column: Contact Form Card */}
-            <div className="bg-[#F8FAF9] border border-gray-200 p-6 md:p-8">
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+             {/* <div className="bg-[#F8FAF9] border border-gray-200 p-6 md:p-8">
+             <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label
@@ -216,7 +217,7 @@ export default function ContactHeroSection() {
                   </div>
                 </button>
               </form>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

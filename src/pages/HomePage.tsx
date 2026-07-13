@@ -25,8 +25,8 @@ const HomePage = () => {
       <HowWeHelpSection />
       <Inquiry />
       <Locations />
-      <LeadMagnetSection />
-      <PropertyCategory />
+      {/* <LeadMagnetSection /> */}
+      {/* <PropertyCategory /> */}
       <TrustSocialProofSection />
       <TestimonialsSection />
       <InsightsPreviewSection />

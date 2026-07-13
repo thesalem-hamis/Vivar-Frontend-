@@ -308,7 +308,7 @@ export default function HowWeHelpSection() {
       bgClass: "bg-[#3D7188]",
       tagColor: "text-[#0E292F]",
       lineColor: "border-white/10",
-      href: "/invest",
+      href: "/",
     },
     {
       id: "03.",
@@ -320,7 +320,7 @@ export default function HowWeHelpSection() {
       bgClass: "bg-[#0E292F]",
       tagColor: "text-[#3D7188]",
       lineColor: "border-white/10",
-      href: "/invest",
+      href: "/",
     },
   ];
 

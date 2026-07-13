@@ -1,20 +1,27 @@
+"use client";
+
+import React from "react";
 import { motion } from "framer-motion";
-import { Landmark, Building2, ShieldCheck, Globe } from "lucide-react";
+
+// Brand Marquee Image Imports
+import abbeyImg from "@/assets/abbey.png";
+import abImg from "@/assets/AB.png";
+import accessImg from "@/assets/access.png";
+import cadwellImg from "@/assets/cadwell.png";
+import fbnImg from "@/assets/fbn.png";
 
 interface Partner {
   name: string;
-  icon: React.ComponentType<{
-    size?: number;
-    strokeWidth?: number;
-    className?: string;
-  }>;
+  image: string | any;
+  slug: string;
 }
 
 const partners: Partner[] = [
-  { name: "ABBEY MORTGAGE BANK", icon: Landmark },
-  { name: "WESTFIELD CONSULTING", icon: Building2 },
-  { name: "GOVERNMENT AGENCIES", icon: ShieldCheck },
-  { name: "INTERNATIONAL PARTNERS", icon: Globe },
+  { name: "ABBEY MORTGAGE BANK", image: abbeyImg, slug: "abbey" },
+  { name: "ACCESS BANK", image: accessImg, slug: "access" },
+  { name: "CADWELL", image: cadwellImg, slug: "cadwell" },
+  { name: "FIRST BANK", image: fbnImg, slug: "fbn" },
+  { name: "AB PROPERTIES", image: abImg, slug: "ab" },
 ];
 
 const marqueeItems: Partner[] = [
@@ -56,18 +63,29 @@ const ContactFormSection = () => {
           }}
         >
           {marqueeItems.map((partner, index) => {
-            const Icon = partner.icon;
+            const imgSrc = partner.image?.src ? partner.image.src : partner.image;
+            const isAbbey = partner.slug === "abbey";
+
             return (
               <div
                 key={`${partner.name}-${index}`}
                 className="flex items-center gap-5 shrink-0 select-none whitespace-nowrap group"
               >
-                {/* Translucent Dark Tile Asset Container */}
-                <div className="p-2.5 rounded-none bg-white/[0.03] border border-white/[0.06] text-white/40 group-hover:text-teal-400 group-hover:border-teal-500/30 group-hover:bg-white/[0.05] transition-all duration-300 shadow-inner">
-                  <Icon size={20} strokeWidth={1.25} />
+                {/* White Tile Asset Container */}
+                <div className="h-14 w-28 flex items-center justify-center p-2.5 rounded-none bg-white border border-white/10 group-hover:border-teal-500/30 transition-all duration-300 shadow-inner">
+                  <img
+                    src={imgSrc}
+                    alt={`${partner.name} Logo`}
+                    className={`h-full w-full object-contain object-center transition-all ${
+                      isAbbey
+                        ? "max-h-[75%] max-w-[85%]"
+                        : "max-h-[100%] max-w-[100%] scale-110"
+                    }`}
+                    loading="lazy"
+                  />
                 </div>
 
-                <span className="text-xs md:text-sm font-bold tracking-[0.2em] text-white/60 uppercase transition-colors duration-300 group-hover:text-white">
+                <span className="text-xs md:text-sm font-bold tracking-[0.2em] text-[#0E292F] uppercase transition-colors duration-300 group-hover:text-white">
                   {partner.name}
                 </span>
 

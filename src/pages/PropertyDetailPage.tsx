@@ -105,7 +105,7 @@ export default function PropertyDetailPage() {
         lng: data.longitude || 3.4322,
         agentName: data.agent_name || "Vivar Agent",
         agentJoined: data.agent_since || "Joined recently",
-        agentPhone: data.agent_phone || "+2348137478998",
+        agentPhone: data.agent_phone || "+2347038888111",
         images: (data.property_images || []).map((img: any) => img.url),
       });
       trackPropertyView(data.id);

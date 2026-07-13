@@ -76,8 +76,8 @@ export default function Navbar() {
             <div className="flex items-center gap-1 px-4">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/about">About</NavLink>
-              <NavLink href="/blog">Blog</NavLink>
               <NavLink href="/properties">Properties</NavLink>
+              <NavLink href="/blog">Blog</NavLink>
             </div>
 
             <a
@@ -137,7 +137,7 @@ export default function Navbar() {
 
               {/* Drawer Links Area */}
               <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col">
-                {["Home", "About", "Blog", "Properties"].map((label) => (
+                {["Home", "About", "Properties", "Blog" ].map((label) => (
                   <Link
                     key={label}
                     to={label === "Home" ? "/" : `/${label.toLowerCase()}`}
@@ -149,14 +149,14 @@ export default function Navbar() {
                   </Link>
                 ))}
 
-                <Link
+                {/* <Link
                   to="/contact"
                   onClick={() => setMobileOpen(false)}
                   className="block py-5 text-[#0E292F]/90 text-2xl font-bold tracking-tight
                     border-b border-[#0E292F]/10 hover:text-[#0E292F] transition-colors"
                 >
                   Contact Us
-                </Link>
+                </Link> */}
               </div>
 
               {/* Action Button CTA Row */}

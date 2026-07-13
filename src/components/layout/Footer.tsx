@@ -181,9 +181,9 @@ const quickLinks = [
   { label: "Homepage",           href: "/"         },
   { label: "About Us",           href: "/about"     },
   { label: "Properties",         href: "/properties"},
-  { label: "Projects",           href: "/projects"  },
-  { label: "Invest with Vivar",  href: "/invest"    },
-  { label: "Insights",           href: "/insights"  },
+  // { label: "Projects",           href: "/projects"  },
+  // { label: "Invest with Vivar",  href: "/invest"    },
+  // { label: "Insights",           href: "/insights"  },
   { label: "Book a Consultation",href: "/contact"   },
 ];
 
@@ -191,16 +191,17 @@ const locations = [
   { label: "Ikoyi",               href: "/properties?loc=ikoyi"    },
   { label: "Lekki",               href: "/properties?loc=lekki"    },
   { label: "Victoria Island",     href: "/properties?loc=vi"       },
-  { label: "Abuja",               href: "/properties?loc=abuja"    },
-  { label: "Port Harcourt",       href: "/properties?loc=ph"       },
-  { label: "Diaspora Properties", href: "/properties?loc=diaspora" },
+  { label: "Banana Island",     href: "/properties?loc=banana"       },
+  // { label: "Abuja",               href: "/properties?loc=abuja"    },
+  // { label: "Port Harcourt",       href: "/properties?loc=ph"       },
+  // { label: "Diaspora Properties", href: "/properties?loc=diaspora" },
 ];
 
 const socials = [
   { icon: FaInstagram, label: "Instagram", href: "https://instagram.com/vivar_realty" },
-  { icon: FaFacebook,  label: "Facebook",  href: "#" },
-  { icon: FaYoutube,   label: "YouTube",   href: "#" },
-  { icon: FaTiktok,    label: "TikTok",    href: "#" },
+  // { icon: FaFacebook,  label: "Facebook",  href: "#" },
+  { icon: FaYoutube,   label: "YouTube",   href: "www.youtube.com/@Vivarrealtyglobal" },
+  // { icon: FaTiktok,    label: "TikTok",    href: "https://tiktok.com/@vivarglobal?_t=8pRRxyhAkPW&_r=1" },
 ];
 
 export default function Footer() {
@@ -266,13 +267,13 @@ export default function Footer() {
               Direct Contact
             </h4>
             <div className="flex flex-col gap-4">
-              <a href="tel:+2349062036699" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
+              <a href="tel:+2347038888111" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
                 <Phone size={13} className="text-black/40 group-hover:text-black transition-colors shrink-0" />
-                <span className="font-sans text-sm tracking-wide">+234 906 203 6699</span>
+                <span className="font-sans text-sm tracking-wide">"+234 703 888 8111"</span>
               </a>
-              <a href="mailto:info@vivar.com.ng" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
+              <a href="mailto:info@vivar.global" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
                 <Mail size={13} className="text-black/40 group-hover:text-black transition-colors shrink-0" />
-                <span className="font-sans text-sm tracking-wide">info@vivar.com.ng</span>
+                <span className="font-sans text-sm tracking-wide">info@vivar.global</span>
               </a>
             </div>
 
@@ -306,7 +307,7 @@ export default function Footer() {
                 href="mailto:info@vivar.com.ng"
                 className="text-xl sm:text-2xl lg:text-[26px] font-serif font-light text-black tracking-wide border-b border-black/60 pb-1 hover:border-black transition-colors inline-block break-all"
               >
-                info@vivar.com.ng
+                info@vivar.global
               </a>
             </div>
 

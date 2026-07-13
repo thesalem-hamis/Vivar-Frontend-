@@ -141,13 +141,13 @@ export default function Locations() {
 
         {/* ── MOSAIC GRID ── */}
         <div className="w-full max-w-[96vw] mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="animate"
-            viewport={{ once: true, amount: 0.05 }}
+            // variants={containerVariants}
+            // initial="hidden"
+            // whileInView="animate"
+            // viewport={{ once: true, amount: 0.05 }}
             className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory items-stretch scrollbar-none"
             style={{ scrollbarWidth: "none" }}
           >
@@ -166,7 +166,7 @@ export default function Locations() {
             <div className="flex flex-col w-[82vw] md:w-full shrink-0 snap-start pr-4 md:pr-0">
               <LocationItem card={locations[3]} variants={itemVariants} />
             </div>
-          </motion.div>
+          </div>
 
           {/* Mobile dots */}
           <div className="flex md:hidden justify-center items-center gap-2 mt-6">

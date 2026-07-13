@@ -168,22 +168,22 @@ export default function PageNavbar() {
                   <ChevronRight size={14} className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all" />
                 </Link>
                 <Link
-                  to="/blog"
-                  onClick={handleClose}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-lg hover:bg-neutral-50 group transition-colors duration-150"
-                >
-                  <span className="text-neutral-800 font-medium text-[14px] tracking-tight group-hover:text-[#0E292F] transition-colors">
-                    Blog
-                  </span>
-                  <ChevronRight size={14} className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all" />
-                </Link>
-                <Link
                   to="/properties"
                   onClick={handleClose}
                   className="flex items-center justify-between px-3.5 py-3 rounded-lg hover:bg-neutral-50 group transition-colors duration-150"
                 >
                   <span className="text-neutral-800 font-medium text-[14px] tracking-tight group-hover:text-[#0E292F] transition-colors">
                     Properties
+                  </span>
+                  <ChevronRight size={14} className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all" />
+                </Link>
+                <Link
+                  to="/blog"
+                  onClick={handleClose}
+                  className="flex items-center justify-between px-3.5 py-3 rounded-lg hover:bg-neutral-50 group transition-colors duration-150"
+                >
+                  <span className="text-neutral-800 font-medium text-[14px] tracking-tight group-hover:text-[#0E292F] transition-colors">
+                    Blog
                   </span>
                   <ChevronRight size={14} className="text-neutral-400 group-hover:text-[#0E292F] group-hover:translate-x-0.5 transition-all" />
                 </Link>

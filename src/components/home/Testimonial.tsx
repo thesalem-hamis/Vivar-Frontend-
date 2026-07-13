@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Quote } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 
@@ -30,19 +30,19 @@ const topRowTestimonials: Testimonial[] = [
 
 const bottomRowTestimonials: Testimonial[] = [
   {
-    quote: "Outstanding product—well-crafted, user-friendly, and exactly what I expected. The legal clearings and deep property verifications left absolutely zero blindspots.",
-    name: "Skylar Rosser",
-    role: "Product Manager, Orbit",
+    quote: "We'd been scammed once before with a fake title, so we were extra cautious. Vivar's team ran a full land verification and Certificate of Occupancy check before we signed anything. Total peace of mind.",
+    name: "Grace M.",
+    role: "Landlord & Property Owner, Lagos",
   },
   {
-    quote: "Impressive service—high quality, simple to deal with, and exactly as promised. Customer care and transactional transparency was superb and very responsive.",
-    name: "Anika Franci",
-    role: "CEO & Co-Founder, Zendesk",
+    quote: "Relocating a family of five from Port Harcourt to Abuja felt overwhelming until we spoke to Vivar. They shortlisted homes that actually matched our budget and school-run needs, not just whatever was available.",
+    name: "Tunde B.",
+    role: "Relocating Homeowner, Abuja",
   },
   {
-    quote: "Wonderful experience—high structural integrity, easy to operate, and exactly what I wanted. Support during the payment schedules was quick and incredibly helpful.",
-    name: "Corey Franci",
-    role: "Managing Director, ABC Corp",
+    quote: "As a first-time buyer I didn't understand agency fees, survey plans, or escrow. Vivar broke it all down in plain language and never rushed me into a decision. I closed on my first home last month.",
+    name: "Oluwaseun T.",
+    role: "First-Time Homeowner, Abuja",
   },
 ];
 
@@ -52,31 +52,20 @@ const duplicatedBottom = [...bottomRowTestimonials, ...bottomRowTestimonials, ..
 export default function FUITestimonialWithSlide(): React.JSX.Element {
   return (
     <section className="w-full bg-white py-16 md:py-28 overflow-hidden relative font-sans">
-      
-      {/* ── INLINE ANIMATION INJECTION ── */}
+
+      {/* ── INLINE STYLE INJECTION (hide scrollbars) ── */}
       <style dangerouslySetInnerHTML={{__html: `
-        @keyframes inline-slide-left {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(calc(-50% - 12px)); }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
-        @keyframes inline-slide-right {
-          0% { transform: translateX(calc(-50% - 12px)); }
-          100% { transform: translateX(0); }
-        }
-        .animate-inline-left {
-          animation: inline-slide-left 45s linear infinite;
-        }
-        .animate-inline-right {
-          animation: inline-slide-right 45s linear infinite;
-        }
-        .animate-inline-left:hover,
-        .animate-inline-right:hover {
-          animation-play-state: paused;
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}} />
 
       <div className="w-full mx-auto relative z-10">
-        
+
         {/* ── CENTERED HEADER BLOCK ── */}
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-16 mb-14 md:mb-20 text-center">
           <span className="text-xs font-semibold tracking-[0.2em] text-[#3D7188] uppercase mb-3 block opacity-80 font-sans">
@@ -88,38 +77,135 @@ export default function FUITestimonialWithSlide(): React.JSX.Element {
         </div>
 
         {/* Dynamic Track Containers with Mask Gradients */}
-        <div 
-          className="flex flex-col gap-6 relative w-full overflow-hidden"
+        <div
+          className="flex flex-col gap-6 relative w-full"
           style={{
             maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)'
           }}
         >
-          
-          {/* TRACK 1: ANIMATING LEFT */}
-          <div className="flex animate-inline-left gap-6 w-max px-4 cursor-pointer">
-            {duplicatedTop.map((t, idx) => (
-              <TestimonialCard key={`top-${idx}`} testimonial={t} />
-            ))}
-          </div>
-
-          {/* TRACK 2: ANIMATING RIGHT */}
-          <div className="flex animate-inline-right gap-6 w-max px-4 cursor-pointer">
-            {duplicatedBottom.map((t, idx) => (
-              <TestimonialCard key={`bottom-${idx}`} testimonial={t} />
-            ))}
-          </div>
-
+          <ScrollingRow items={duplicatedTop} direction="left" speed={0.4} />
+          <ScrollingRow items={duplicatedBottom} direction="right" speed={0.4} />
         </div>
       </div>
     </section>
   );
 }
 
+/**
+ * Auto-scrolling row that also supports manual dragging (mouse),
+ * touch swiping, and trackpad scrolling. Auto-scroll pauses while
+ * the user is interacting, and resumes seamlessly afterward.
+ */
+function ScrollingRow({
+  items,
+  direction,
+  speed = 0.4,
+}: {
+  items: Testimonial[];
+  direction: "left" | "right";
+  speed?: number;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const isPausedRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const dragStartX = useRef(0);
+  const dragStartScroll = useRef(0);
+  const rafRef = useRef<number | undefined>(undefined);
+
+  // Keeps the scroll position within the middle duplicate set so the
+  // loop never visibly "jumps" — content is tripled to allow this.
+  const normalizeScroll = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const third = el.scrollWidth / 3;
+    if (third <= 0) return;
+    if (el.scrollLeft >= third * 2) {
+      el.scrollLeft -= third;
+    } else if (el.scrollLeft <= 0.5) {
+      el.scrollLeft += third;
+    }
+  };
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    // Start inside the middle duplicate set
+    el.scrollLeft = el.scrollWidth / 3;
+
+    const dirSign = direction === "left" ? 1 : -1;
+
+    const tick = () => {
+      if (!isPausedRef.current && !isDraggingRef.current && el) {
+        el.scrollLeft += speed * dirSign;
+        normalizeScroll();
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [direction, speed]);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = trackRef.current;
+    if (!el) return;
+    isDraggingRef.current = true;
+    dragStartX.current = e.clientX;
+    dragStartScroll.current = el.scrollLeft;
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    const el = trackRef.current;
+    if (!el) return;
+    const dx = e.clientX - dragStartX.current;
+    el.scrollLeft = dragStartScroll.current - dx;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    const el = trackRef.current;
+    if (el) {
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {
+        // no-op
+      }
+    }
+  };
+
+  return (
+    <div
+      ref={trackRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerLeave={endDrag}
+      onPointerCancel={endDrag}
+      onMouseEnter={() => (isPausedRef.current = true)}
+      onMouseLeave={() => (isPausedRef.current = false)}
+      onScroll={normalizeScroll}
+      style={{ touchAction: "pan-x" }}
+      className="flex gap-6 w-full overflow-x-auto scrollbar-hide px-4 cursor-grab active:cursor-grabbing select-none"
+    >
+      {items.map((t, idx) => (
+        <TestimonialCard key={idx} testimonial={t} />
+      ))}
+    </div>
+  );
+}
+
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <MagicCard 
-      className="flex flex-col bg-slate-50/50 border-2 border-[#0E292F] rounded-2xl p-6 md:p-8 w-[320px] sm:w-[420px] md:w-[500px] h-full justify-between shadow-[0_4px_25px_rgba(14,41,47,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.04)] hover:border-[#3D7188] transition-all duration-300 ease-out select-none font-sans"
+    <MagicCard
+      className="flex flex-col bg-slate-50/50 border-2 border-[#0E292F] rounded-2xl p-6 md:p-8 w-[320px] sm:w-[420px] md:w-[500px] h-full justify-between shrink-0 shadow-[0_4px_25px_rgba(14,41,47,0.01)] hover:shadow-[0_12px_35px_rgba(14,41,47,0.04)] hover:border-[#3D7188] transition-all duration-300 ease-out select-none font-sans"
       gradientColor="rgba(61, 113, 136, 0.08)"
     >
       <div>

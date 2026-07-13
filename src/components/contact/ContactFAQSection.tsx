@@ -82,7 +82,7 @@ export default function ContactFAQ() {
         <motion.span
           custom={0}
           variants={leftColumnVariants}
-          className="text-xs uppercase tracking-[0.2em] text-teal-600 font-semibold"
+          className="text-xs uppercase tracking-[0.2em] text-[#3D7188] font-semibold"
         >
           QUESTIONS & ANSWERS
         </motion.span>
@@ -93,7 +93,7 @@ export default function ContactFAQ() {
           className="text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight leading-tight text-gray-900"
         >
           Frequently asked <br />
-          <span className="italic font-light text-teal-700">questions</span>
+          <span className="italic font-light text-[#3D7188]">questions</span>
         </motion.h2>
 
         <motion.p
@@ -139,7 +139,7 @@ export default function ContactFAQ() {
                 <div className="flex items-center space-x-4 md:space-x-6">
                   <span
                     className={`text-xs md:text-sm font-mono font-medium transition-colors duration-300 ${
-                      isOpen ? "text-teal-600" : "text-gray-400"
+                      isOpen ? "text-[#3D7188]" : "text-gray-400"
                     }`}
                   >
                     {faq.id}
@@ -155,9 +155,9 @@ export default function ContactFAQ() {
                   </span>
                 </div>
 
-                <div className="text-gray-400 group-hover:text-teal-600 transition-colors duration-200 ml-4 flex-shrink-0">
+                <div className="text-gray-400 group-hover:text-[#3D7188] transition-colors duration-200 ml-4 flex-shrink-0">
                   {isOpen ? (
-                    <Minus className="w-5 h-5 text-teal-600" />
+                    <Minus className="w-5 h-5 text-[#3D7188]" />
                   ) : (
                     <Plus className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
                   )}
