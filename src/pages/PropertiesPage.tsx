@@ -761,9 +761,9 @@ export default function PropertiesListingPage() {
         }}
       />
 
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <PageNavbar />
+      <PageNavbar darkHero />
 
+      <div className="relative z-10 flex flex-col min-h-screen">
         {/* ── HERO ── */}
         <PropertyPageHero />
 

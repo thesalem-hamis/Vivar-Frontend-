@@ -2,6 +2,8 @@ import { useState } from "react";
 import { submitEnquiry } from "@/lib/supabase/admin";
 import { motion } from "framer-motion";
 import { ArrowUpRight, CheckCircle2, Loader2 } from "lucide-react";
+import PageNavbar from "@/components/layout/PageNavbar";
+import Footer from "@/components/layout/Footer";
 
 const PROPERTY_TYPES = [
   "Apartment",
@@ -43,6 +45,7 @@ export default function EnquiryPage() {
 
   return (
     <div className="min-h-screen bg-white text-[#0E292F] font-sans">
+      <PageNavbar />
       {/* Hero */}
       <div className="border-b border-[#0E292F]/8 py-16 px-6">
         <div className="max-w-2xl mx-auto">
@@ -180,6 +183,7 @@ export default function EnquiryPage() {
           </form>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

@@ -7,9 +7,7 @@ import TEAM_HERO_IMAGE from "../../assets/ikoyi-main.jpg";
 
 export default function PropertyPageHero() {
   return (
-    <div className="w-full bg-white font-sans selection:bg-[#D4E9B9] selection:text-[#0E292F]">
-      {/* ── PANORAMIC HERO OVERLAY CONTAINER ── */}
-      <section className="relative w-full h-[60vh] min-h-[440px] max-h-[600px] bg-[#0E292F] overflow-hidden flex items-end">
+    <section className="relative w-full h-[60vh] min-h-[440px] max-h-[600px] bg-[#0E292F] overflow-hidden flex items-end font-sans">
         {/* Core Widescreen Corporate Image Canvas */}
         <img
           src={TEAM_HERO_IMAGE}
@@ -41,7 +39,6 @@ export default function PropertyPageHero() {
             </p>
           </motion.div>
         </div>
-      </section>
-    </div>
+    </section>
   );
 }

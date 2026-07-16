@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import LOGO_DEFAULT from "../../assets/logo_main.png";
 import LOGO_SCROLLED from "../../assets/logo_white.png";
 
-export default function PageNavbar() {
+export default function PageNavbar({ darkHero = false }: { darkHero?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +53,7 @@ export default function PageNavbar() {
           className={`
             w-full rounded-[18px] px-4 py-2.5 flex items-center justify-between shadow-xl transition-all duration-500 ease-out
             ${
-              scrolled
+              scrolled || darkHero
                 ? "bg-[#0E292F]/95 border border-white/20 backdrop-blur-md"
                 : "bg-white border border-neutral-100"
             }
@@ -65,7 +65,7 @@ export default function PageNavbar() {
             className="pl-0.5 flex items-center justify-center transition-opacity hover:opacity-90"
           >
             <AnimatePresence mode="wait">
-              {scrolled ? (
+              {scrolled || darkHero ? (
                 <motion.img
                   key="logo-scrolled"
                   src={LOGO_SCROLLED}
@@ -102,7 +102,7 @@ export default function PageNavbar() {
             className={`
               flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 active:scale-95
               ${
-                scrolled
+                scrolled || darkHero
                   ? "bg-white/20 hover:bg-white/30"
                   : "bg-[#0E292F] hover:bg-[#143941]"
               }
