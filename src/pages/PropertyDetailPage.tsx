@@ -589,28 +589,6 @@ export default function PropertyDetailPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2 border-t border-[#0E292F]/6">
-              {[
-                { label: "Property type", value: property.category || "Land" },
-                { label: "Floors", value: property.floors },
-                { label: "Year built", value: property.yearBuilt },
-                {
-                  label: "Price/sqm",
-                  value:
-                    property.pricePerSqm !== "—"
-                      ? `₦${Number(property.pricePerSqm).toLocaleString()}`
-                      : "—",
-                },
-              ].map(({ label, value }) => (
-                <div key={label}>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#0E292F]/30 mb-1.5">
-                    {label}
-                  </p>
-                  <p className="text-[14px] font-bold text-black">{value}</p>
-                </div>
-              ))}
-            </div>
-
             <div className="bg-white border border-[#0E292F]/8 divide-y divide-[#0E292F]/5 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="grid grid-cols-2 gap-y-7 gap-x-6">
