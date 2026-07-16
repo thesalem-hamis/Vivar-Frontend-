@@ -173,7 +173,7 @@
 
 import React, { useState } from "react";
 import { ArrowUpRight, Phone, Mail, ArrowUp } from "lucide-react";
-import { FaFacebook, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
+import { FaInstagram, FaYoutube } from "react-icons/fa";
 
 import LOGO_TEXT from "../../assets/logo_main.png";
 

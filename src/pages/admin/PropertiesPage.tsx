@@ -43,36 +43,49 @@ interface PropertyFormData {
   title: string;
   description: string;
   price: string;
+  price_usd: string;
+  price_eur: string;
   type: string;
   category: string;
   bedrooms: string;
   bathrooms: string;
   area: string;
-  address: string;
   city: string;
   state: string;
   country: string;
-  documents: string;
+  documents_list: string[];
+  video_url: string;
   amenities: string[];
   tags: string[];
   imageFiles: File[];
   featured: boolean;
 }
 
+const DOCUMENTS_LIST = [
+  "C of O",
+  "Deed of Assignment",
+  "Governor's Consent",
+  "Excision",
+  "Survey Plan",
+  "Certificate of Purchase",
+];
+
 const initialFormData: PropertyFormData = {
   title: "",
   description: "",
   price: "",
+  price_usd: "",
+  price_eur: "",
   type: "sale",
   category: "Apartment",
   bedrooms: "",
   bathrooms: "",
   area: "",
-  address: "",
   city: "",
   state: "",
   country: "Nigeria",
-  documents: "",
+  documents_list: [],
+  video_url: "",
   amenities: [""],
   tags: [""],
   imageFiles: [],
@@ -477,13 +490,8 @@ export default function PropertiesPage() {
   };
 
   const generateMapEmbed = () => {
-    if (!formData.address && !formData.city) return undefined;
-    const address = [
-      formData.address,
-      formData.city,
-      formData.state,
-      formData.country,
-    ]
+    if (!formData.city) return undefined;
+    const address = [formData.city, formData.state, formData.country]
       .filter(Boolean)
       .join(", ");
     return `https://maps.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
@@ -502,16 +510,18 @@ export default function PropertiesPage() {
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),
+        price_usd: formData.price_usd ? parseFloat(formData.price_usd) : undefined,
+        price_eur: formData.price_eur ? parseFloat(formData.price_eur) : undefined,
         type: formData.type,
         category: formData.category,
         bedrooms: parseInt(formData.bedrooms) || 0,
         bathrooms: parseInt(formData.bathrooms) || 0,
         area_sqft: formData.area ? parseFloat(formData.area) : undefined,
-        address: formData.address,
         city: formData.city,
         state: formData.state,
         country: formData.country,
-        documents: formData.documents,
+        documents_list: formData.documents_list,
+        video_url: formData.video_url || undefined,
         amenities: amenities,
         tags: tags,
         map_embed: mapEmbed,
@@ -551,16 +561,18 @@ export default function PropertiesPage() {
       title: property.title || "",
       description: property.description || "",
       price: property.price?.toString() || "",
+      price_usd: property.price_usd?.toString() || "",
+      price_eur: property.price_eur?.toString() || "",
       type: property.listing_type || property.type || "sale",
       category: property.category || "Apartment",
       bedrooms: property.bedrooms?.toString() || "",
       bathrooms: property.bathrooms?.toString() || "",
       area: property.area_sqft?.toString() || "",
-      address: property.address || "",
       city: property.city || "",
       state: property.state || "",
       country: property.country || "Nigeria",
-      documents: property.documents || "",
+      documents_list: property.documents_list || [],
+      video_url: property.video_url || "",
       amenities: property.amenities || [""],
       tags: property.tags || [],
       featured: property.featured,
@@ -584,16 +596,18 @@ export default function PropertiesPage() {
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),
+        price_usd: formData.price_usd ? parseFloat(formData.price_usd) : undefined,
+        price_eur: formData.price_eur ? parseFloat(formData.price_eur) : undefined,
         listing_type: formData.type,
         category: formData.category,
         bedrooms: parseInt(formData.bedrooms) || 0,
         bathrooms: parseInt(formData.bathrooms) || 0,
         area_sqft: formData.area ? parseFloat(formData.area) : undefined,
-        address: formData.address,
         city: formData.city,
         state: formData.state,
         country: formData.country,
-        documents: formData.documents,
+        documents_list: formData.documents_list,
+        video_url: formData.video_url || undefined,
         amenities: amenities,
         tags: tags,
         map_embed: mapEmbed,
@@ -1226,28 +1240,33 @@ export default function PropertiesPage() {
                         className={`${inputCls} h-auto py-2.5 resize-none`}
                       />
                     </Field>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <Field label="Price (₦)" required>
                         <div className="relative">
-                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF] font-semibold pointer-events-none select-none font-sans">
-                            ₦
-                          </span>
-                          <input
-                            type="number"
-                            required
-                            min="0"
-                            placeholder="0"
-                            value={formData.price}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                price: e.target.value,
-                              })
-                            }
-                            className={`${inputCls} pl-8`}
-                          />
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF] font-semibold pointer-events-none select-none font-sans">₦</span>
+                          <input type="number" required min="0" placeholder="0" value={formData.price}
+                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                            className={`${inputCls} pl-8`} />
                         </div>
                       </Field>
+                      <Field label="Price (USD)">
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF] font-semibold pointer-events-none select-none font-sans">$</span>
+                          <input type="number" min="0" placeholder="0" value={formData.price_usd}
+                            onChange={(e) => setFormData({ ...formData, price_usd: e.target.value })}
+                            className={`${inputCls} pl-8`} />
+                        </div>
+                      </Field>
+                      <Field label="Price (EUR)">
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#9CA3AF] font-semibold pointer-events-none select-none font-sans">€</span>
+                          <input type="number" min="0" placeholder="0" value={formData.price_eur}
+                            onChange={(e) => setFormData({ ...formData, price_eur: e.target.value })}
+                            className={`${inputCls} pl-8`} />
+                        </div>
+                      </Field>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Field label="Listing type" required>
                         <div className="grid grid-cols-2 gap-2">
                           {[
@@ -1317,12 +1336,7 @@ export default function PropertiesPage() {
                         <div className="relative">
                           <select
                             value={formData.category}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                category: e.target.value,
-                              })
-                            }
+                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                             className="appearance-none pl-3.5 pr-8 h-10 border border-[#E5E7EB] rounded-md text-sm bg-white text-[#0E292F] focus:outline-none focus:border-[#0E292F] focus:ring-2 focus:ring-[#0E292F]/10 w-full cursor-pointer font-sans"
                           >
                             <option value="Apartment">Apartment</option>
@@ -1331,6 +1345,8 @@ export default function PropertiesPage() {
                             <option value="Mansion">Mansion</option>
                             <option value="Terrace">Terrace</option>
                             <option value="Stand Alone">Stand Alone</option>
+                            <option value="Semi-Detached">Semi-Detached</option>
+                            <option value="Fully Detached">Fully Detached</option>
                             <option value="Penthouse">Penthouse</option>
                             <option value="Office">Office</option>
                             <option value="Land">Land</option>
@@ -1339,33 +1355,24 @@ export default function PropertiesPage() {
                           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9CA3AF] pointer-events-none" />
                         </div>
                       </Field>
-                      <Field label="Documents">
-                        <div className="relative">
-                          <select
-                            value={formData.documents}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                documents: e.target.value,
-                              })
-                            }
-                            className="appearance-none pl-3.5 pr-8 h-10 border border-[#E5E7EB] rounded-md text-sm bg-white text-[#0E292F] focus:outline-none focus:border-[#0E292F] focus:ring-2 focus:ring-[#0E292F]/10 w-full cursor-pointer font-sans"
-                          >
-                            <option value="">Select document type</option>
-                            <option value="C of O">C of O</option>
-                            <option value="Deed of Assignment">
-                              Deed of Assignment
-                            </option>
-                            <option value="Governor's Consent">
-                              Governor's Consent
-                            </option>
-                            <option value="Excision">Excision</option>
-                            <option value="Survey Plan">Survey Plan</option>
-                            <option value="Certificate of Purchase">
-                              Certificate of Purchase
-                            </option>
-                          </select>
-                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9CA3AF] pointer-events-none" />
+                      <Field label="Documents (select all that apply)">
+                        <div className="border border-[#E5E7EB] rounded-md bg-white p-2 space-y-1.5 max-h-[140px] overflow-y-auto">
+                          {DOCUMENTS_LIST.map((doc) => (
+                            <label key={doc} className="flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded hover:bg-[#F3F4F6] transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={formData.documents_list.includes(doc)}
+                                onChange={(e) => setFormData((prev) => ({
+                                  ...prev,
+                                  documents_list: e.target.checked
+                                    ? [...prev.documents_list, doc]
+                                    : prev.documents_list.filter((d) => d !== doc),
+                                }))}
+                                className="w-3.5 h-3.5 accent-[#0E292F] cursor-pointer"
+                              />
+                              <span className="text-xs text-[#0E292F] font-sans">{doc}</span>
+                            </label>
+                          ))}
                         </div>
                       </Field>
                     </div>
@@ -1396,17 +1403,6 @@ export default function PropertiesPage() {
                 <div>
                   <SectionLabel label="Location" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Field label="Street address" className="sm:col-span-2">
-                      <input
-                        type="text"
-                        placeholder="123 Marina Drive, Ikoyi Parkview Estate"
-                        value={formData.address}
-                        onChange={(e) =>
-                          setFormData({ ...formData, address: e.target.value })
-                        }
-                        className={inputCls}
-                      />
-                    </Field>
                     <Field label="City">
                       <input
                         type="text"
@@ -1500,9 +1496,9 @@ export default function PropertiesPage() {
                   </div>
                 </div>
 
-                {/* Images */}
+                {/* Media */}
                 <div>
-                  <SectionLabel label="Property images" />
+                  <SectionLabel label="Property images & video" />
                   <label className="group cursor-pointer block">
                     <div className="w-full py-8 px-4 border-2 border-dashed border-slate-200 bg-slate-100 rounded-xl text-center hover:border-[#0E292F]/30 hover:bg-[#F9FAFB] transition-all duration-200">
                       <div className="w-11 h-11 mx-auto rounded-xl  flex items-center justify-center mb-3 group-hover:bg-[#E5E7EB] transition-colors">
@@ -1537,33 +1533,57 @@ export default function PropertiesPage() {
                   {formData.imageFiles.length > 0 && (
                     <div className="flex gap-2 mt-3 flex-wrap">
                       {formData.imageFiles.map((file, i) => (
-                        <div
-                          key={`${file.name}-${i}`}
-                          className="relative w-16 h-16 rounded-lg bg-[#F3F4F6] overflow-hidden border border-[#E5E7EB] group/img"
-                        >
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setFormData((prev) => ({
-                                ...prev,
-                                imageFiles: prev.imageFiles.filter(
-                                  (_, idx) => idx !== i,
-                                ),
-                              }))
-                            }
-                            className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-[#0E292F] text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-[#DC2626]"
-                          >
+                        <div key={`${file.name}-${i}`} className="relative w-16 h-16 rounded-lg bg-[#F3F4F6] overflow-hidden border border-[#E5E7EB] group/img">
+                          <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                          <button type="button"
+                            onClick={() => setFormData((prev) => ({ ...prev, imageFiles: prev.imageFiles.filter((_, idx) => idx !== i) }))}
+                            className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-[#0E292F] text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-[#DC2626]">
                             <X className="w-2.5 h-2.5" />
                           </button>
                         </div>
                       ))}
                     </div>
                   )}
+                  {/* Video */}
+                  <div className="mt-5 space-y-3">
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-[#6B6B66] font-sans font-semibold">Video (optional)</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <label className="group cursor-pointer block">
+                        <div className="w-full py-5 px-4 border-2 border-dashed border-slate-200 bg-slate-100 rounded-xl text-center hover:border-[#0E292F]/30 hover:bg-[#F9FAFB] transition-all duration-200">
+                          <Upload className="w-4 h-4 mx-auto text-[#6B6B66] mb-1.5" />
+                          <p className="text-xs font-semibold text-[#0E292F] font-sans">Upload from gallery</p>
+                          <p className="text-[10px] text-[#9CA3AF] mt-0.5 font-sans">MP4, MOV, WebM</p>
+                        </div>
+                        <input type="file" accept="video/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const url = URL.createObjectURL(file);
+                              setFormData((prev) => ({ ...prev, video_url: url }));
+                            }
+                            e.target.value = "";
+                          }}
+                          className="hidden" />
+                      </label>
+                      <Field label="Or paste video URL">
+                        <input
+                          type="url"
+                          placeholder="https://youtube.com/... or direct link"
+                          value={formData.video_url}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, video_url: e.target.value }))}
+                          className={inputCls}
+                        />
+                      </Field>
+                    </div>
+                    {formData.video_url && (
+                      <div className="flex items-center gap-2 text-xs text-[#0E292F] bg-[#F3F4F6] rounded-md px-3 py-2">
+                        <span className="truncate flex-1">{formData.video_url}</span>
+                        <button type="button" onClick={() => setFormData((prev) => ({ ...prev, video_url: "" }))} className="text-[#9CA3AF] hover:text-[#DC2626] shrink-0">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

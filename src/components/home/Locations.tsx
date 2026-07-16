@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import lekki from "@/assets/lekki.jpg";
@@ -68,11 +69,6 @@ export default function Locations() {
     { text: "Explore Our Most", italic: false },
     { text: "Popular Areas",    italic: false },
   ];
-
-  const containerVariants = {
-    hidden: {},
-    animate: { transition: { staggerChildren: 0.1 } },
-  };
 
   const itemVariants = {
     hidden:   { opacity: 0, y: 30 },
@@ -187,14 +183,15 @@ export default function Locations() {
 
 function LocationItem({ card, variants }: { card: LocationCard; variants: any }) {
   const imageSrc = card.bgImage?.src ? card.bgImage.src : card.bgImage;
+  const navigate = useNavigate();
 
   return (
-    <motion.a
-      href={`/locations/${card.slug}`}
+    <motion.div
+      onClick={() => navigate(`/properties?location=${encodeURIComponent(card.name)}`)}
       variants={variants}
       className={`
         group relative flex flex-col justify-end items-start overflow-hidden w-full
-        rounded-[24px] cursor-pointer select-none no-underline
+        rounded-[24px] cursor-pointer select-none
         transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
         hover:shadow-2xl
         ${card.gridClass}
@@ -238,6 +235,6 @@ function LocationItem({ card, variants }: { card: LocationCard; variants: any })
         @keyframes shine { 100% { left: 125%; } }
         .animate-shine { animation: shine 0.85s cubic-bezier(0.16,1,0.3,1) forwards; }
       `}</style>
-    </motion.a>
+    </motion.div>
   );
 }

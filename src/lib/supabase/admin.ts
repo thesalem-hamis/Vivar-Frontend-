@@ -93,6 +93,8 @@ export async function createProperty(data: {
   title: string;
   description?: string;
   price: number;
+  price_usd?: number;
+  price_eur?: number;
   type?: string;
   category?: string;
   bedrooms?: number;
@@ -103,6 +105,8 @@ export async function createProperty(data: {
   state?: string;
   country?: string;
   documents?: string;
+  documents_list?: string[];
+  video_url?: string;
   amenities?: string[];
   tags?: string[];
   map_embed?: string;
@@ -143,6 +147,10 @@ export async function createProperty(data: {
       state: data.state || null,
       country: data.country || "Nigeria",
       documents: data.documents || null,
+      documents_list: data.documents_list || [],
+      price_usd: data.price_usd || null,
+      price_eur: data.price_eur || null,
+      video_url: data.video_url || null,
       amenities: data.amenities || [],
       tags: data.tags || [],
       map_embed: data.map_embed || null,
@@ -166,6 +174,8 @@ export async function updateProperty(
     title?: string;
     description?: string;
     price?: number;
+    price_usd?: number;
+    price_eur?: number;
     listing_type?: string;
     category?: string;
     bedrooms?: number;
@@ -176,6 +186,8 @@ export async function updateProperty(
     state?: string;
     country?: string;
     documents?: string;
+    documents_list?: string[];
+    video_url?: string;
     amenities?: string[];
     tags?: string[];
     map_embed?: string;

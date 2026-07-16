@@ -3,6 +3,7 @@
 import  { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface CategoryItem {
   id: number;
@@ -18,32 +19,33 @@ const categories: CategoryItem[] = [
     title: 'Top Rentals of the Week',
     description: 'The finest rental homes across Lagos, curated weekly.',
     bgImage: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=2070&auto=format&fit=crop',
-    link: '#',
+    link: '/properties?cat=rent',
   },
   {
     id: 2,
     title: 'Off-Plan Properties',
     description: 'Buy early. Build wealth before completion.',
     bgImage: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=2074&auto=format&fit=crop',
-    link: '#',
+    link: '/properties?type=Off-Plan',
   },
   {
     id: 3,
     title: 'Commercial Properties',
     description: 'Grade A commercial spaces across Lagos Island.',
     bgImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop',
-    link: '#',
+    link: '/properties?cat=commercial',
   },
   {
     id: 4,
     title: 'Landed Opportunities',
     description: 'Prime land for sale in Lagos\' most valuable locations.',
     bgImage: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2073&auto=format&fit=crop',
-    link: '#',
+    link: '/properties?cat=land',
   },
 ];
 
 export default function PropertyCategory() {
+  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const rowRefs = useRef<HTMLAnchorElement[]>([]);
   const [inView, setInView] = useState(false);
@@ -98,6 +100,7 @@ export default function PropertyCategory() {
           <a
             key={category.id}
             href={category.link}
+            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'instant' }); navigate(category.link); }}
             ref={(el) => { if (el) rowRefs.current[index] = el; }}
             className="group relative flex items-center justify-between min-h-[140px] md:min-h-[160px] lg:min-h-[180px] px-6 md:px-16 overflow-hidden transition-all duration-500 opacity-0 [will-change:transform,opacity]"
           >

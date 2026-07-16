@@ -107,6 +107,10 @@ export default function PropertyDetailPage() {
         agentJoined: data.agent_since || "Joined recently",
         agentPhone: data.agent_phone || "+2347038888111",
         images: (data.property_images || []).map((img: any) => img.url),
+        price_usd: data.price_usd || null,
+        price_eur: data.price_eur || null,
+        documents_list: data.documents_list || [],
+        video_url: data.video_url || null,
       });
       trackPropertyView(data.id);
     } catch (err: any) {
@@ -476,9 +480,24 @@ export default function PropertyDetailPage() {
               <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-[#3D7188] mb-2">
                 {property.type === "rent" ? "Annual Rent" : "Asking Price"}
               </p>
-              <div className="text-[32px] sm:text-[38px] font-serif font-bold text-black tracking-tight leading-none mb-3">
+              <div className="text-[32px] sm:text-[38px] font-serif font-bold text-black tracking-tight leading-none mb-1">
                 ₦{formatPrice(property.price)}
               </div>
+              {(property.price_usd || property.price_eur) && (
+                <div className="flex flex-wrap gap-3 mb-3">
+                  {property.price_usd && (
+                    <span className="text-[13px] font-semibold text-[#0E292F]/60">
+                      ${Number(property.price_usd).toLocaleString()} USD
+                    </span>
+                  )}
+                  {property.price_usd && property.price_eur && <span className="text-[#0E292F]/20">·</span>}
+                  {property.price_eur && (
+                    <span className="text-[13px] font-semibold text-[#0E292F]/60">
+                      €{Number(property.price_eur).toLocaleString()} EUR
+                    </span>
+                  )}
+                </div>
+              )}
               <h1 className="text-[16px] sm:text-[19px] font-bold text-black leading-snug mb-3">
                 {property.title}
               </h1>
@@ -642,7 +661,10 @@ export default function PropertyDetailPage() {
                   Documentation Status
                 </h2>
                 <div className="space-y-4">
-                  {docs.map((doc: { name: string; available: boolean }) => (
+                  {(property.documents_list?.length > 0
+                    ? property.documents_list.map((name: string) => ({ name, available: true }))
+                    : docs
+                  ).map((doc: { name: string; available: boolean }) => (
                     <div key={doc.name} className="flex items-center gap-3.5">
                       <div
                         className={`w-8 h-8 border flex items-center justify-center shrink-0 rounded-lg ${doc.available ? "bg-[#F0FBF6] border-[#0E9F6E]/15" : "bg-[#FEF2F2] border-red-100"}`}
@@ -667,6 +689,15 @@ export default function PropertyDetailPage() {
                   ))}
                 </div>
               </div>
+
+              {property.video_url && (
+                <div className="p-6 sm:p-8">
+                  <h2 className="font-serif text-[18px] font-bold text-[#0E292F] tracking-tight mb-4">
+                    Property Video
+                  </h2>
+                  <VideoEmbed url={property.video_url} />
+                </div>
+              )}
 
               <div className="p-6 sm:p-8">
                 <h2 className="font-serif text-[18px] font-bold text-[#0E292F] tracking-tight mb-5">
@@ -925,6 +956,79 @@ export default function PropertyDetailPage() {
         </div>
       )}
     </div>
+  );
+}
+
+/* ── VIDEO EMBED ── */
+function VideoEmbed({ url }: { url: string }) {
+  const getYouTubeId = (u: string) => {
+    const m = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+    return m?.[1] ?? null;
+  };
+
+  const getVimeoId = (u: string) => {
+    const m = u.match(/vimeo\.com\/(?:video\/)?([0-9]+)/);
+    return m?.[1] ?? null;
+  };
+
+  const youtubeId = getYouTubeId(url);
+  const vimeoId = getVimeoId(url);
+  const isDirectVideo = /\.(mp4|mov|webm|ogg)$/i.test(url) || url.startsWith("blob:");
+  const isFacebook = url.includes("facebook.com") || url.includes("fb.watch");
+  const isInstagram = url.includes("instagram.com");
+  const isTikTok = url.includes("tiktok.com");
+
+  if (youtubeId) {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${youtubeId}?rel=0`}
+        title="Property Video"
+        className="w-full rounded-xl aspect-video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    );
+  }
+
+  if (vimeoId) {
+    return (
+      <iframe
+        src={`https://player.vimeo.com/video/${vimeoId}?badge=0&autopause=0`}
+        title="Property Video"
+        className="w-full rounded-xl aspect-video"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowFullScreen
+      />
+    );
+  }
+
+  if (isDirectVideo) {
+    return (
+      <video src={url} controls className="w-full rounded-xl aspect-video bg-black" />
+    );
+  }
+
+  // Facebook, Instagram, TikTok — block iframes; show a styled open link instead
+  const platform = isFacebook ? "Facebook" : isInstagram ? "Instagram" : isTikTok ? "TikTok" : "Video";
+  const platformColor = isFacebook
+    ? "bg-[#1877F2]"
+    : isInstagram
+    ? "bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#F77737]"
+    : isTikTok
+    ? "bg-black"
+    : "bg-[#0E292F]";
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      className={`flex items-center justify-center gap-3 w-full rounded-xl aspect-video ${platformColor} text-white hover:opacity-90 transition-opacity`}
+    >
+      <Video className="w-8 h-8 opacity-80" />
+      <span className="text-[13px] font-bold tracking-wide">Watch on {platform}</span>
+      <ArrowUpRight className="w-4 h-4 opacity-70" />
+    </a>
   );
 }
 

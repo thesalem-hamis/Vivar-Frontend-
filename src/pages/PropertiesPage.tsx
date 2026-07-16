@@ -531,6 +531,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import PageNavbar from "@/components/layout/PageNavbar";
 import PropertyCard from "@/components/layout/PropertyCard";
 import SearchBar from "@/components/layout/SearchBar";
@@ -539,7 +540,6 @@ import PropertyPageHero from "@/components/property/PropertyPageHero";
 
 import FALLBACK_IMAGE from "@/assets/svg.png";
 import {
-  getPublicProperties,
   searchPublicProperties,
 } from "@/lib/supabase/admin";
 import Footer from "@/components/layout/Footer";
@@ -600,6 +600,11 @@ function PropertyCardSkeleton() {
 }
 
 export default function PropertiesListingPage() {
+  const [searchParams] = useSearchParams();
+  const locationParam = searchParams.get("location");
+  const catParam = searchParams.get("cat");
+  const typeParam = searchParams.get("type");
+
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedType, setSelectedType] = useState<string>("All Properties");
@@ -613,15 +618,25 @@ export default function PropertiesListingPage() {
     beds: string | null;
   }>({
     dealType: null,
-    location: null,
+    location: locationParam || null,
     homeType: null,
     beds: null,
   });
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [locationParam, catParam, typeParam]);
+
+  useEffect(() => {
     const loadProperties = async () => {
       try {
-        const data = await getPublicProperties();
+        setLoading(true);
+        const data = await searchPublicProperties(
+          catParam || undefined,
+          locationParam || undefined,
+          typeParam || undefined,
+          undefined,
+        );
         setProperties((data as Property[]) || []);
       } catch (error) {
         console.error("Failed to load properties:", error);
@@ -630,7 +645,7 @@ export default function PropertiesListingPage() {
       }
     };
     loadProperties();
-  }, []);
+  }, [locationParam, catParam, typeParam]);
 
   // Intercept SearchBar updates
   const handleSearchBarSubmit = async (filters: {
@@ -776,7 +791,17 @@ export default function PropertiesListingPage() {
                 </nav>
                 <div className="flex items-center gap-3">
                   <h2 className="font-sans text-2xl font-bold text-[#0E292F] tracking-tight">
-                    All Listings
+                    {locationParam
+                      ? `Properties in ${locationParam}`
+                      : catParam === "rent"
+                      ? "Top Rentals"
+                      : catParam === "commercial"
+                      ? "Commercial Properties"
+                      : catParam === "land"
+                      ? "Landed Opportunities"
+                      : typeParam
+                      ? `${typeParam} Properties`
+                      : "All Listings"}
                   </h2>
                   {!loading && (
                     <span className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#0E292F]/[0.06] text-[#0E292F] text-[10px] font-bold tracking-wider uppercase border border-stone-200 ring-1 ring-[#0E292F]/5 select-none">

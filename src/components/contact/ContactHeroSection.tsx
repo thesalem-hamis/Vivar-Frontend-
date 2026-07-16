@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 
 // Replace with your team portrait asset matching the reference layout
 import TEAM_HERO_IMAGE from "../../assets/ikoyi-main.jpg";
