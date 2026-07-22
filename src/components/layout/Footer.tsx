@@ -277,6 +277,7 @@ export default function Footer() {
               </a>
             </div>
 
+
             <div className="mt-8 max-w-xs">
               <form onSubmit={handleSubmit} className="flex items-center gap-2 border-b border-black/15 py-1.5 focus-within:border-black transition-colors">
                 <input
