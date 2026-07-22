@@ -97,7 +97,7 @@ export default function ContactHeroSection() {
                       className="text-base font-semibold text-gray-900 hover:text-teal-900 transition-colors"
                     >
                       
-                        "+234 703 888 8111"
+                        +234 703 888 8111
                     </a>
                   </div>
                 </div>
