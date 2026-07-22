@@ -269,7 +269,7 @@ export default function Footer() {
             <div className="flex flex-col gap-4">
               <a href="tel:+2347038888111" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
                 <Phone size={13} className="text-black/40 group-hover:text-black transition-colors shrink-0" />
-                <span className="font-sans text-sm tracking-wide">"+234 703 888 8111"</span>
+                <span className="font-sans text-sm tracking-wide">+234 703 888 8111</span>
               </a>
               <a href="mailto:info@vivar.global" className="flex items-center gap-3 text-black/80 hover:text-black transition-colors group">
                 <Mail size={13} className="text-black/40 group-hover:text-black transition-colors shrink-0" />
